@@ -5,11 +5,11 @@ from download import download_pages
 from scrape import extract_match_data
 import json
 
-def main(create_tables = False,
+def main(update_tables = False,
          download_matches = False,
          process_matches = False):
 
-    if create_tables:
+    if update_tables:
         create_tables()
 
     if download_matches:
@@ -37,7 +37,6 @@ def main(create_tables = False,
         # Store in db
         # Flag as processed
 
-    
 
 if __name__ == '__main__':
-    main(process_matches = True)
+    main(update_tables = True)
