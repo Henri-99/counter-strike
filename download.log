@@ -1,2 +1,10 @@
 2023-11-02 13:33:31,338 - INFO - Downloading https://www.hltv.org/matches/2338764/fate-vs-skade-ggbet-winter-cup
 2023-11-02 13:33:43,868 - INFO - Successfully downloaded https://www.hltv.org/matches/2338764/fate-vs-skade-ggbet-winter-cup
+2023-11-02 14:43:50,259 - INFO - Downloading https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup
+2023-11-02 14:45:27,643 - INFO - Downloading https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup
+2023-11-02 14:45:46,243 - ERROR - Failed to download https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup: can only concatenate str (not "int") to str
+2023-11-02 14:46:18,933 - INFO - Downloading https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup
+2023-11-02 14:46:28,073 - ERROR - Failed to download https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup: can only concatenate str (not "int") to str
+2023-11-02 14:47:25,113 - INFO - Downloading https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup
+2023-11-02 14:49:10,313 - INFO - Downloading https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup
+2023-11-02 14:49:18,422 - INFO - Successfully downloaded https://www.hltv.org/matches/2338765/heroic-vs-skade-ggbet-winter-cup

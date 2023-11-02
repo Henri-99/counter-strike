@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 DATABASE_URI = 'sqlite:///counter-strike.db'
-engine = create_engine(DATABASE_URI, echo=True)
+engine = create_engine(DATABASE_URI, echo=False)
 
 Base = declarative_base()
 

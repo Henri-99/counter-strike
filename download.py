@@ -57,7 +57,7 @@ def download_page(client, page, params):
         logging.info(f"Downloading {page['url']}")
         print(page['url'])
         response = client.get(page['url'], params)
-        with open("./download/"+page['path'], 'w', encoding='utf-8') as file:
+        with open(f"./download/{page['path']}.html", 'w', encoding='utf-8') as file:
             file.write(response.text)
         logging.info(f"Successfully downloaded {page['url']}")
     except Exception as e:
