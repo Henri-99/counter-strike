@@ -23,6 +23,7 @@ class Match(Base):
     __tablename__ = 'match'
 
     id = Column(Integer, primary_key=True)
+    url = Column(String)
     datetime = Column(String)
     team1_id = Column(Integer)
     team2_id = Column(Integer)
@@ -127,6 +128,7 @@ class Lineup(Base):
     team_name = Column(String)
     rank = Column(Integer)
     date = Column(String)
+    match_id = Column(Integer)
     player1_id = Column(Integer)
     player1 = Column(String)
     player2_id = Column(Integer)

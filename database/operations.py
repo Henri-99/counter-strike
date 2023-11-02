@@ -1,5 +1,5 @@
 from database.setup import session
-from database.models import MatchURL
+from database.models import MatchURL, Match, Lineup
 
 def get_match_urls(downloaded=False, processed=None, limit=None):
     # Query the database to get a list of MatchURLs where downloaded matches the specified value
@@ -28,4 +28,72 @@ def update_match_url(id_list: list, flag: str):
     session.query(MatchURL).filter(MatchURL.id.in_(id_list)).update(flag_to_update, synchronize_session=False)
 
     # Commit the changes to the database
+    session.commit()
+    
+
+def insert_matches(match_data_list):
+    """
+    Insert a list of match data dictionaries into the Match table.
+
+    Args:
+        match_data_list (list of dict): List of dictionaries containing match data.
+
+    Returns:
+        None
+    """
+    for data in match_data_list:
+        match_entry = Match(
+            id=data['id'],
+            url=data['url'],
+            datetime=data['datetime'],
+            team1_id=data['team1_id'],
+            team2_id=data['team2_id'],
+            team1=data['team1'],
+            team2=data['team2'],
+            team1_score=data['team1_score'],
+            team2_score=data['team2_score'],
+            team1_rank=data['team1_rank'],
+            team2_rank=data['team2_rank'],
+            winner=data['winner'],
+            event_id=data['event_id'],
+            event=data['event'],
+            lan=data['lan'],
+            best_of=data['best_of'],
+            box_str=data['box_str'],
+            veto=data['veto']
+        )
+        session.add(match_entry)
+
+    session.commit()
+    
+def insert_lineups(lineup_data_list):
+    """
+    Insert a list of lineup data dictionaries into the Lineup table.
+
+    Args:
+        lineup_data_list (list of dict): List of dictionaries containing lineup data.
+
+    Returns:
+        None
+    """
+    for data in lineup_data_list:
+        lineup_entry = Lineup(
+            team_id=data['team_id'],
+            team_name=data['team_name'],
+            rank=data['rank'],
+            date=data['date'],
+            match_id=data['match_id'],
+            player1_id=data['player1_id'],
+            player1=data['player1'],
+            player2_id=data['player2_id'],
+            player2=data['player2'],
+            player3_id=data['player3_id'],
+            player3=data['player3'],
+            player4_id=data['player4_id'],
+            player4=data['player4'],
+            player5_id=data['player5_id'],
+            player5=data['player5']
+        )
+        session.add(lineup_entry)
+
     session.commit()

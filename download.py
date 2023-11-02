@@ -14,7 +14,12 @@ import logging
 ZENROWS_API_KEY = "5771f6aa356840a80c50a447b69d8d0ad31ab888"
 DEFAULT_PARAMS = {"premium_proxy":"true"}
 
-logging.basicConfig(filename='download.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+download_logger = logging.getLogger('download_logger')
+download_logger.setLevel(logging.INFO)
+download_handler = logging.FileHandler('download.log')
+download_handler.setLevel(logging.INFO)
+download_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+download_logger.addHandler(download_handler)
 
 def format_time(total_seconds):
     """
@@ -54,14 +59,17 @@ def download_page(client, page, params):
     start_time = time.time()
 
     try:
-        logging.info(f"Downloading {page['url']}")
+        download_logger.info(f"Downloading {page['url']}")
         print(page['url'])
         response = client.get(page['url'], params)
         with open(f"./download/{page['path']}.html", 'w', encoding='utf-8') as file:
+            data = response.text
+            if "Operation timeout exceeded (CTX0002)" in data:
+                raise TimeoutError
             file.write(response.text)
-        logging.info(f"Successfully downloaded {page['url']}")
+        download_logger.info(f"Successfully downloaded {page['url']}")
     except Exception as e:
-        logging.error(f"Failed to download {page['url']}: {e}")
+        download_logger.error(f"Failed to download {page['url']}: {e}")
         return None
 
     return time.time() - start_time

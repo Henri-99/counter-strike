@@ -3,14 +3,25 @@ from datetime import datetime
 import re
 import logging
 
-logging.basicConfig(filename='scrape.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+scraper_logger = logging.getLogger('scraper_logger')
+scraper_logger.setLevel(logging.INFO)
+scraper_handler = logging.FileHandler('scraper.log')
+scraper_handler.setLevel(logging.INFO)
+scraper_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+scraper_logger.addHandler(scraper_handler)
 
 def extract_match_data(match):
 	with open(f"download/match/{match.id}.html", "r", encoding='utf-8') as html:
 		soup = BeautifulSoup(html, "html.parser")
 		
 		teambox = soup.find("div", class_ = "teamsBox")
-		team1_div = teambox.find("div", class_ = "team1-gradient")
+		try:
+			team1_div = teambox.find("div", class_ = "team1-gradient")
+		except Exception as e:
+			scraper_logger.info(f"{match.id}: {e}")
+			return None, None
+
+
 		team1_id = team1_div.find("a")['href'].split("/")[2]
 		team1 = team1_div.find("a")['href'].split("/")[3]
 		team1_score = team1_div.find_all("div")[1].text
@@ -34,12 +45,12 @@ def extract_match_data(match):
 		try:
 			team1_rank = int(lineup_boxes[0].find("div", class_="teamRanking").find("a").text.strip("World rank: #"))
 		except:
-			logging.info(f"Anomolous team rank {match.id}/{match.url}")
+			scraper_logger.info(f"Anomolous team rank {match.id}/{match.url}")
 			team1_rank = None
 		try:
 			team2_rank = int(lineup_boxes[1].find("div", class_="teamRanking").find("a").text.strip("World rank: #"))
 		except:
-			logging.info(f"Anomolous team rank {match.id}/{match.url}")
+			scraper_logger.info(f"Anomolous team rank {match.id}/{match.url}")
 			team2_rank = None
 
 		for j, lineup_box in enumerate(lineup_boxes):
@@ -48,6 +59,7 @@ def extract_match_data(match):
 				"team_name" : team1 if j == 0 else team2,
 				"rank" : team1_rank if j == 0 else team2_rank,
 				"date" : datetime_,
+				"match_id" : match.id,
 			}
 			player_links = lineup_box.find_all("td", class_='player')[:5]
 			for i, link in enumerate(player_links):
@@ -60,7 +72,7 @@ def extract_match_data(match):
 			lineups.append(lineup)
 		
 		# Start building stats dict
-		match_info = {
+		match_data = {
 			"id" : match.id,
 			"url" : match.url,
 			"datetime" : datetime_,
@@ -76,14 +88,14 @@ def extract_match_data(match):
 			"event_id" : event_id,
 			"event" : event,
 		}
-		match_info['lan'] = True if "LAN" in boxes[0].text else False
+		match_data['lan'] = True if "LAN" in boxes[0].text else False
 		pattern = r'(Best of|BO)\s*(\d+)'
 		format_ = [match[1] for match in re.findall(pattern, boxes[0].text)]
 		if len(format_) > 0:
-			match_info['best_of'] = int(format_[0])
+			match_data['best_of'] = int(format_[0])
 		else:
-			match_info['best_of'] = 0
-		match_info['box_str'] = "\n".join([s.strip("* ") for s in boxes[0].text.strip().split("\n") if s])
-		match_info['veto'] = boxes[1].text.strip()
+			match_data['best_of'] = 0
+		match_data['box_str'] = "\n".join([s.strip("* ") for s in boxes[0].text.strip().split("\n") if s])
+		match_data['veto'] = boxes[1].text.strip()
 		
-	return match_info, lineups
+	return match_data, lineups
