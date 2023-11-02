@@ -1,5 +1,7 @@
 from database.setup import session
-from database.models import MatchURL, Match, Lineup
+from database.models import MatchURL, Match, Lineup, Map
+from sqlalchemy import func, and_
+from datetime import datetime
 
 def get_match_urls(downloaded=False, processed=None, limit=None):
     # Query the database to get a list of MatchURLs where downloaded matches the specified value
@@ -17,6 +19,31 @@ def get_match_urls(downloaded=False, processed=None, limit=None):
     
     return match_urls
 
+def get_maps(start_date=None, end_date=None, limit=None):
+    query = session.query(Map)
+    if start_date and end_date is not None:
+        query = query.filter(
+			and_(
+				Map.datetime >= start_date,
+				Map.datetime <= end_date
+			)
+		).order_by(Map.id)
+    
+    if limit is not None:
+        query = query.limit(limit)
+    
+    map_data = query.all()
+
+    return map_data
+
+def get_date_range():
+    # Query for the minimum and maximum datetime values
+    min_date = session.query(func.min(Map.datetime)).scalar()
+    max_date = session.query(func.max(Map.datetime)).scalar()
+    date_format = "%Y-%m-%d %H:%M"
+
+    return datetime.strptime(min_date, date_format), datetime.strptime(max_date, date_format)
+
 def update_match_url(id_list: list, flag: str):
     if flag not in ['downloaded', 'processed']:
         raise ValueError("Flag must be 'downloaded' or 'processed'")
@@ -30,7 +57,6 @@ def update_match_url(id_list: list, flag: str):
     # Commit the changes to the database
     session.commit()
     
-
 def insert_matches(match_data_list):
     """
     Insert a list of match data dictionaries into the Match table.

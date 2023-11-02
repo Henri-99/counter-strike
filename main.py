@@ -1,9 +1,8 @@
-from database.models import MatchURL
-from database.setup import session, create_tables
+from database.setup import create_tables
 from database.operations import get_match_urls, update_match_url, insert_matches, insert_lineups
 from download import download_pages
 from scrape import extract_match_data
-import json
+import random
 
 def main(update_tables = False,
          download_matches = False,
@@ -14,7 +13,8 @@ def main(update_tables = False,
 
     if download_matches:
         # Get list of matches to download
-        matches_to_download = get_match_urls(downloaded=False, limit=98)
+        matches_to_download = get_match_urls(downloaded=False, limit=300)
+        matches_to_download = random.sample(matches_to_download, len(matches_to_download))
         download_list = [
             {
                 'url': f"https://www.hltv.org/matches/{match.id}/{match.url}",
@@ -22,6 +22,8 @@ def main(update_tables = False,
             }
             for match in matches_to_download
         ]
+        
+		
 
         # Download the match pages and update the 'downloaded' flag in database
         success = download_pages(download_list)
@@ -46,4 +48,4 @@ def main(update_tables = False,
 
 
 if __name__ == '__main__':
-    main(update_tables = True, process_matches = True)
+    main(download_matches = True, process_matches = True)

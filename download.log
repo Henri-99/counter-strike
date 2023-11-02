@@ -204,3 +204,619 @@
 2023-11-02 15:38:46,277 - INFO - Successfully downloaded https://www.hltv.org/matches/2339102/natus-vincere-vs-vitality-blast-premier-spring-series-2020
 2023-11-02 15:38:46,277 - INFO - Downloading https://www.hltv.org/matches/2339103/complexity-vs-natus-vincere-blast-premier-spring-series-2020
 2023-11-02 15:39:13,561 - INFO - Successfully downloaded https://www.hltv.org/matches/2339103/complexity-vs-natus-vincere-blast-premier-spring-series-2020
+2023-11-02 17:23:16,327 - INFO - Downloading https://www.hltv.org/matches/2338797/chaos-vs-mibr-iem-katowice-2020-north-america-closed-qualifier
+2023-11-02 17:23:25,356 - INFO - Successfully downloaded https://www.hltv.org/matches/2338797/chaos-vs-mibr-iem-katowice-2020-north-america-closed-qualifier
+2023-11-02 17:23:25,356 - INFO - Downloading https://www.hltv.org/matches/2338859/heroic-vs-mad-lions-iem-katowice-2020-europe-closed-qualifier
+2023-11-02 17:23:41,034 - INFO - Successfully downloaded https://www.hltv.org/matches/2338859/heroic-vs-mad-lions-iem-katowice-2020-europe-closed-qualifier
+2023-11-02 17:23:41,034 - INFO - Downloading https://www.hltv.org/matches/2338975/mad-lions-vs-renegades-dreamhack-open-leipzig-2020
+2023-11-02 17:23:57,593 - INFO - Successfully downloaded https://www.hltv.org/matches/2338975/mad-lions-vs-renegades-dreamhack-open-leipzig-2020
+2023-11-02 17:23:57,594 - INFO - Downloading https://www.hltv.org/matches/2338977/renegades-vs-big-dreamhack-open-leipzig-2020
+2023-11-02 17:24:04,500 - INFO - Successfully downloaded https://www.hltv.org/matches/2338977/renegades-vs-big-dreamhack-open-leipzig-2020
+2023-11-02 17:24:04,500 - INFO - Downloading https://www.hltv.org/matches/2339026/forze-vs-winstrike-dreamhack-open-anaheim-2020-europe-closed-qualifier
+2023-11-02 17:24:28,462 - INFO - Successfully downloaded https://www.hltv.org/matches/2339026/forze-vs-winstrike-dreamhack-open-anaheim-2020-europe-closed-qualifier
+2023-11-02 17:24:28,462 - INFO - Downloading https://www.hltv.org/matches/2339093/liquid-vs-mibr-blast-premier-spring-series-2020
+2023-11-02 17:24:37,154 - INFO - Successfully downloaded https://www.hltv.org/matches/2339093/liquid-vs-mibr-blast-premier-spring-series-2020
+2023-11-02 17:24:37,154 - INFO - Downloading https://www.hltv.org/matches/2339097/faze-vs-liquid-blast-premier-spring-series-2020
+2023-11-02 17:25:20,576 - INFO - Downloading https://www.hltv.org/matches/2338797/chaos-vs-mibr-iem-katowice-2020-north-america-closed-qualifier
+2023-11-02 17:25:27,473 - INFO - Successfully downloaded https://www.hltv.org/matches/2338797/chaos-vs-mibr-iem-katowice-2020-north-america-closed-qualifier
+2023-11-02 17:25:27,473 - INFO - Downloading https://www.hltv.org/matches/2338859/heroic-vs-mad-lions-iem-katowice-2020-europe-closed-qualifier
+2023-11-02 17:27:32,296 - INFO - Downloading https://www.hltv.org/matches/2340350/havu-vs-mad-lions-flashpoint-1
+2023-11-02 17:27:44,847 - INFO - Successfully downloaded https://www.hltv.org/matches/2340350/havu-vs-mad-lions-flashpoint-1
+2023-11-02 17:27:44,847 - INFO - Downloading https://www.hltv.org/matches/2339356/mibr-vs-complexity-dreamhack-open-anaheim-2020
+2023-11-02 17:27:58,734 - INFO - Successfully downloaded https://www.hltv.org/matches/2339356/mibr-vs-complexity-dreamhack-open-anaheim-2020
+2023-11-02 17:27:58,735 - INFO - Downloading https://www.hltv.org/matches/2340189/orgless-vs-ex-eunited-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 17:28:08,176 - INFO - Successfully downloaded https://www.hltv.org/matches/2340189/orgless-vs-ex-eunited-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 17:28:08,177 - INFO - Downloading https://www.hltv.org/matches/2339606/gambit-youngsters-vs-havu-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:28:16,515 - INFO - Successfully downloaded https://www.hltv.org/matches/2339606/gambit-youngsters-vs-havu-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:28:16,516 - INFO - Downloading https://www.hltv.org/matches/2339809/havu-vs-big-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 17:28:41,545 - INFO - Successfully downloaded https://www.hltv.org/matches/2339809/havu-vs-big-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 17:28:41,546 - INFO - Downloading https://www.hltv.org/matches/2340197/ago-vs-big-esea-mdl-season-33-europe
+2023-11-02 17:29:01,149 - INFO - Successfully downloaded https://www.hltv.org/matches/2340197/ago-vs-big-esea-mdl-season-33-europe
+2023-11-02 17:29:01,149 - INFO - Downloading https://www.hltv.org/matches/2339161/virtuspro-vs-godsent-ice-challenge-2020
+2023-11-02 17:29:41,116 - INFO - Successfully downloaded https://www.hltv.org/matches/2339161/virtuspro-vs-godsent-ice-challenge-2020
+2023-11-02 17:29:41,116 - INFO - Downloading https://www.hltv.org/matches/2339108/evil-geniuses-vs-og-blast-premier-spring-series-2020
+2023-11-02 17:32:41,355 - ERROR - Failed to download https://www.hltv.org/matches/2339108/evil-geniuses-vs-og-blast-premier-spring-series-2020: 
+2023-11-02 17:32:41,355 - INFO - Downloading https://www.hltv.org/matches/2338977/renegades-vs-big-dreamhack-open-leipzig-2020
+2023-11-02 17:35:41,595 - ERROR - Failed to download https://www.hltv.org/matches/2338977/renegades-vs-big-dreamhack-open-leipzig-2020: 
+2023-11-02 17:35:41,596 - INFO - Downloading https://www.hltv.org/matches/2340026/teamone-vs-triumph-esea-mdl-season-33-north-america
+2023-11-02 17:36:14,478 - INFO - Successfully downloaded https://www.hltv.org/matches/2340026/teamone-vs-triumph-esea-mdl-season-33-north-america
+2023-11-02 17:36:14,478 - INFO - Downloading https://www.hltv.org/matches/2339630/pro100-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 17:36:38,311 - INFO - Successfully downloaded https://www.hltv.org/matches/2339630/pro100-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 17:36:38,312 - INFO - Downloading https://www.hltv.org/matches/2340045/triumph-vs-chaos-esea-mdl-season-33-north-america
+2023-11-02 17:36:58,963 - INFO - Successfully downloaded https://www.hltv.org/matches/2340045/triumph-vs-chaos-esea-mdl-season-33-north-america
+2023-11-02 17:36:58,963 - INFO - Downloading https://www.hltv.org/matches/2340270/triumph-vs-swole-patrol-esea-mdl-season-33-north-america
+2023-11-02 17:37:20,115 - INFO - Successfully downloaded https://www.hltv.org/matches/2340270/triumph-vs-swole-patrol-esea-mdl-season-33-north-america
+2023-11-02 17:37:20,115 - INFO - Downloading https://www.hltv.org/matches/2339596/spirit-vs-juggernauts-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:37:35,269 - INFO - Successfully downloaded https://www.hltv.org/matches/2339596/spirit-vs-juggernauts-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:37:35,269 - INFO - Downloading https://www.hltv.org/matches/2339387/renegades-vs-faze-iem-katowice-2020
+2023-11-02 17:37:50,119 - INFO - Successfully downloaded https://www.hltv.org/matches/2339387/renegades-vs-faze-iem-katowice-2020
+2023-11-02 17:37:50,120 - INFO - Downloading https://www.hltv.org/matches/2339097/faze-vs-liquid-blast-premier-spring-series-2020
+2023-11-02 17:38:13,858 - INFO - Successfully downloaded https://www.hltv.org/matches/2339097/faze-vs-liquid-blast-premier-spring-series-2020
+2023-11-02 17:38:13,859 - INFO - Downloading https://www.hltv.org/matches/2339557/movistar-riders-vs-endpoint-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:38:47,747 - INFO - Successfully downloaded https://www.hltv.org/matches/2339557/movistar-riders-vs-endpoint-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:38:47,747 - INFO - Downloading https://www.hltv.org/matches/2339638/movistar-riders-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 17:39:07,835 - INFO - Successfully downloaded https://www.hltv.org/matches/2339638/movistar-riders-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 17:39:07,836 - INFO - Downloading https://www.hltv.org/matches/2339686/hard-legion-vs-gambit-youngsters-oga-counter-pit-season-7
+2023-11-02 17:39:29,202 - INFO - Successfully downloaded https://www.hltv.org/matches/2339686/hard-legion-vs-gambit-youngsters-oga-counter-pit-season-7
+2023-11-02 17:39:29,202 - INFO - Downloading https://www.hltv.org/matches/2339500/hellraisers-vs-avez-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:39:50,776 - INFO - Successfully downloaded https://www.hltv.org/matches/2339500/hellraisers-vs-avez-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:39:50,777 - INFO - Downloading https://www.hltv.org/matches/2339274/ex-virtuspro-vs-nordavind-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 17:42:51,016 - ERROR - Failed to download https://www.hltv.org/matches/2339274/ex-virtuspro-vs-nordavind-europe-minor-open-qualifier-2-esl-one-rio-2020: 
+2023-11-02 17:42:51,017 - INFO - Downloading https://www.hltv.org/matches/2340076/ninjas-in-pyjamas-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 17:43:07,341 - INFO - Successfully downloaded https://www.hltv.org/matches/2340076/ninjas-in-pyjamas-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 17:43:07,342 - INFO - Downloading https://www.hltv.org/matches/2339361/endpoint-vs-forze-dreamhack-open-anaheim-2020
+2023-11-02 17:43:26,634 - INFO - Successfully downloaded https://www.hltv.org/matches/2339361/endpoint-vs-forze-dreamhack-open-anaheim-2020
+2023-11-02 17:43:26,634 - INFO - Downloading https://www.hltv.org/matches/2339258/gamerlegion-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 17:43:38,541 - INFO - Successfully downloaded https://www.hltv.org/matches/2339258/gamerlegion-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 17:43:38,542 - INFO - Downloading https://www.hltv.org/matches/2340128/forze-vs-pro100-cis-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 17:46:38,771 - ERROR - Failed to download https://www.hltv.org/matches/2340128/forze-vs-pro100-cis-minor-closed-qualifier-esl-one-rio-2020: 
+2023-11-02 17:46:38,771 - INFO - Downloading https://www.hltv.org/matches/2339628/winstrike-vs-gambit-youngsters-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:46:54,458 - INFO - Successfully downloaded https://www.hltv.org/matches/2339628/winstrike-vs-gambit-youngsters-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:46:54,458 - INFO - Downloading https://www.hltv.org/matches/2340341/mad-lions-vs-copenhagen-flames-flashpoint-1
+2023-11-02 17:49:54,698 - ERROR - Failed to download https://www.hltv.org/matches/2340341/mad-lions-vs-copenhagen-flames-flashpoint-1: 
+2023-11-02 17:49:54,698 - INFO - Downloading https://www.hltv.org/matches/2339588/gambit-youngsters-vs-movistar-riders-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:50:16,520 - INFO - Successfully downloaded https://www.hltv.org/matches/2339588/gambit-youngsters-vs-movistar-riders-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:50:16,521 - INFO - Downloading https://www.hltv.org/matches/2339449/complexity-vs-avez-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 17:50:35,147 - INFO - Successfully downloaded https://www.hltv.org/matches/2339449/complexity-vs-avez-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 17:50:35,147 - INFO - Downloading https://www.hltv.org/matches/2339389/virtuspro-vs-mad-lions-iem-katowice-2020
+2023-11-02 17:50:58,907 - INFO - Successfully downloaded https://www.hltv.org/matches/2339389/virtuspro-vs-mad-lions-iem-katowice-2020
+2023-11-02 17:50:58,908 - INFO - Downloading https://www.hltv.org/matches/2339362/ence-vs-mibr-dreamhack-open-anaheim-2020
+2023-11-02 17:51:22,004 - INFO - Successfully downloaded https://www.hltv.org/matches/2339362/ence-vs-mibr-dreamhack-open-anaheim-2020
+2023-11-02 17:51:22,005 - INFO - Downloading https://www.hltv.org/matches/2339359/furia-vs-north-dreamhack-open-anaheim-2020
+2023-11-02 17:51:42,775 - INFO - Successfully downloaded https://www.hltv.org/matches/2339359/furia-vs-north-dreamhack-open-anaheim-2020
+2023-11-02 17:51:42,776 - INFO - Downloading https://www.hltv.org/matches/2339494/gamerlegion-vs-heretics-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:52:06,865 - INFO - Successfully downloaded https://www.hltv.org/matches/2339494/gamerlegion-vs-heretics-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:52:06,865 - INFO - Downloading https://www.hltv.org/matches/2339890/ago-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 17:52:21,844 - INFO - Successfully downloaded https://www.hltv.org/matches/2339890/ago-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 17:52:21,844 - INFO - Downloading https://www.hltv.org/matches/2339440/hellraisers-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 17:52:37,262 - INFO - Successfully downloaded https://www.hltv.org/matches/2339440/hellraisers-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 17:52:37,262 - INFO - Downloading https://www.hltv.org/matches/2339626/avez-vs-skade-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:55:37,501 - ERROR - Failed to download https://www.hltv.org/matches/2339626/avez-vs-skade-flashpoint-1-europe-closed-qualifier: 
+2023-11-02 17:55:37,501 - INFO - Downloading https://www.hltv.org/matches/2339598/havu-vs-syman-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:55:57,648 - INFO - Successfully downloaded https://www.hltv.org/matches/2339598/havu-vs-syman-flashpoint-1-europe-closed-qualifier
+2023-11-02 17:55:57,649 - INFO - Downloading https://www.hltv.org/matches/2339643/hard-legion-vs-nemiga-oga-counter-pit-season-7
+2023-11-02 17:56:29,452 - INFO - Successfully downloaded https://www.hltv.org/matches/2339643/hard-legion-vs-nemiga-oga-counter-pit-season-7
+2023-11-02 17:56:29,452 - INFO - Downloading https://www.hltv.org/matches/2339404/nemiga-vs-big-esea-mdl-season-33-europe
+2023-11-02 17:56:54,932 - INFO - Successfully downloaded https://www.hltv.org/matches/2339404/nemiga-vs-big-esea-mdl-season-33-europe
+2023-11-02 17:56:54,933 - INFO - Downloading https://www.hltv.org/matches/2340181/big-vs-movistar-riders-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 17:57:33,903 - INFO - Successfully downloaded https://www.hltv.org/matches/2340181/big-vs-movistar-riders-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 17:57:33,904 - INFO - Downloading https://www.hltv.org/matches/2339443/pro100-vs-gambit-youngsters-wesg-2019-russia-closed-qualifier
+2023-11-02 17:58:02,806 - INFO - Successfully downloaded https://www.hltv.org/matches/2339443/pro100-vs-gambit-youngsters-wesg-2019-russia-closed-qualifier
+2023-11-02 17:58:02,806 - INFO - Downloading https://www.hltv.org/matches/2340287/og-vs-tyloo-esl-pro-league-season-11-europe
+2023-11-02 18:01:03,045 - ERROR - Failed to download https://www.hltv.org/matches/2340287/og-vs-tyloo-esl-pro-league-season-11-europe: 
+2023-11-02 18:01:03,046 - INFO - Downloading https://www.hltv.org/matches/2339109/g2-vs-og-blast-premier-spring-series-2020
+2023-11-02 18:01:37,474 - INFO - Successfully downloaded https://www.hltv.org/matches/2339109/g2-vs-og-blast-premier-spring-series-2020
+2023-11-02 18:01:37,474 - INFO - Downloading https://www.hltv.org/matches/2339374/astralis-vs-cloud9-iem-katowice-2020
+2023-11-02 18:01:47,045 - INFO - Successfully downloaded https://www.hltv.org/matches/2339374/astralis-vs-cloud9-iem-katowice-2020
+2023-11-02 18:01:47,045 - INFO - Downloading https://www.hltv.org/matches/2340092/mouz-vs-virtuspro-esl-pro-league-season-11-europe
+2023-11-02 18:02:00,644 - INFO - Successfully downloaded https://www.hltv.org/matches/2340092/mouz-vs-virtuspro-esl-pro-league-season-11-europe
+2023-11-02 18:02:00,645 - INFO - Downloading https://www.hltv.org/matches/2339597/heretics-vs-gamerlegion-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:02:16,353 - INFO - Successfully downloaded https://www.hltv.org/matches/2339597/heretics-vs-gamerlegion-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:02:16,354 - INFO - Downloading https://www.hltv.org/matches/2339260/movistar-riders-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 18:02:37,551 - INFO - Successfully downloaded https://www.hltv.org/matches/2339260/movistar-riders-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 18:02:37,551 - INFO - Downloading https://www.hltv.org/matches/2339542/ex-virtuspro-vs-gamerlegion-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:03:11,007 - INFO - Successfully downloaded https://www.hltv.org/matches/2339542/ex-virtuspro-vs-gamerlegion-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:03:11,007 - INFO - Downloading https://www.hltv.org/matches/2340257/illuminar-vs-big-esea-mdl-season-33-europe
+2023-11-02 18:03:34,464 - INFO - Successfully downloaded https://www.hltv.org/matches/2340257/illuminar-vs-big-esea-mdl-season-33-europe
+2023-11-02 18:03:34,465 - INFO - Downloading https://www.hltv.org/matches/2339354/spirit-vs-gambit-youngsters-wesg-2019-russia-closed-qualifier
+2023-11-02 18:03:51,567 - INFO - Successfully downloaded https://www.hltv.org/matches/2339354/spirit-vs-gambit-youngsters-wesg-2019-russia-closed-qualifier
+2023-11-02 18:03:51,568 - INFO - Downloading https://www.hltv.org/matches/2339647/gambit-youngsters-vs-ago-oga-counter-pit-season-7
+2023-11-02 18:06:51,815 - ERROR - Failed to download https://www.hltv.org/matches/2339647/gambit-youngsters-vs-ago-oga-counter-pit-season-7: 
+2023-11-02 18:06:51,816 - INFO - Downloading https://www.hltv.org/matches/2339594/avez-vs-winstrike-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:07:23,421 - INFO - Successfully downloaded https://www.hltv.org/matches/2339594/avez-vs-winstrike-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:07:23,421 - INFO - Downloading https://www.hltv.org/matches/2339532/spirit-vs-copenhagen-flames-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:08:02,915 - INFO - Successfully downloaded https://www.hltv.org/matches/2339532/spirit-vs-copenhagen-flames-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:08:02,915 - INFO - Downloading https://www.hltv.org/matches/2339296/ago-vs-sprout-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 18:08:39,196 - INFO - Successfully downloaded https://www.hltv.org/matches/2339296/ago-vs-sprout-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 18:08:39,196 - INFO - Downloading https://www.hltv.org/matches/2340220/ago-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 18:09:25,292 - INFO - Successfully downloaded https://www.hltv.org/matches/2340220/ago-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 18:09:25,292 - INFO - Downloading https://www.hltv.org/matches/2339862/japaleno-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 18:09:57,405 - INFO - Successfully downloaded https://www.hltv.org/matches/2339862/japaleno-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 18:09:57,405 - INFO - Downloading https://www.hltv.org/matches/2340166/complexity-vs-godsent-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:10:29,886 - INFO - Successfully downloaded https://www.hltv.org/matches/2340166/complexity-vs-godsent-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:10:29,886 - INFO - Downloading https://www.hltv.org/matches/2339959/spirit-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 18:13:30,127 - ERROR - Failed to download https://www.hltv.org/matches/2339959/spirit-vs-sprout-esea-mdl-season-33-europe: 
+2023-11-02 18:13:30,127 - INFO - Downloading https://www.hltv.org/matches/2340358/funplus-phoenix-vs-c0ntact-flashpoint-1
+2023-11-02 18:14:00,728 - INFO - Successfully downloaded https://www.hltv.org/matches/2340358/funplus-phoenix-vs-c0ntact-flashpoint-1
+2023-11-02 18:14:00,728 - INFO - Downloading https://www.hltv.org/matches/2339105/evil-geniuses-vs-og-blast-premier-spring-series-2020
+2023-11-02 18:14:50,535 - INFO - Successfully downloaded https://www.hltv.org/matches/2339105/evil-geniuses-vs-og-blast-premier-spring-series-2020
+2023-11-02 18:14:50,536 - INFO - Downloading https://www.hltv.org/matches/2340154/tyloo-vs-vici-asia-minor-greater-china-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:15:28,182 - INFO - Successfully downloaded https://www.hltv.org/matches/2340154/tyloo-vs-vici-asia-minor-greater-china-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:15:28,183 - INFO - Downloading https://www.hltv.org/matches/2340088/astralis-vs-vitality-esl-pro-league-season-11-europe
+2023-11-02 18:18:28,425 - ERROR - Failed to download https://www.hltv.org/matches/2340088/astralis-vs-vitality-esl-pro-league-season-11-europe: 
+2023-11-02 18:18:28,425 - INFO - Downloading https://www.hltv.org/matches/2340280/ninjas-in-pyjamas-vs-ence-esl-pro-league-season-11-europe
+2023-11-02 18:18:58,255 - INFO - Successfully downloaded https://www.hltv.org/matches/2340280/ninjas-in-pyjamas-vs-ence-esl-pro-league-season-11-europe
+2023-11-02 18:18:58,255 - INFO - Downloading https://www.hltv.org/matches/2339685/nemiga-vs-ago-oga-counter-pit-season-7
+2023-11-02 18:19:33,970 - INFO - Successfully downloaded https://www.hltv.org/matches/2339685/nemiga-vs-ago-oga-counter-pit-season-7
+2023-11-02 18:19:33,971 - INFO - Downloading https://www.hltv.org/matches/2339365/geng-vs-north-dreamhack-open-anaheim-2020
+2023-11-02 18:20:08,051 - INFO - Successfully downloaded https://www.hltv.org/matches/2339365/geng-vs-north-dreamhack-open-anaheim-2020
+2023-11-02 18:20:08,052 - INFO - Downloading https://www.hltv.org/matches/2339159/ence-vs-godsent-ice-challenge-2020
+2023-11-02 18:20:36,215 - INFO - Successfully downloaded https://www.hltv.org/matches/2339159/ence-vs-godsent-ice-challenge-2020
+2023-11-02 18:20:36,215 - INFO - Downloading https://www.hltv.org/matches/2340359/cloud9-vs-copenhagen-flames-flashpoint-1
+2023-11-02 18:21:17,846 - INFO - Successfully downloaded https://www.hltv.org/matches/2340359/cloud9-vs-copenhagen-flames-flashpoint-1
+2023-11-02 18:21:17,846 - INFO - Downloading https://www.hltv.org/matches/2340194/big-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 18:21:50,529 - INFO - Successfully downloaded https://www.hltv.org/matches/2340194/big-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 18:21:50,530 - INFO - Downloading https://www.hltv.org/matches/2339385/liquid-vs-evil-geniuses-iem-katowice-2020
+2023-11-02 18:22:23,917 - INFO - Successfully downloaded https://www.hltv.org/matches/2339385/liquid-vs-evil-geniuses-iem-katowice-2020
+2023-11-02 18:22:23,918 - INFO - Downloading https://www.hltv.org/matches/2339842/demolition-crew-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 18:22:59,445 - INFO - Successfully downloaded https://www.hltv.org/matches/2339842/demolition-crew-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 18:22:59,445 - INFO - Downloading https://www.hltv.org/matches/2339558/bad-news-bears-vs-triumph-flashpoint-1-north-america-closed-qualifier
+2023-11-02 18:23:36,414 - INFO - Successfully downloaded https://www.hltv.org/matches/2339558/bad-news-bears-vs-triumph-flashpoint-1-north-america-closed-qualifier
+2023-11-02 18:23:36,414 - INFO - Downloading https://www.hltv.org/matches/2340116/faze-vs-og-esl-pro-league-season-11-europe
+2023-11-02 18:24:21,324 - INFO - Successfully downloaded https://www.hltv.org/matches/2340116/faze-vs-og-esl-pro-league-season-11-europe
+2023-11-02 18:24:21,324 - INFO - Downloading https://www.hltv.org/matches/2339156/virtuspro-vs-mouz-ice-challenge-2020
+2023-11-02 18:27:21,563 - ERROR - Failed to download https://www.hltv.org/matches/2339156/virtuspro-vs-mouz-ice-challenge-2020: 
+2023-11-02 18:27:21,563 - INFO - Downloading https://www.hltv.org/matches/2339118/sprout-vs-copenhagen-flames-united-masters-league-season-2
+2023-11-02 18:30:21,803 - ERROR - Failed to download https://www.hltv.org/matches/2339118/sprout-vs-copenhagen-flames-united-masters-league-season-2: 
+2023-11-02 18:30:21,803 - INFO - Downloading https://www.hltv.org/matches/2339204/sprout-vs-dignitas-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 18:30:50,174 - INFO - Successfully downloaded https://www.hltv.org/matches/2339204/sprout-vs-dignitas-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 18:30:50,175 - INFO - Downloading https://www.hltv.org/matches/2339106/100-thieves-vs-evil-geniuses-blast-premier-spring-series-2020
+2023-11-02 18:31:13,446 - INFO - Successfully downloaded https://www.hltv.org/matches/2339106/100-thieves-vs-evil-geniuses-blast-premier-spring-series-2020
+2023-11-02 18:31:13,446 - INFO - Downloading https://www.hltv.org/matches/2339669/hellraisers-vs-big-esea-mdl-season-33-europe
+2023-11-02 18:31:40,651 - INFO - Successfully downloaded https://www.hltv.org/matches/2339669/hellraisers-vs-big-esea-mdl-season-33-europe
+2023-11-02 18:31:40,652 - INFO - Downloading https://www.hltv.org/matches/2340337/funplus-phoenix-vs-cloud9-flashpoint-1
+2023-11-02 18:32:24,465 - INFO - Successfully downloaded https://www.hltv.org/matches/2340337/funplus-phoenix-vs-cloud9-flashpoint-1
+2023-11-02 18:32:24,466 - INFO - Downloading https://www.hltv.org/matches/2340336/copenhagen-flames-vs-c0ntact-flashpoint-1
+2023-11-02 18:32:52,127 - INFO - Successfully downloaded https://www.hltv.org/matches/2340336/copenhagen-flames-vs-c0ntact-flashpoint-1
+2023-11-02 18:32:52,128 - INFO - Downloading https://www.hltv.org/matches/2339580/orgless-vs-triumph-flashpoint-1-north-america-closed-qualifier
+2023-11-02 18:33:19,964 - INFO - Successfully downloaded https://www.hltv.org/matches/2339580/orgless-vs-triumph-flashpoint-1-north-america-closed-qualifier
+2023-11-02 18:33:19,964 - INFO - Downloading https://www.hltv.org/matches/2339155/natus-vincere-vs-godsent-ice-challenge-2020
+2023-11-02 18:33:56,542 - INFO - Successfully downloaded https://www.hltv.org/matches/2339155/natus-vincere-vs-godsent-ice-challenge-2020
+2023-11-02 18:33:56,543 - INFO - Downloading https://www.hltv.org/matches/2339358/ence-vs-geng-dreamhack-open-anaheim-2020
+2023-11-02 18:34:35,567 - INFO - Successfully downloaded https://www.hltv.org/matches/2339358/ence-vs-geng-dreamhack-open-anaheim-2020
+2023-11-02 18:34:35,567 - INFO - Downloading https://www.hltv.org/matches/2339515/heretics-vs-movistar-riders-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:37:35,806 - ERROR - Failed to download https://www.hltv.org/matches/2339515/heretics-vs-movistar-riders-flashpoint-1-europe-closed-qualifier: 
+2023-11-02 18:37:35,807 - INFO - Downloading https://www.hltv.org/matches/2339850/demolition-crew-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 18:38:07,433 - INFO - Successfully downloaded https://www.hltv.org/matches/2339850/demolition-crew-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 18:38:07,433 - INFO - Downloading https://www.hltv.org/matches/2339104/100-thieves-vs-g2-blast-premier-spring-series-2020
+2023-11-02 18:41:07,684 - ERROR - Failed to download https://www.hltv.org/matches/2339104/100-thieves-vs-g2-blast-premier-spring-series-2020: 
+2023-11-02 18:41:07,685 - INFO - Downloading https://www.hltv.org/matches/2339207/big-vs-complexity-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 18:41:34,553 - INFO - Successfully downloaded https://www.hltv.org/matches/2339207/big-vs-complexity-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 18:41:34,553 - INFO - Downloading https://www.hltv.org/matches/2339093/liquid-vs-mibr-blast-premier-spring-series-2020
+2023-11-02 18:41:53,586 - INFO - Successfully downloaded https://www.hltv.org/matches/2339093/liquid-vs-mibr-blast-premier-spring-series-2020
+2023-11-02 18:41:53,586 - INFO - Downloading https://www.hltv.org/matches/2339695/fate-vs-copenhagen-flames-oga-counter-pit-season-7
+2023-11-02 18:42:11,851 - INFO - Successfully downloaded https://www.hltv.org/matches/2339695/fate-vs-copenhagen-flames-oga-counter-pit-season-7
+2023-11-02 18:42:11,851 - INFO - Downloading https://www.hltv.org/matches/2339525/ex-virtuspro-vs-winstrike-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:42:27,476 - INFO - Successfully downloaded https://www.hltv.org/matches/2339525/ex-virtuspro-vs-winstrike-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:42:27,477 - INFO - Downloading https://www.hltv.org/matches/2339171/big-vs-fate-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 18:42:48,582 - INFO - Successfully downloaded https://www.hltv.org/matches/2339171/big-vs-fate-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 18:42:48,583 - INFO - Downloading https://www.hltv.org/matches/2339648/spirit-vs-gambit-youngsters-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:43:07,930 - INFO - Successfully downloaded https://www.hltv.org/matches/2339648/spirit-vs-gambit-youngsters-flashpoint-1-europe-closed-qualifier
+2023-11-02 18:43:07,931 - INFO - Downloading https://www.hltv.org/matches/2340071/astralis-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 18:46:08,170 - ERROR - Failed to download https://www.hltv.org/matches/2340071/astralis-vs-godsent-esl-pro-league-season-11-europe: 
+2023-11-02 18:46:08,170 - INFO - Downloading https://www.hltv.org/matches/2340057/syman-vs-hard-legion-cis-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:46:24,138 - INFO - Successfully downloaded https://www.hltv.org/matches/2340057/syman-vs-hard-legion-cis-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:46:24,139 - INFO - Downloading https://www.hltv.org/matches/2339664/demolition-crew-vs-nemiga-esea-mdl-season-33-europe
+2023-11-02 18:49:24,378 - ERROR - Failed to download https://www.hltv.org/matches/2339664/demolition-crew-vs-nemiga-esea-mdl-season-33-europe: 
+2023-11-02 18:49:24,379 - INFO - Downloading https://www.hltv.org/matches/2339735/havu-vs-fate-asus-rog-winter-2020
+2023-11-02 18:49:30,400 - INFO - Successfully downloaded https://www.hltv.org/matches/2339735/havu-vs-fate-asus-rog-winter-2020
+2023-11-02 18:49:30,400 - INFO - Downloading https://www.hltv.org/matches/2339160/og-vs-mad-lions-ice-challenge-2020
+2023-11-02 18:49:45,365 - INFO - Successfully downloaded https://www.hltv.org/matches/2339160/og-vs-mad-lions-ice-challenge-2020
+2023-11-02 18:49:45,365 - INFO - Downloading https://www.hltv.org/matches/2340361/chaos-vs-funplus-phoenix-flashpoint-1
+2023-11-02 18:50:00,677 - INFO - Successfully downloaded https://www.hltv.org/matches/2340361/chaos-vs-funplus-phoenix-flashpoint-1
+2023-11-02 18:50:00,677 - INFO - Downloading https://www.hltv.org/matches/2340187/envy-vs-chaos-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:50:16,458 - INFO - Successfully downloaded https://www.hltv.org/matches/2340187/envy-vs-chaos-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 18:50:16,458 - INFO - Downloading https://www.hltv.org/matches/2340335/mad-lions-vs-havu-flashpoint-1
+2023-11-02 18:50:31,317 - INFO - Successfully downloaded https://www.hltv.org/matches/2340335/mad-lions-vs-havu-flashpoint-1
+2023-11-02 18:50:31,318 - INFO - Downloading https://www.hltv.org/matches/2339724/pro100-vs-big-esea-mdl-season-33-europe
+2023-11-02 18:50:41,561 - INFO - Successfully downloaded https://www.hltv.org/matches/2339724/pro100-vs-big-esea-mdl-season-33-europe
+2023-11-02 18:50:41,561 - INFO - Downloading https://www.hltv.org/matches/2340108/faze-vs-tyloo-esl-pro-league-season-11-europe
+2023-11-02 18:53:41,800 - ERROR - Failed to download https://www.hltv.org/matches/2340108/faze-vs-tyloo-esl-pro-league-season-11-europe: 
+2023-11-02 18:53:41,801 - INFO - Downloading https://www.hltv.org/matches/2340342/havu-vs-c0ntact-flashpoint-1
+2023-11-02 18:54:09,549 - INFO - Successfully downloaded https://www.hltv.org/matches/2340342/havu-vs-c0ntact-flashpoint-1
+2023-11-02 18:54:09,550 - INFO - Downloading https://www.hltv.org/matches/2339392/100-thieves-vs-evil-geniuses-iem-katowice-2020
+2023-11-02 18:54:38,835 - INFO - Successfully downloaded https://www.hltv.org/matches/2339392/100-thieves-vs-evil-geniuses-iem-katowice-2020
+2023-11-02 18:54:38,835 - INFO - Downloading https://www.hltv.org/matches/2339381/mad-lions-vs-evil-geniuses-iem-katowice-2020
+2023-11-02 18:55:03,218 - INFO - Successfully downloaded https://www.hltv.org/matches/2339381/mad-lions-vs-evil-geniuses-iem-katowice-2020
+2023-11-02 18:55:03,219 - INFO - Downloading https://www.hltv.org/matches/2339267/ex-virtuspro-vs-endpoint-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 18:58:03,465 - ERROR - Failed to download https://www.hltv.org/matches/2339267/ex-virtuspro-vs-endpoint-europe-minor-open-qualifier-2-esl-one-rio-2020: 
+2023-11-02 18:58:03,465 - INFO - Downloading https://www.hltv.org/matches/2339632/nemiga-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 18:58:43,114 - INFO - Successfully downloaded https://www.hltv.org/matches/2339632/nemiga-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 18:58:43,114 - INFO - Downloading https://www.hltv.org/matches/2339153/heroic-vs-virtuspro-ice-challenge-2020
+2023-11-02 18:59:28,630 - INFO - Successfully downloaded https://www.hltv.org/matches/2339153/heroic-vs-virtuspro-ice-challenge-2020
+2023-11-02 18:59:28,630 - INFO - Downloading https://www.hltv.org/matches/2340237/ex-eunited-vs-chaos-esea-mdl-season-33-north-america
+2023-11-02 18:59:56,823 - INFO - Successfully downloaded https://www.hltv.org/matches/2340237/ex-eunited-vs-chaos-esea-mdl-season-33-north-america
+2023-11-02 18:59:56,823 - INFO - Downloading https://www.hltv.org/matches/2339674/big-vs-spirit-esea-mdl-season-33-europe
+2023-11-02 19:00:23,735 - INFO - Successfully downloaded https://www.hltv.org/matches/2339674/big-vs-spirit-esea-mdl-season-33-europe
+2023-11-02 19:00:23,736 - INFO - Downloading https://www.hltv.org/matches/2339384/g2-vs-mouz-iem-katowice-2020
+2023-11-02 19:01:03,313 - INFO - Successfully downloaded https://www.hltv.org/matches/2339384/g2-vs-mouz-iem-katowice-2020
+2023-11-02 19:01:03,314 - INFO - Downloading https://www.hltv.org/matches/2339892/movistar-riders-vs-illuminar-esea-mdl-season-33-europe
+2023-11-02 19:01:35,440 - INFO - Successfully downloaded https://www.hltv.org/matches/2339892/movistar-riders-vs-illuminar-esea-mdl-season-33-europe
+2023-11-02 19:01:35,440 - INFO - Downloading https://www.hltv.org/matches/2339912/big-vs-nordavind-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:02:07,118 - INFO - Successfully downloaded https://www.hltv.org/matches/2339912/big-vs-nordavind-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:02:07,119 - INFO - Downloading https://www.hltv.org/matches/2339399/natus-vincere-vs-liquid-iem-katowice-2020
+2023-11-02 19:02:48,101 - INFO - Successfully downloaded https://www.hltv.org/matches/2339399/natus-vincere-vs-liquid-iem-katowice-2020
+2023-11-02 19:02:48,102 - INFO - Downloading https://www.hltv.org/matches/2339375/natus-vincere-vs-faze-iem-katowice-2020
+2023-11-02 19:03:34,208 - INFO - Successfully downloaded https://www.hltv.org/matches/2339375/natus-vincere-vs-faze-iem-katowice-2020
+2023-11-02 19:03:34,209 - INFO - Downloading https://www.hltv.org/matches/2340351/chaos-vs-mibr-flashpoint-1
+2023-11-02 19:04:08,898 - INFO - Successfully downloaded https://www.hltv.org/matches/2340351/chaos-vs-mibr-flashpoint-1
+2023-11-02 19:04:08,899 - INFO - Downloading https://www.hltv.org/matches/2339453/havu-vs-copenhagen-flames-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 19:07:09,138 - ERROR - Failed to download https://www.hltv.org/matches/2339453/havu-vs-copenhagen-flames-europe-minor-open-qualifier-4-esl-one-rio-2020: 
+2023-11-02 19:07:09,139 - INFO - Downloading https://www.hltv.org/matches/2339386/ninjas-in-pyjamas-vs-cloud9-iem-katowice-2020
+2023-11-02 19:07:34,015 - INFO - Successfully downloaded https://www.hltv.org/matches/2339386/ninjas-in-pyjamas-vs-cloud9-iem-katowice-2020
+2023-11-02 19:07:34,016 - INFO - Downloading https://www.hltv.org/matches/2340104/g2-vs-faze-esl-pro-league-season-11-europe
+2023-11-02 19:10:34,255 - ERROR - Failed to download https://www.hltv.org/matches/2340104/g2-vs-faze-esl-pro-league-season-11-europe: 
+2023-11-02 19:10:34,256 - INFO - Downloading https://www.hltv.org/matches/2338859/heroic-vs-mad-lions-iem-katowice-2020-europe-closed-qualifier
+2023-11-02 19:10:58,464 - INFO - Successfully downloaded https://www.hltv.org/matches/2338859/heroic-vs-mad-lions-iem-katowice-2020-europe-closed-qualifier
+2023-11-02 19:10:58,464 - INFO - Downloading https://www.hltv.org/matches/2339911/og-vs-heretics-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:11:32,025 - INFO - Successfully downloaded https://www.hltv.org/matches/2339911/og-vs-heretics-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:11:32,025 - INFO - Downloading https://www.hltv.org/matches/2339272/avez-vs-sprout-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 19:11:56,570 - INFO - Successfully downloaded https://www.hltv.org/matches/2339272/avez-vs-sprout-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 19:11:56,570 - INFO - Downloading https://www.hltv.org/matches/2339503/mouz-vs-tyloo-iem-katowice-2020
+2023-11-02 19:12:40,787 - INFO - Successfully downloaded https://www.hltv.org/matches/2339503/mouz-vs-tyloo-iem-katowice-2020
+2023-11-02 19:12:40,788 - INFO - Downloading https://www.hltv.org/matches/2339383/natus-vincere-vs-fnatic-iem-katowice-2020
+2023-11-02 19:13:01,057 - INFO - Successfully downloaded https://www.hltv.org/matches/2339383/natus-vincere-vs-fnatic-iem-katowice-2020
+2023-11-02 19:13:01,058 - INFO - Downloading https://www.hltv.org/matches/2339801/havu-vs-chaos-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 19:13:19,096 - INFO - Successfully downloaded https://www.hltv.org/matches/2339801/havu-vs-chaos-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 19:13:19,096 - INFO - Downloading https://www.hltv.org/matches/2340216/gamerlegion-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 19:13:49,348 - INFO - Successfully downloaded https://www.hltv.org/matches/2340216/gamerlegion-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 19:13:49,348 - INFO - Downloading https://www.hltv.org/matches/2339116/gamerlegion-vs-havu-cmd368-championship
+2023-11-02 19:13:57,719 - INFO - Successfully downloaded https://www.hltv.org/matches/2339116/gamerlegion-vs-havu-cmd368-championship
+2023-11-02 19:13:57,719 - INFO - Downloading https://www.hltv.org/matches/2339737/gambit-youngsters-vs-nemiga-oga-counter-pit-season-7
+2023-11-02 19:14:03,870 - INFO - Successfully downloaded https://www.hltv.org/matches/2339737/gambit-youngsters-vs-nemiga-oga-counter-pit-season-7
+2023-11-02 19:14:03,871 - INFO - Downloading https://www.hltv.org/matches/2339390/ninjas-in-pyjamas-vs-natus-vincere-iem-katowice-2020
+2023-11-02 19:14:15,668 - INFO - Successfully downloaded https://www.hltv.org/matches/2339390/ninjas-in-pyjamas-vs-natus-vincere-iem-katowice-2020
+2023-11-02 19:14:15,668 - INFO - Downloading https://www.hltv.org/matches/2339178/ago-vs-sprout-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 19:14:37,208 - INFO - Successfully downloaded https://www.hltv.org/matches/2339178/ago-vs-sprout-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 19:14:37,208 - INFO - Downloading https://www.hltv.org/matches/2339898/furia-vs-triumph-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:14:53,738 - INFO - Successfully downloaded https://www.hltv.org/matches/2339898/furia-vs-triumph-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:14:53,739 - INFO - Downloading https://www.hltv.org/matches/2339273/juggernauts-vs-ago-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 19:15:17,777 - INFO - Successfully downloaded https://www.hltv.org/matches/2339273/juggernauts-vs-ago-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 19:15:17,777 - INFO - Downloading https://www.hltv.org/matches/2340352/cloud9-vs-orgless-flashpoint-1
+2023-11-02 19:15:36,950 - INFO - Successfully downloaded https://www.hltv.org/matches/2340352/cloud9-vs-orgless-flashpoint-1
+2023-11-02 19:15:36,950 - INFO - Downloading https://www.hltv.org/matches/2339996/illuminar-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 19:16:38,310 - INFO - Successfully downloaded https://www.hltv.org/matches/2339996/illuminar-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 19:16:38,310 - INFO - Downloading https://www.hltv.org/matches/2339915/hellraisers-vs-winstrike-cis-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:17:03,046 - INFO - Successfully downloaded https://www.hltv.org/matches/2339915/hellraisers-vs-winstrike-cis-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:17:03,046 - INFO - Downloading https://www.hltv.org/matches/2339634/nordavind-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 19:20:03,286 - ERROR - Failed to download https://www.hltv.org/matches/2339634/nordavind-vs-movistar-riders-esea-mdl-season-33-europe: 
+2023-11-02 19:20:03,286 - INFO - Downloading https://www.hltv.org/matches/2339126/gamerlegion-vs-havu-cmd368-championship
+2023-11-02 19:20:29,031 - INFO - Successfully downloaded https://www.hltv.org/matches/2339126/gamerlegion-vs-havu-cmd368-championship
+2023-11-02 19:20:29,032 - INFO - Downloading https://www.hltv.org/matches/2339744/copenhagen-flames-vs-ago-oga-counter-pit-season-7
+2023-11-02 19:23:29,282 - ERROR - Failed to download https://www.hltv.org/matches/2339744/copenhagen-flames-vs-ago-oga-counter-pit-season-7: 
+2023-11-02 19:23:29,282 - INFO - Downloading https://www.hltv.org/matches/2339505/spirit-vs-gambit-youngsters-wesg-2019-russia-closed-qualifier
+2023-11-02 19:24:07,137 - INFO - Successfully downloaded https://www.hltv.org/matches/2339505/spirit-vs-gambit-youngsters-wesg-2019-russia-closed-qualifier
+2023-11-02 19:24:07,137 - INFO - Downloading https://www.hltv.org/matches/2339355/furia-vs-endpoint-dreamhack-open-anaheim-2020
+2023-11-02 19:24:43,433 - INFO - Successfully downloaded https://www.hltv.org/matches/2339355/furia-vs-endpoint-dreamhack-open-anaheim-2020
+2023-11-02 19:24:43,434 - INFO - Downloading https://www.hltv.org/matches/2339804/big-vs-avez-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 19:25:16,400 - INFO - Successfully downloaded https://www.hltv.org/matches/2339804/big-vs-avez-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 19:25:16,400 - INFO - Downloading https://www.hltv.org/matches/2339172/dignitas-vs-avez-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 19:25:49,470 - INFO - Successfully downloaded https://www.hltv.org/matches/2339172/dignitas-vs-avez-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 19:25:49,470 - INFO - Downloading https://www.hltv.org/matches/2339863/ago-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 19:26:24,008 - INFO - Successfully downloaded https://www.hltv.org/matches/2339863/ago-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 19:26:24,008 - INFO - Downloading https://www.hltv.org/matches/2339452/illuminar-vs-skade-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 19:27:04,652 - INFO - Successfully downloaded https://www.hltv.org/matches/2339452/illuminar-vs-skade-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 19:27:04,652 - INFO - Downloading https://www.hltv.org/matches/2340330/spirit-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 19:27:42,150 - INFO - Successfully downloaded https://www.hltv.org/matches/2340330/spirit-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 19:27:42,151 - INFO - Downloading https://www.hltv.org/matches/2339797/havu-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 19:28:34,113 - INFO - Successfully downloaded https://www.hltv.org/matches/2339797/havu-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 19:28:34,114 - INFO - Downloading https://www.hltv.org/matches/2340212/sprout-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 19:31:34,353 - ERROR - Failed to download https://www.hltv.org/matches/2340212/sprout-vs-movistar-riders-esea-mdl-season-33-europe: 
+2023-11-02 19:31:34,353 - INFO - Downloading https://www.hltv.org/matches/2340065/astralis-vs-ninjas-in-pyjamas-esl-pro-league-season-11-europe
+2023-11-02 19:32:10,578 - INFO - Successfully downloaded https://www.hltv.org/matches/2340065/astralis-vs-ninjas-in-pyjamas-esl-pro-league-season-11-europe
+2023-11-02 19:32:10,578 - INFO - Downloading https://www.hltv.org/matches/2340344/geng-vs-chaos-flashpoint-1
+2023-11-02 19:32:54,698 - INFO - Successfully downloaded https://www.hltv.org/matches/2340344/geng-vs-chaos-flashpoint-1
+2023-11-02 19:32:54,698 - INFO - Downloading https://www.hltv.org/matches/2340068/natus-vincere-vs-complexity-esl-pro-league-season-11-europe
+2023-11-02 19:33:33,858 - INFO - Successfully downloaded https://www.hltv.org/matches/2340068/natus-vincere-vs-complexity-esl-pro-league-season-11-europe
+2023-11-02 19:33:33,859 - INFO - Downloading https://www.hltv.org/matches/2340343/envy-vs-mibr-flashpoint-1
+2023-11-02 19:34:12,299 - INFO - Successfully downloaded https://www.hltv.org/matches/2340343/envy-vs-mibr-flashpoint-1
+2023-11-02 19:34:12,300 - INFO - Downloading https://www.hltv.org/matches/2339808/orgless-vs-chaos-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 19:34:44,313 - INFO - Successfully downloaded https://www.hltv.org/matches/2339808/orgless-vs-chaos-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 19:34:44,314 - INFO - Downloading https://www.hltv.org/matches/2340078/astralis-vs-ence-esl-pro-league-season-11-europe
+2023-11-02 19:35:27,071 - INFO - Successfully downloaded https://www.hltv.org/matches/2340078/astralis-vs-ence-esl-pro-league-season-11-europe
+2023-11-02 19:35:27,072 - INFO - Downloading https://www.hltv.org/matches/2340294/illuminar-vs-spirit-esea-mdl-season-33-europe
+2023-11-02 19:38:27,312 - ERROR - Failed to download https://www.hltv.org/matches/2340294/illuminar-vs-spirit-esea-mdl-season-33-europe: 
+2023-11-02 19:38:27,312 - INFO - Downloading https://www.hltv.org/matches/2340183/godsent-vs-og-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:39:10,752 - INFO - Successfully downloaded https://www.hltv.org/matches/2340183/godsent-vs-og-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:39:10,753 - INFO - Downloading https://www.hltv.org/matches/2339659/gamerlegion-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 19:42:10,992 - ERROR - Failed to download https://www.hltv.org/matches/2339659/gamerlegion-vs-hellraisers-esea-mdl-season-33-europe: 
+2023-11-02 19:42:10,993 - INFO - Downloading https://www.hltv.org/matches/2340339/geng-vs-envy-flashpoint-1
+2023-11-02 19:43:08,110 - INFO - Successfully downloaded https://www.hltv.org/matches/2340339/geng-vs-envy-flashpoint-1
+2023-11-02 19:43:08,110 - INFO - Downloading https://www.hltv.org/matches/2340293/japaleno-vs-big-esea-mdl-season-33-europe
+2023-11-02 19:43:38,656 - INFO - Successfully downloaded https://www.hltv.org/matches/2340293/japaleno-vs-big-esea-mdl-season-33-europe
+2023-11-02 19:43:38,656 - INFO - Downloading https://www.hltv.org/matches/2340172/furia-vs-envy-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:44:17,199 - INFO - Successfully downloaded https://www.hltv.org/matches/2340172/furia-vs-envy-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:44:17,199 - INFO - Downloading https://www.hltv.org/matches/2340221/illuminar-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 19:47:17,440 - ERROR - Failed to download https://www.hltv.org/matches/2340221/illuminar-vs-nordavind-esea-mdl-season-33-europe: 
+2023-11-02 19:47:17,440 - INFO - Downloading https://www.hltv.org/matches/2339843/ago-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 19:50:17,684 - ERROR - Failed to download https://www.hltv.org/matches/2339843/ago-vs-sprout-esea-mdl-season-33-europe: 
+2023-11-02 19:50:17,684 - INFO - Downloading https://www.hltv.org/matches/2339329/skade-vs-demolition-crew-europe-minor-open-qualifier-3-esl-one-rio-2020
+2023-11-02 19:50:50,374 - INFO - Successfully downloaded https://www.hltv.org/matches/2339329/skade-vs-demolition-crew-europe-minor-open-qualifier-3-esl-one-rio-2020
+2023-11-02 19:50:50,374 - INFO - Downloading https://www.hltv.org/matches/2340353/copenhagen-flames-vs-havu-flashpoint-1
+2023-11-02 19:51:14,269 - INFO - Successfully downloaded https://www.hltv.org/matches/2340353/copenhagen-flames-vs-havu-flashpoint-1
+2023-11-02 19:51:14,270 - INFO - Downloading https://www.hltv.org/matches/2340215/spirit-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 19:54:14,510 - ERROR - Failed to download https://www.hltv.org/matches/2340215/spirit-vs-movistar-riders-esea-mdl-season-33-europe: 
+2023-11-02 19:54:14,511 - INFO - Downloading https://www.hltv.org/matches/2339154/mouz-vs-mad-lions-ice-challenge-2020
+2023-11-02 19:54:33,737 - INFO - Successfully downloaded https://www.hltv.org/matches/2339154/mouz-vs-mad-lions-ice-challenge-2020
+2023-11-02 19:54:33,738 - INFO - Downloading https://www.hltv.org/matches/2339791/pro100-vs-nemiga-esea-mdl-season-33-europe
+2023-11-02 19:54:57,549 - INFO - Successfully downloaded https://www.hltv.org/matches/2339791/pro100-vs-nemiga-esea-mdl-season-33-europe
+2023-11-02 19:54:57,549 - INFO - Downloading https://www.hltv.org/matches/2340180/copenhagen-flames-vs-sprout-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:55:26,085 - INFO - Successfully downloaded https://www.hltv.org/matches/2340180/copenhagen-flames-vs-sprout-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:55:26,086 - INFO - Downloading https://www.hltv.org/matches/2339432/spirit-vs-pro100-wesg-2019-russia-closed-qualifier
+2023-11-02 19:56:31,654 - INFO - Successfully downloaded https://www.hltv.org/matches/2339432/spirit-vs-pro100-wesg-2019-russia-closed-qualifier
+2023-11-02 19:56:31,654 - INFO - Downloading https://www.hltv.org/matches/2339406/movistar-riders-vs-nemiga-esea-mdl-season-33-europe
+2023-11-02 19:56:45,187 - INFO - Successfully downloaded https://www.hltv.org/matches/2339406/movistar-riders-vs-nemiga-esea-mdl-season-33-europe
+2023-11-02 19:56:45,187 - INFO - Downloading https://www.hltv.org/matches/2339909/complexity-vs-sprout-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:57:01,184 - INFO - Successfully downloaded https://www.hltv.org/matches/2339909/complexity-vs-sprout-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 19:57:01,184 - INFO - Downloading https://www.hltv.org/matches/2340089/natus-vincere-vs-fnatic-esl-pro-league-season-11-europe
+2023-11-02 19:57:34,320 - INFO - Successfully downloaded https://www.hltv.org/matches/2340089/natus-vincere-vs-fnatic-esl-pro-league-season-11-europe
+2023-11-02 19:57:34,321 - INFO - Downloading https://www.hltv.org/matches/2339376/renegades-vs-fnatic-iem-katowice-2020
+2023-11-02 19:58:19,509 - INFO - Successfully downloaded https://www.hltv.org/matches/2339376/renegades-vs-fnatic-iem-katowice-2020
+2023-11-02 19:58:19,509 - INFO - Downloading https://www.hltv.org/matches/2339807/copenhagen-flames-vs-chaos-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 20:01:19,760 - ERROR - Failed to download https://www.hltv.org/matches/2339807/copenhagen-flames-vs-chaos-flashpoint-1-global-qualifier-pinnacle-open: 
+2023-11-02 20:01:19,761 - INFO - Downloading https://www.hltv.org/matches/2339823/chaos-vs-bad-news-bears-esea-mdl-season-33-north-america
+2023-11-02 20:01:44,483 - INFO - Successfully downloaded https://www.hltv.org/matches/2339823/chaos-vs-bad-news-bears-esea-mdl-season-33-north-america
+2023-11-02 20:01:44,483 - INFO - Downloading https://www.hltv.org/matches/2340238/ex-eunited-vs-teamone-esea-mdl-season-33-north-america
+2023-11-02 20:02:13,291 - INFO - Successfully downloaded https://www.hltv.org/matches/2340238/ex-eunited-vs-teamone-esea-mdl-season-33-north-america
+2023-11-02 20:02:13,292 - INFO - Downloading https://www.hltv.org/matches/2340360/havu-vs-envy-flashpoint-1
+2023-11-02 20:02:43,237 - INFO - Successfully downloaded https://www.hltv.org/matches/2340360/havu-vs-envy-flashpoint-1
+2023-11-02 20:02:43,237 - INFO - Downloading https://www.hltv.org/matches/2339524/gambit-youngsters-vs-ago-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:03:25,097 - INFO - Successfully downloaded https://www.hltv.org/matches/2339524/gambit-youngsters-vs-ago-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:03:25,097 - INFO - Downloading https://www.hltv.org/matches/2339627/copenhagen-flames-vs-spirit-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:06:25,337 - ERROR - Failed to download https://www.hltv.org/matches/2339627/copenhagen-flames-vs-spirit-flashpoint-1-europe-closed-qualifier: 
+2023-11-02 20:06:25,337 - INFO - Downloading https://www.hltv.org/matches/2339363/north-vs-endpoint-dreamhack-open-anaheim-2020
+2023-11-02 20:07:11,004 - INFO - Successfully downloaded https://www.hltv.org/matches/2339363/north-vs-endpoint-dreamhack-open-anaheim-2020
+2023-11-02 20:07:11,005 - INFO - Downloading https://www.hltv.org/matches/2339777/hellraisers-vs-ago-esea-mdl-season-33-europe
+2023-11-02 20:07:32,754 - INFO - Successfully downloaded https://www.hltv.org/matches/2339777/hellraisers-vs-ago-esea-mdl-season-33-europe
+2023-11-02 20:07:32,754 - INFO - Downloading https://www.hltv.org/matches/2340176/geng-vs-orgless-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:07:54,180 - INFO - Successfully downloaded https://www.hltv.org/matches/2340176/geng-vs-orgless-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:07:54,180 - INFO - Downloading https://www.hltv.org/matches/2340121/ago-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 20:08:11,241 - INFO - Successfully downloaded https://www.hltv.org/matches/2340121/ago-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 20:08:11,241 - INFO - Downloading https://www.hltv.org/matches/2339637/big-vs-havu-esea-mdl-season-33-europe
+2023-11-02 20:11:11,491 - ERROR - Failed to download https://www.hltv.org/matches/2339637/big-vs-havu-esea-mdl-season-33-europe: 
+2023-11-02 20:11:11,491 - INFO - Downloading https://www.hltv.org/matches/2339661/havu-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 20:11:53,982 - INFO - Successfully downloaded https://www.hltv.org/matches/2339661/havu-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 20:11:53,982 - INFO - Downloading https://www.hltv.org/matches/2339840/ago-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 20:12:25,483 - INFO - Successfully downloaded https://www.hltv.org/matches/2339840/ago-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 20:12:25,483 - INFO - Downloading https://www.hltv.org/matches/2339496/endpoint-vs-winstrike-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:13:19,443 - INFO - Successfully downloaded https://www.hltv.org/matches/2339496/endpoint-vs-winstrike-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:13:19,444 - INFO - Downloading https://www.hltv.org/matches/2340074/natus-vincere-vs-forze-esl-pro-league-season-11-europe
+2023-11-02 20:14:01,835 - INFO - Successfully downloaded https://www.hltv.org/matches/2340074/natus-vincere-vs-forze-esl-pro-league-season-11-europe
+2023-11-02 20:14:01,835 - INFO - Downloading https://www.hltv.org/matches/2339629/nemiga-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 20:14:38,107 - INFO - Successfully downloaded https://www.hltv.org/matches/2339629/nemiga-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 20:14:38,107 - INFO - Downloading https://www.hltv.org/matches/2339727/fate-vs-gambit-youngsters-oga-counter-pit-season-7
+2023-11-02 20:15:10,439 - INFO - Successfully downloaded https://www.hltv.org/matches/2339727/fate-vs-gambit-youngsters-oga-counter-pit-season-7
+2023-11-02 20:15:10,440 - INFO - Downloading https://www.hltv.org/matches/2339026/forze-vs-winstrike-dreamhack-open-anaheim-2020-europe-closed-qualifier
+2023-11-02 20:15:50,464 - INFO - Successfully downloaded https://www.hltv.org/matches/2339026/forze-vs-winstrike-dreamhack-open-anaheim-2020-europe-closed-qualifier
+2023-11-02 20:15:50,465 - INFO - Downloading https://www.hltv.org/matches/2339889/gamerlegion-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 20:16:30,134 - INFO - Successfully downloaded https://www.hltv.org/matches/2339889/gamerlegion-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 20:16:30,134 - INFO - Downloading https://www.hltv.org/matches/2339837/forze-vs-spirit-wesg-2019-russia-finals
+2023-11-02 20:17:01,291 - INFO - Successfully downloaded https://www.hltv.org/matches/2339837/forze-vs-spirit-wesg-2019-russia-finals
+2023-11-02 20:17:01,291 - INFO - Downloading https://www.hltv.org/matches/2340347/mad-lions-vs-c0ntact-flashpoint-1
+2023-11-02 20:17:44,179 - INFO - Successfully downloaded https://www.hltv.org/matches/2340347/mad-lions-vs-c0ntact-flashpoint-1
+2023-11-02 20:17:44,180 - INFO - Downloading https://www.hltv.org/matches/2339860/hard-legion-vs-hellraisers-legends-bet-l33t-cup
+2023-11-02 20:18:18,937 - INFO - Successfully downloaded https://www.hltv.org/matches/2339860/hard-legion-vs-hellraisers-legends-bet-l33t-cup
+2023-11-02 20:18:18,938 - INFO - Downloading https://www.hltv.org/matches/2340080/fnatic-vs-forze-esl-pro-league-season-11-europe
+2023-11-02 20:21:19,177 - ERROR - Failed to download https://www.hltv.org/matches/2340080/fnatic-vs-forze-esl-pro-league-season-11-europe: 
+2023-11-02 20:21:19,177 - INFO - Downloading https://www.hltv.org/matches/2339364/complexity-vs-mibr-dreamhack-open-anaheim-2020
+2023-11-02 20:22:02,052 - INFO - Successfully downloaded https://www.hltv.org/matches/2339364/complexity-vs-mibr-dreamhack-open-anaheim-2020
+2023-11-02 20:22:02,052 - INFO - Downloading https://www.hltv.org/matches/2339357/north-vs-forze-dreamhack-open-anaheim-2020
+2023-11-02 20:25:02,303 - ERROR - Failed to download https://www.hltv.org/matches/2339357/north-vs-forze-dreamhack-open-anaheim-2020: 
+2023-11-02 20:25:02,304 - INFO - Downloading https://www.hltv.org/matches/2339799/avez-vs-orgless-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 20:25:55,579 - INFO - Successfully downloaded https://www.hltv.org/matches/2339799/avez-vs-orgless-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 20:25:55,580 - INFO - Downloading https://www.hltv.org/matches/2339402/g2-vs-natus-vincere-iem-katowice-2020
+2023-11-02 20:26:44,277 - INFO - Successfully downloaded https://www.hltv.org/matches/2339402/g2-vs-natus-vincere-iem-katowice-2020
+2023-11-02 20:26:44,278 - INFO - Downloading https://www.hltv.org/matches/2339504/illuminar-vs-copenhagen-flames-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 20:27:22,767 - INFO - Successfully downloaded https://www.hltv.org/matches/2339504/illuminar-vs-copenhagen-flames-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 20:27:22,767 - INFO - Downloading https://www.hltv.org/matches/2339793/sprout-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 20:28:09,049 - INFO - Successfully downloaded https://www.hltv.org/matches/2339793/sprout-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 20:28:09,049 - INFO - Downloading https://www.hltv.org/matches/2340164/big-vs-ninjas-in-pyjamas-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:28:51,291 - INFO - Successfully downloaded https://www.hltv.org/matches/2340164/big-vs-ninjas-in-pyjamas-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:28:51,292 - INFO - Downloading https://www.hltv.org/matches/2339543/skade-vs-heretics-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:29:24,595 - INFO - Successfully downloaded https://www.hltv.org/matches/2339543/skade-vs-heretics-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:29:24,595 - INFO - Downloading https://www.hltv.org/matches/2339319/havu-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 20:32:24,834 - ERROR - Failed to download https://www.hltv.org/matches/2339319/havu-vs-demolition-crew-esea-mdl-season-33-europe: 
+2023-11-02 20:32:24,835 - INFO - Downloading https://www.hltv.org/matches/2340348/mibr-vs-geng-flashpoint-1
+2023-11-02 20:32:54,205 - INFO - Successfully downloaded https://www.hltv.org/matches/2340348/mibr-vs-geng-flashpoint-1
+2023-11-02 20:32:54,205 - INFO - Downloading https://www.hltv.org/matches/2339512/copenhagen-flames-vs-hard-legion-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:33:30,027 - INFO - Successfully downloaded https://www.hltv.org/matches/2339512/copenhagen-flames-vs-hard-legion-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:33:30,027 - INFO - Downloading https://www.hltv.org/matches/2340354/cloud9-vs-envy-flashpoint-1
+2023-11-02 20:34:18,826 - INFO - Successfully downloaded https://www.hltv.org/matches/2340354/cloud9-vs-envy-flashpoint-1
+2023-11-02 20:34:18,826 - INFO - Downloading https://www.hltv.org/matches/2340082/ence-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 20:35:10,393 - INFO - Successfully downloaded https://www.hltv.org/matches/2340082/ence-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 20:35:10,394 - INFO - Downloading https://www.hltv.org/matches/2340256/gamerlegion-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 20:35:51,707 - INFO - Successfully downloaded https://www.hltv.org/matches/2340256/gamerlegion-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 20:35:51,707 - INFO - Downloading https://www.hltv.org/matches/2340261/pro100-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 20:36:23,815 - INFO - Successfully downloaded https://www.hltv.org/matches/2340261/pro100-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 20:36:23,815 - INFO - Downloading https://www.hltv.org/matches/2340356/mibr-vs-orgless-flashpoint-1
+2023-11-02 20:37:23,061 - INFO - Successfully downloaded https://www.hltv.org/matches/2340356/mibr-vs-orgless-flashpoint-1
+2023-11-02 20:37:23,062 - INFO - Downloading https://www.hltv.org/matches/2340311/bad-news-bears-vs-triumph-esea-mdl-season-33-north-america
+2023-11-02 20:38:26,440 - INFO - Successfully downloaded https://www.hltv.org/matches/2340311/bad-news-bears-vs-triumph-esea-mdl-season-33-north-america
+2023-11-02 20:38:26,440 - INFO - Downloading https://www.hltv.org/matches/2340110/g2-vs-og-esl-pro-league-season-11-europe
+2023-11-02 20:38:47,498 - INFO - Successfully downloaded https://www.hltv.org/matches/2340110/g2-vs-og-esl-pro-league-season-11-europe
+2023-11-02 20:38:47,498 - INFO - Downloading https://www.hltv.org/matches/2339367/geng-vs-furia-dreamhack-open-anaheim-2020
+2023-11-02 20:39:17,413 - INFO - Successfully downloaded https://www.hltv.org/matches/2339367/geng-vs-furia-dreamhack-open-anaheim-2020
+2023-11-02 20:39:17,413 - INFO - Downloading https://www.hltv.org/matches/2339152/og-vs-ence-ice-challenge-2020
+2023-11-02 20:42:17,655 - ERROR - Failed to download https://www.hltv.org/matches/2339152/og-vs-ence-ice-challenge-2020: 
+2023-11-02 20:42:17,656 - INFO - Downloading https://www.hltv.org/matches/2339271/ago-vs-havu-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 20:45:17,894 - ERROR - Failed to download https://www.hltv.org/matches/2339271/ago-vs-havu-europe-minor-open-qualifier-2-esl-one-rio-2020: 
+2023-11-02 20:45:17,895 - INFO - Downloading https://www.hltv.org/matches/2340063/vitality-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 20:46:16,326 - INFO - Successfully downloaded https://www.hltv.org/matches/2340063/vitality-vs-godsent-esl-pro-league-season-11-europe
+2023-11-02 20:46:16,326 - INFO - Downloading https://www.hltv.org/matches/2339728/demolition-crew-vs-nemiga-oga-counter-pit-season-7
+2023-11-02 20:47:10,281 - INFO - Successfully downloaded https://www.hltv.org/matches/2339728/demolition-crew-vs-nemiga-oga-counter-pit-season-7
+2023-11-02 20:47:10,282 - INFO - Downloading https://www.hltv.org/matches/2340340/chaos-vs-mibr-flashpoint-1
+2023-11-02 20:47:53,150 - INFO - Successfully downloaded https://www.hltv.org/matches/2340340/chaos-vs-mibr-flashpoint-1
+2023-11-02 20:47:53,150 - INFO - Downloading https://www.hltv.org/matches/2339522/syman-vs-hellraisers-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:48:36,884 - INFO - Successfully downloaded https://www.hltv.org/matches/2339522/syman-vs-hellraisers-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:48:36,884 - INFO - Downloading https://www.hltv.org/matches/2340218/ago-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 20:49:47,394 - INFO - Successfully downloaded https://www.hltv.org/matches/2340218/ago-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 20:49:47,394 - INFO - Downloading https://www.hltv.org/matches/2339533/havu-vs-avez-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:50:31,309 - INFO - Successfully downloaded https://www.hltv.org/matches/2339533/havu-vs-avez-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:50:31,309 - INFO - Downloading https://www.hltv.org/matches/2339765/bad-news-bears-vs-eunited-esea-mdl-season-33-north-america
+2023-11-02 20:51:13,573 - INFO - Successfully downloaded https://www.hltv.org/matches/2339765/bad-news-bears-vs-eunited-esea-mdl-season-33-north-america
+2023-11-02 20:51:13,574 - INFO - Downloading https://www.hltv.org/matches/2339320/hellraisers-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 20:51:47,087 - INFO - Successfully downloaded https://www.hltv.org/matches/2339320/hellraisers-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 20:51:47,088 - INFO - Downloading https://www.hltv.org/matches/2340184/dignitas-vs-nordavind-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:52:13,252 - INFO - Successfully downloaded https://www.hltv.org/matches/2340184/dignitas-vs-nordavind-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:52:13,252 - INFO - Downloading https://www.hltv.org/matches/2340022/chaos-vs-teamone-esea-mdl-season-33-north-america
+2023-11-02 20:52:47,540 - INFO - Successfully downloaded https://www.hltv.org/matches/2340022/chaos-vs-teamone-esea-mdl-season-33-north-america
+2023-11-02 20:52:47,540 - INFO - Downloading https://www.hltv.org/matches/2339535/hard-legion-vs-syman-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:53:19,146 - INFO - Successfully downloaded https://www.hltv.org/matches/2339535/hard-legion-vs-syman-flashpoint-1-europe-closed-qualifier
+2023-11-02 20:53:19,146 - INFO - Downloading https://www.hltv.org/matches/2339780/pro100-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 20:53:59,946 - INFO - Successfully downloaded https://www.hltv.org/matches/2339780/pro100-vs-movistar-riders-esea-mdl-season-33-europe
+2023-11-02 20:53:59,947 - INFO - Downloading https://www.hltv.org/matches/2340052/forze-vs-winstrike-cis-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:57:00,186 - ERROR - Failed to download https://www.hltv.org/matches/2340052/forze-vs-winstrike-cis-minor-closed-qualifier-esl-one-rio-2020: 
+2023-11-02 20:57:00,186 - INFO - Downloading https://www.hltv.org/matches/2340072/vitality-vs-ence-esl-pro-league-season-11-europe
+2023-11-02 20:57:36,856 - INFO - Successfully downloaded https://www.hltv.org/matches/2340072/vitality-vs-ence-esl-pro-league-season-11-europe
+2023-11-02 20:57:36,856 - INFO - Downloading https://www.hltv.org/matches/2339907/dignitas-vs-movistar-riders-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:58:08,900 - INFO - Successfully downloaded https://www.hltv.org/matches/2339907/dignitas-vs-movistar-riders-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:58:08,901 - INFO - Downloading https://www.hltv.org/matches/2340087/fnatic-vs-complexity-esl-pro-league-season-11-europe
+2023-11-02 20:58:42,594 - INFO - Successfully downloaded https://www.hltv.org/matches/2340087/fnatic-vs-complexity-esl-pro-league-season-11-europe
+2023-11-02 20:58:42,594 - INFO - Downloading https://www.hltv.org/matches/2339908/godsent-vs-copenhagen-flames-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:59:12,662 - INFO - Successfully downloaded https://www.hltv.org/matches/2339908/godsent-vs-copenhagen-flames-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 20:59:12,662 - INFO - Downloading https://www.hltv.org/matches/2339360/geng-vs-complexity-dreamhack-open-anaheim-2020
+2023-11-02 20:59:47,319 - INFO - Successfully downloaded https://www.hltv.org/matches/2339360/geng-vs-complexity-dreamhack-open-anaheim-2020
+2023-11-02 20:59:47,319 - INFO - Downloading https://www.hltv.org/matches/2339391/vitality-vs-faze-iem-katowice-2020
+2023-11-02 21:00:40,983 - INFO - Successfully downloaded https://www.hltv.org/matches/2339391/vitality-vs-faze-iem-katowice-2020
+2023-11-02 21:00:40,984 - INFO - Downloading https://www.hltv.org/matches/2340200/triumph-vs-orgless-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:01:26,563 - INFO - Successfully downloaded https://www.hltv.org/matches/2340200/triumph-vs-orgless-americas-minor-north-america-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:01:26,564 - INFO - Downloading https://www.hltv.org/matches/2339516/pro100-vs-skade-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:02:37,737 - INFO - Successfully downloaded https://www.hltv.org/matches/2339516/pro100-vs-skade-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:02:37,737 - INFO - Downloading https://www.hltv.org/matches/2340214/big-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 21:03:16,113 - INFO - Successfully downloaded https://www.hltv.org/matches/2340214/big-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 21:03:16,113 - INFO - Downloading https://www.hltv.org/matches/2340094/g2-vs-tyloo-esl-pro-league-season-11-europe
+2023-11-02 21:04:10,919 - INFO - Successfully downloaded https://www.hltv.org/matches/2340094/g2-vs-tyloo-esl-pro-league-season-11-europe
+2023-11-02 21:04:10,919 - INFO - Downloading https://www.hltv.org/matches/2339269/fate-vs-nordavind-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 21:04:33,059 - INFO - Successfully downloaded https://www.hltv.org/matches/2339269/fate-vs-nordavind-europe-minor-open-qualifier-2-esl-one-rio-2020
+2023-11-02 21:04:33,059 - INFO - Downloading https://www.hltv.org/matches/2339743/ago-vs-gambit-youngsters-oga-counter-pit-season-7
+2023-11-02 21:04:59,139 - INFO - Successfully downloaded https://www.hltv.org/matches/2339743/ago-vs-gambit-youngsters-oga-counter-pit-season-7
+2023-11-02 21:04:59,139 - INFO - Downloading https://www.hltv.org/matches/2340279/forze-vs-complexity-esl-pro-league-season-11-europe
+2023-11-02 21:07:59,380 - ERROR - Failed to download https://www.hltv.org/matches/2340279/forze-vs-complexity-esl-pro-league-season-11-europe: 
+2023-11-02 21:07:59,380 - INFO - Downloading https://www.hltv.org/matches/2338797/chaos-vs-mibr-iem-katowice-2020-north-america-closed-qualifier
+2023-11-02 21:08:04,424 - INFO - Successfully downloaded https://www.hltv.org/matches/2338797/chaos-vs-mibr-iem-katowice-2020-north-america-closed-qualifier
+2023-11-02 21:08:04,425 - INFO - Downloading https://www.hltv.org/matches/2340182/heroic-vs-copenhagen-flames-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:08:15,294 - INFO - Successfully downloaded https://www.hltv.org/matches/2340182/heroic-vs-copenhagen-flames-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:08:15,295 - INFO - Downloading https://www.hltv.org/matches/2339595/copenhagen-flames-vs-skade-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:08:26,187 - INFO - Successfully downloaded https://www.hltv.org/matches/2339595/copenhagen-flames-vs-skade-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:08:26,188 - INFO - Downloading https://www.hltv.org/matches/2339781/sprout-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 21:08:32,378 - INFO - Successfully downloaded https://www.hltv.org/matches/2339781/sprout-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 21:08:32,379 - INFO - Downloading https://www.hltv.org/matches/2339179/complexity-vs-skade-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 21:08:37,059 - INFO - Successfully downloaded https://www.hltv.org/matches/2339179/complexity-vs-skade-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 21:08:37,059 - INFO - Downloading https://www.hltv.org/matches/2339782/japaleno-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 21:08:57,218 - INFO - Successfully downloaded https://www.hltv.org/matches/2339782/japaleno-vs-pro100-esea-mdl-season-33-europe
+2023-11-02 21:08:57,219 - INFO - Downloading https://www.hltv.org/matches/2339646/copenhagen-flames-vs-demolition-crew-oga-counter-pit-season-7
+2023-11-02 21:09:04,091 - INFO - Successfully downloaded https://www.hltv.org/matches/2339646/copenhagen-flames-vs-demolition-crew-oga-counter-pit-season-7
+2023-11-02 21:09:04,091 - INFO - Downloading https://www.hltv.org/matches/2339380/liquid-vs-virtuspro-iem-katowice-2020
+2023-11-02 21:09:11,181 - INFO - Successfully downloaded https://www.hltv.org/matches/2339380/liquid-vs-virtuspro-iem-katowice-2020
+2023-11-02 21:09:11,181 - INFO - Downloading https://www.hltv.org/matches/2339465/orgless-vs-chaos-flashpoint-1-north-america-closed-qualifier
+2023-11-02 21:09:24,935 - INFO - Successfully downloaded https://www.hltv.org/matches/2339465/orgless-vs-chaos-flashpoint-1-north-america-closed-qualifier
+2023-11-02 21:09:24,935 - INFO - Downloading https://www.hltv.org/matches/2339662/nordavind-vs-big-esea-mdl-season-33-europe
+2023-11-02 21:09:30,867 - INFO - Successfully downloaded https://www.hltv.org/matches/2339662/nordavind-vs-big-esea-mdl-season-33-europe
+2023-11-02 21:09:30,867 - INFO - Downloading https://www.hltv.org/matches/2340255/spirit-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 21:09:47,049 - INFO - Successfully downloaded https://www.hltv.org/matches/2340255/spirit-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 21:09:47,050 - INFO - Downloading https://www.hltv.org/matches/2339396/100-thieves-vs-mouz-iem-katowice-2020
+2023-11-02 21:12:47,289 - ERROR - Failed to download https://www.hltv.org/matches/2339396/100-thieves-vs-mouz-iem-katowice-2020: 
+2023-11-02 21:12:47,289 - INFO - Downloading https://www.hltv.org/matches/2339378/100-thieves-vs-g2-iem-katowice-2020
+2023-11-02 21:12:54,835 - INFO - Successfully downloaded https://www.hltv.org/matches/2339378/100-thieves-vs-g2-iem-katowice-2020
+2023-11-02 21:12:54,835 - INFO - Downloading https://www.hltv.org/matches/2339540/gambit-youngsters-vs-pro100-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:15:55,074 - ERROR - Failed to download https://www.hltv.org/matches/2339540/gambit-youngsters-vs-pro100-flashpoint-1-europe-closed-qualifier: 
+2023-11-02 21:15:55,075 - INFO - Downloading https://www.hltv.org/matches/2339446/havu-vs-fate-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 21:16:03,243 - INFO - Successfully downloaded https://www.hltv.org/matches/2339446/havu-vs-fate-europe-minor-open-qualifier-4-esl-one-rio-2020
+2023-11-02 21:16:03,243 - INFO - Downloading https://www.hltv.org/matches/2339960/spirit-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 21:16:12,454 - INFO - Successfully downloaded https://www.hltv.org/matches/2339960/spirit-vs-japaleno-esea-mdl-season-33-europe
+2023-11-02 21:16:12,454 - INFO - Downloading https://www.hltv.org/matches/2339721/pro100-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 21:16:20,154 - INFO - Successfully downloaded https://www.hltv.org/matches/2339721/pro100-vs-sprout-esea-mdl-season-33-europe
+2023-11-02 21:16:20,154 - INFO - Downloading https://www.hltv.org/matches/2340031/bad-news-bears-vs-teamone-esea-mdl-season-33-north-america
+2023-11-02 21:16:27,166 - INFO - Successfully downloaded https://www.hltv.org/matches/2340031/bad-news-bears-vs-teamone-esea-mdl-season-33-north-america
+2023-11-02 21:16:27,167 - INFO - Downloading https://www.hltv.org/matches/2339162/mouz-vs-mad-lions-ice-challenge-2020
+2023-11-02 21:16:49,474 - INFO - Successfully downloaded https://www.hltv.org/matches/2339162/mouz-vs-mad-lions-ice-challenge-2020
+2023-11-02 21:16:49,475 - INFO - Downloading https://www.hltv.org/matches/2339163/natus-vincere-vs-godsent-ice-challenge-2020
+2023-11-02 21:17:03,201 - INFO - Successfully downloaded https://www.hltv.org/matches/2339163/natus-vincere-vs-godsent-ice-challenge-2020
+2023-11-02 21:17:03,202 - INFO - Downloading https://www.hltv.org/matches/2339395/g2-vs-liquid-iem-katowice-2020
+2023-11-02 21:17:24,847 - INFO - Successfully downloaded https://www.hltv.org/matches/2339395/g2-vs-liquid-iem-katowice-2020
+2023-11-02 21:17:24,848 - INFO - Downloading https://www.hltv.org/matches/2340327/spirit-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 21:17:38,151 - INFO - Successfully downloaded https://www.hltv.org/matches/2340327/spirit-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 21:17:38,151 - INFO - Downloading https://www.hltv.org/matches/2338975/mad-lions-vs-renegades-dreamhack-open-leipzig-2020
+2023-11-02 21:17:44,299 - INFO - Successfully downloaded https://www.hltv.org/matches/2338975/mad-lions-vs-renegades-dreamhack-open-leipzig-2020
+2023-11-02 21:17:44,299 - INFO - Downloading https://www.hltv.org/matches/2340161/heretics-vs-heroic-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:17:50,955 - INFO - Successfully downloaded https://www.hltv.org/matches/2340161/heretics-vs-heroic-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:17:50,956 - INFO - Downloading https://www.hltv.org/matches/2339107/g2-vs-og-blast-premier-spring-series-2020
+2023-11-02 21:17:56,543 - INFO - Successfully downloaded https://www.hltv.org/matches/2339107/g2-vs-og-blast-premier-spring-series-2020
+2023-11-02 21:17:56,544 - INFO - Downloading https://www.hltv.org/matches/2339995/gamerlegion-vs-illuminar-esea-mdl-season-33-europe
+2023-11-02 21:18:01,006 - INFO - Successfully downloaded https://www.hltv.org/matches/2339995/gamerlegion-vs-illuminar-esea-mdl-season-33-europe
+2023-11-02 21:18:01,006 - INFO - Downloading https://www.hltv.org/matches/2339393/mad-lions-vs-mouz-iem-katowice-2020
+2023-11-02 21:18:17,389 - INFO - Successfully downloaded https://www.hltv.org/matches/2339393/mad-lions-vs-mouz-iem-katowice-2020
+2023-11-02 21:18:17,390 - INFO - Downloading https://www.hltv.org/matches/2339321/ago-vs-illuminar-esea-mdl-season-33-europe
+2023-11-02 21:18:22,602 - INFO - Successfully downloaded https://www.hltv.org/matches/2339321/ago-vs-illuminar-esea-mdl-season-33-europe
+2023-11-02 21:18:22,602 - INFO - Downloading https://www.hltv.org/matches/2340349/dignitas-vs-orgless-flashpoint-1
+2023-11-02 21:18:28,000 - INFO - Successfully downloaded https://www.hltv.org/matches/2340349/dignitas-vs-orgless-flashpoint-1
+2023-11-02 21:18:28,000 - INFO - Downloading https://www.hltv.org/matches/2339366/furia-vs-complexity-dreamhack-open-anaheim-2020
+2023-11-02 21:18:35,741 - INFO - Successfully downloaded https://www.hltv.org/matches/2339366/furia-vs-complexity-dreamhack-open-anaheim-2020
+2023-11-02 21:18:35,741 - INFO - Downloading https://www.hltv.org/matches/2340357/mad-lions-vs-chaos-flashpoint-1
+2023-11-02 21:18:41,027 - INFO - Successfully downloaded https://www.hltv.org/matches/2340357/mad-lions-vs-chaos-flashpoint-1
+2023-11-02 21:18:41,027 - INFO - Downloading https://www.hltv.org/matches/2339388/100-thieves-vs-tyloo-iem-katowice-2020
+2023-11-02 21:19:12,865 - INFO - Successfully downloaded https://www.hltv.org/matches/2339388/100-thieves-vs-tyloo-iem-katowice-2020
+2023-11-02 21:19:12,866 - INFO - Downloading https://www.hltv.org/matches/2339394/astralis-vs-fnatic-iem-katowice-2020
+2023-11-02 21:22:13,113 - ERROR - Failed to download https://www.hltv.org/matches/2339394/astralis-vs-fnatic-iem-katowice-2020: 
+2023-11-02 21:22:13,114 - INFO - Downloading https://www.hltv.org/matches/2339665/sprout-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 21:22:18,393 - INFO - Successfully downloaded https://www.hltv.org/matches/2339665/sprout-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 21:22:18,393 - INFO - Downloading https://www.hltv.org/matches/2339397/natus-vincere-vs-faze-iem-katowice-2020
+2023-11-02 21:22:35,149 - INFO - Successfully downloaded https://www.hltv.org/matches/2339397/natus-vincere-vs-faze-iem-katowice-2020
+2023-11-02 21:22:35,149 - INFO - Downloading https://www.hltv.org/matches/2339652/skade-vs-spirit-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:22:40,293 - INFO - Successfully downloaded https://www.hltv.org/matches/2339652/skade-vs-spirit-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:22:40,293 - INFO - Downloading https://www.hltv.org/matches/2339400/fnatic-vs-g2-iem-katowice-2020
+2023-11-02 21:22:48,247 - INFO - Successfully downloaded https://www.hltv.org/matches/2339400/fnatic-vs-g2-iem-katowice-2020
+2023-11-02 21:22:48,248 - INFO - Downloading https://www.hltv.org/matches/2339753/pro100-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 21:22:52,868 - INFO - Successfully downloaded https://www.hltv.org/matches/2339753/pro100-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 21:22:52,869 - INFO - Downloading https://www.hltv.org/matches/2339861/illuminar-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 21:22:58,339 - INFO - Successfully downloaded https://www.hltv.org/matches/2339861/illuminar-vs-hellraisers-esea-mdl-season-33-europe
+2023-11-02 21:22:58,340 - INFO - Downloading https://www.hltv.org/matches/2339177/dignitas-vs-gamerlegion-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 21:23:04,872 - INFO - Successfully downloaded https://www.hltv.org/matches/2339177/dignitas-vs-gamerlegion-europe-minor-open-qualifier-1-esl-one-rio-2020
+2023-11-02 21:23:04,873 - INFO - Downloading https://www.hltv.org/matches/2339803/copenhagen-flames-vs-havu-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 21:23:11,153 - INFO - Successfully downloaded https://www.hltv.org/matches/2339803/copenhagen-flames-vs-havu-flashpoint-1-global-qualifier-pinnacle-open
+2023-11-02 21:23:11,153 - INFO - Downloading https://www.hltv.org/matches/2339164/mouz-vs-natus-vincere-ice-challenge-2020
+2023-11-02 21:23:25,114 - INFO - Successfully downloaded https://www.hltv.org/matches/2339164/mouz-vs-natus-vincere-ice-challenge-2020
+2023-11-02 21:23:25,115 - INFO - Downloading https://www.hltv.org/matches/2339794/nordavind-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 21:23:29,708 - INFO - Successfully downloaded https://www.hltv.org/matches/2339794/nordavind-vs-demolition-crew-esea-mdl-season-33-europe
+2023-11-02 21:23:29,708 - INFO - Downloading https://www.hltv.org/matches/2340355/dignitas-vs-geng-flashpoint-1
+2023-11-02 21:23:38,519 - INFO - Successfully downloaded https://www.hltv.org/matches/2340355/dignitas-vs-geng-flashpoint-1
+2023-11-02 21:23:38,519 - INFO - Downloading https://www.hltv.org/matches/2339382/vitality-vs-astralis-iem-katowice-2020
+2023-11-02 21:23:46,925 - INFO - Successfully downloaded https://www.hltv.org/matches/2339382/vitality-vs-astralis-iem-katowice-2020
+2023-11-02 21:23:46,926 - INFO - Downloading https://www.hltv.org/matches/2339729/ago-vs-copenhagen-flames-oga-counter-pit-season-7
+2023-11-02 21:23:52,202 - INFO - Successfully downloaded https://www.hltv.org/matches/2339729/ago-vs-copenhagen-flames-oga-counter-pit-season-7
+2023-11-02 21:23:52,202 - INFO - Downloading https://www.hltv.org/matches/2340346/dignitas-vs-cloud9-flashpoint-1
+2023-11-02 21:23:59,398 - INFO - Successfully downloaded https://www.hltv.org/matches/2340346/dignitas-vs-cloud9-flashpoint-1
+2023-11-02 21:23:59,398 - INFO - Downloading https://www.hltv.org/matches/2339401/natus-vincere-vs-astralis-iem-katowice-2020
+2023-11-02 21:24:11,071 - INFO - Successfully downloaded https://www.hltv.org/matches/2339401/natus-vincere-vs-astralis-iem-katowice-2020
+2023-11-02 21:24:11,071 - INFO - Downloading https://www.hltv.org/matches/2339158/heroic-vs-mad-lions-ice-challenge-2020
+2023-11-02 21:24:17,351 - INFO - Successfully downloaded https://www.hltv.org/matches/2339158/heroic-vs-mad-lions-ice-challenge-2020
+2023-11-02 21:24:17,352 - INFO - Downloading https://www.hltv.org/matches/2339893/spirit-vs-ago-esea-mdl-season-33-europe
+2023-11-02 21:24:22,661 - INFO - Successfully downloaded https://www.hltv.org/matches/2339893/spirit-vs-ago-esea-mdl-season-33-europe
+2023-11-02 21:24:22,662 - INFO - Downloading https://www.hltv.org/matches/2339671/spirit-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 21:24:41,061 - INFO - Successfully downloaded https://www.hltv.org/matches/2339671/spirit-vs-gamerlegion-esea-mdl-season-33-europe
+2023-11-02 21:24:41,061 - INFO - Downloading https://www.hltv.org/matches/2340338/orgless-vs-dignitas-flashpoint-1
+2023-11-02 21:25:00,735 - INFO - Successfully downloaded https://www.hltv.org/matches/2340338/orgless-vs-dignitas-flashpoint-1
+2023-11-02 21:25:00,735 - INFO - Downloading https://www.hltv.org/matches/2339373/ninjas-in-pyjamas-vs-vitality-iem-katowice-2020
+2023-11-02 21:25:06,633 - INFO - Successfully downloaded https://www.hltv.org/matches/2339373/ninjas-in-pyjamas-vs-vitality-iem-katowice-2020
+2023-11-02 21:25:06,634 - INFO - Downloading https://www.hltv.org/matches/2340084/vitality-vs-ninjas-in-pyjamas-esl-pro-league-season-11-europe
+2023-11-02 21:25:12,354 - INFO - Successfully downloaded https://www.hltv.org/matches/2340084/vitality-vs-ninjas-in-pyjamas-esl-pro-league-season-11-europe
+2023-11-02 21:25:12,355 - INFO - Downloading https://www.hltv.org/matches/2339157/og-vs-natus-vincere-ice-challenge-2020
+2023-11-02 21:25:28,786 - INFO - Successfully downloaded https://www.hltv.org/matches/2339157/og-vs-natus-vincere-ice-challenge-2020
+2023-11-02 21:25:28,786 - INFO - Downloading https://www.hltv.org/matches/2339398/fnatic-vs-100-thieves-iem-katowice-2020
+2023-11-02 21:25:37,691 - INFO - Successfully downloaded https://www.hltv.org/matches/2339398/fnatic-vs-100-thieves-iem-katowice-2020
+2023-11-02 21:25:37,691 - INFO - Downloading https://www.hltv.org/matches/2339605/spirit-vs-gamerlegion-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:25:42,277 - INFO - Successfully downloaded https://www.hltv.org/matches/2339605/spirit-vs-gamerlegion-flashpoint-1-europe-closed-qualifier
+2023-11-02 21:25:42,278 - INFO - Downloading https://www.hltv.org/matches/2340160/fnatic-vs-dignitas-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:25:53,540 - INFO - Successfully downloaded https://www.hltv.org/matches/2340160/fnatic-vs-dignitas-europe-minor-closed-qualifier-esl-one-rio-2020
+2023-11-02 21:25:53,541 - INFO - Downloading https://www.hltv.org/matches/2340291/sprout-vs-nordavind-esea-mdl-season-33-europe
+2023-11-02 21:25:57,987 - INFO - Successfully downloaded https://www.hltv.org/matches/2340291/sprout-vs-nordavind-esea-mdl-season-33-europe
