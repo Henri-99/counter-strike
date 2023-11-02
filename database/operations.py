@@ -1,9 +1,12 @@
 from database.setup import session
 from database.models import MatchURL
 
-def get_match_urls(downloaded=False, limit=None):
+def get_match_urls(downloaded=False, processed=None, limit=None):
     # Query the database to get a list of MatchURLs where downloaded matches the specified value
     query = session.query(MatchURL).filter(MatchURL.downloaded == downloaded)
+    
+    if processed is not None:
+        query = query.filter(MatchURL.processed == processed)
 
     # Optionally, limit the number of results
     if limit is not None:
