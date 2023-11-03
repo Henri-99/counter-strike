@@ -98,4 +98,5 @@ def extract_match_data(match):
 		match_data['box_str'] = "\n".join([s.strip("* ") for s in boxes[0].text.strip().split("\n") if s])
 		match_data['veto'] = boxes[1].text.strip()
 		
+		scraper_logger.info(f"{match.id} processed successfully")
 	return match_data, lineups
