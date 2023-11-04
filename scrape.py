@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import re
 import logging
+import os
 
 scraper_logger = logging.getLogger('scraper_logger')
 scraper_logger.setLevel(logging.INFO)
@@ -104,3 +105,46 @@ def extract_match_data(match):
 
 		scraper_logger.info(f"{match.id} processed successfully")
 	return match_data, lineups
+
+def extract_map_page_list(start_date, end_date):
+	with open(f"download/maplist/{end_date}_0.html", "r", encoding='utf-8') as html:
+		soup = BeautifulSoup(html, "html.parser")
+		pagination_data = soup.find("span", {"class": "pagination-data"}).text.split(" of ")
+		total_map_count = int(pagination_data[1])
+		no_pages_to_download = int(total_map_count/50) + 1
+
+		page_list = []
+		for page_no in range(1,no_pages_to_download):
+			page_list.append(
+				{
+					'url': f"https://www.hltv.org/stats/matches?startDate={start_date}&endDate={end_date}&offset={page_no*50}&rankingFilter=Top50",
+					'path': f"maplist/{end_date}_{page_no}"
+				}
+			)
+		return page_list
+
+def extract_map_url_data(scrape_date):
+	filenames = [f for f in os.listdir("download/maplist/") if scrape_date in f]
+	map_url_data = []
+	for filename in filenames:
+		with open(f"download/maplist/{filename}", "r", encoding='utf-8') as html:
+			soup = BeautifulSoup(html, "html.parser")
+			# Loop through each row	and record map URLs
+			table_rows  = soup.table.contents[3].find_all("tr")
+			for i in range(len(table_rows)):
+				map_url = table_rows[i].find_all("a", href=True)
+				map_object = {
+					'id'   : map_url[0]['href'].split('/')[4],
+					'url'  : map_url[0]['href'].split('?')[0].split("/")[-1],
+					'downloaded' : 0,
+					'processed' : 0
+					}
+				map_url_data.append(map_object)
+	return map_url_data
+
+
+
+
+
+
+
