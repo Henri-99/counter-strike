@@ -2,9 +2,9 @@ from database.setup import create_tables
 from database.operations import get_match_urls, update_match_url, insert_matches, insert_lineups
 from download import download_pages
 from scrape import extract_match_data
-import random
 import os
 import logging
+import asyncio
 
 main_logger = logging.getLogger('main_logger')
 main_logger.setLevel(logging.INFO)
@@ -13,7 +13,7 @@ main_handler.setLevel(logging.INFO)
 main_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 main_logger.addHandler(main_handler)
 
-def check_downloaded_matches():
+def update_downloaded_matches_status():
 	file_list = []
 	size_threshold = 100 * 1024
 	directory_path = "./download/match"
@@ -33,8 +33,8 @@ def main(update_tables = False,
 
 	if download_matches:
 		# Get list of matches to download
+		update_downloaded_matches_status()
 		matches_to_download = get_match_urls(downloaded=False)
-		matches_to_download = random.sample(matches_to_download, len(matches_to_download))
 		download_list = [
 			{
 				'url': f"https://www.hltv.org/matches/{match.id}/{match.url}",
@@ -46,9 +46,8 @@ def main(update_tables = False,
 		
 
 		# Download the match pages and update the 'downloaded' flag in database
-		success = download_pages(download_list)
-		success_ids = [int(match.split("/")[4]) for match in success]
-		update_match_url(success_ids, 'downloaded')
+		asyncio.run(download_pages(download_list))
+		update_downloaded_matches_status()
 
 	if process_matches:
 		match_data = []
@@ -71,5 +70,5 @@ def main(update_tables = False,
 
 
 if __name__ == '__main__':
-	check_downloaded_matches()
-	main(process_matches = True)
+	
+	main(download_matches = True)
