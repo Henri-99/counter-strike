@@ -96,7 +96,11 @@ def extract_match_data(match):
 		else:
 			match_data['best_of'] = 0
 		match_data['box_str'] = "\n".join([s.strip("* ") for s in boxes[0].text.strip().split("\n") if s])
-		match_data['veto'] = boxes[1].text.strip()
-		
+		try:
+			match_data['veto'] = boxes[1].text.strip()
+		except Exception as e:
+			scraper_logger.info(f"{match.id} has no veto data")
+			match_data['veto'] = ""
+
 		scraper_logger.info(f"{match.id} processed successfully")
 	return match_data, lineups
