@@ -71,4 +71,4 @@ def main(update_tables = False,
 
 if __name__ == '__main__':
 	
-	main(download_matches = True)
+	main(process_matches = True)
