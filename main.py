@@ -1,4 +1,3 @@
-from database.setup import create_tables
 from database.operations import get_match_urls, update_match_url, insert_matches, insert_lineups, get_unscraped_date_range, insert_map_urls, get_map_urls, update_map_url_status, insert_maps, insert_player_performances, update_map_status, create_match_url_records
 from download import download_pages
 from scrape import extract_match_data, extract_map_page_list, extract_map_url_data, extract_map_data
@@ -131,52 +130,46 @@ def process_match_pages():
 	insert_lineups(lineup_data)
 	update_match_url(success_ids, 'processed')
 
-def main(update_tables = False,
-		 update_all = False):
+def main():
+	# Get date range to scrape
+	last_date, today = get_unscraped_date_range()
+	print(f"Syncing with HLTV... (last update: {last_date})\n")
 
-	if update_tables:
-		create_tables()
+	# Download pages with map URLs
+	print("Fetching links to new maps")
+	download_map_urls(last_date, today)
+	
+	# Extract list of map URLs from pages and insert into database
+	print("Finding new map URLs")
+	process_map_url_pages(today)
+	print(f"Map URLs added to database")
 
-	if update_all:
-		# Get date range to scrape
-		last_date, today = get_unscraped_date_range()
-		print(f"Syncing with HLTV... (last update: {last_date})\n")
+	# Download map pages
+	print("Fetching new maps")
+	download_maps()
 
-		# Download pages with map URLs
-		print("Fetching links to new maps")
-		download_map_urls(last_date, today)
-		
-		# Extract list of map URLs from pages and insert into database
-		print("Finding new map URLs")
-		process_map_url_pages(today)
-		print(f"Map URLs added to database")
+	# Extract map, player data from map pages and insert into database
+	print("Reading map data")
+	process_map_pages()
+	print(f"Map data added to database")
 
-		# Download map pages
-		print("Fetching new maps")
-		download_maps()
+	# Create match URL records from map records
+	create_match_url_records()
 
-		# Extract map, player data from map pages and insert into database
-		print("Reading map data")
-		process_map_pages()
-		print(f"Map data added to database")
+	# Download match pages
+	print("Fetching new matches")
+	download_matches()
 
-		# Create match URL records from map records
-		create_match_url_records()
+	# Extract match, lineup data from match pages and insert into database
+	print("Reading match data")
+	process_match_pages()
 
-		# Download match pages
-		print("Fetching new matches")
-		download_matches()
+	print("Matches added to database")
 
-		# Extract match, lineup data from match pages and insert into database
-		print("Reading match data")
-		process_match_pages()
-
-		print("Matches added to database")
-
-		print("\nSync complete.")
+	print("\nSync complete.")
 
 
 if __name__ == '__main__':
-	main(update_all = True)
+	main()
 
 

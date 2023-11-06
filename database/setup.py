@@ -10,5 +10,5 @@ Base = declarative_base()
 Session = sessionmaker(bind=engine)
 session = Session()
 
-def create_tables():
+if __name__ == "__main__":
 	Base.metadata.create_all(engine)
