@@ -49,6 +49,9 @@ class MapURL(Base):
 	downloaded = Column(Boolean, default=False)
 	processed = Column(Boolean, default=False)
 
+	def __repr__(self):
+		return f"<MapURL(ID={self.id}, URI='{self.url}', downloaded={self.downloaded}, processed={self.processed})>"
+
 class Map(Base):
 	__tablename__ = 'map'
 
