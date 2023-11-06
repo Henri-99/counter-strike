@@ -90,10 +90,9 @@ class Map(Base):
 class PlayerStats(Base):
 	__tablename__ = 'playerstats'
 
-	id = Column(Integer, primary_key=True)
-	player_id = Column(Integer)
+	player_id = Column(Integer, primary_key=True)
+	map_id = Column(Integer, primary_key=True)
 	player_name = Column(String)
-	map_id = Column(Integer, ForeignKey('map.id'))
 	team_id = Column(Integer)
 	team = Column(String)
 	kills = Column(Integer)
@@ -105,8 +104,6 @@ class PlayerStats(Base):
 	adr = Column(Float)
 	first_kd = Column(Integer)
 	rating = Column(Float)
-
-	map_rel = relationship('Map', backref='player_stats')
 
 class Ranking(Base):
 	__tablename__ = 'ranking'
