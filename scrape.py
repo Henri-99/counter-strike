@@ -102,6 +102,12 @@ def extract_match_data(match):
 		except Exception as e:
 			scraper_logger.info(f"{match.id} has no veto data")
 			match_data['veto'] = ""
+		
+		# Check if the date is after 8 October 2023 or CS2 in match data box
+		if datetime.strptime(datetime_, "%Y-%m-%d %H:%M") > datetime(2023, 10, 8) or "Counter-Strike 2" in match_data['box_str']:
+			match_data['cs2'] = True
+		else:
+			match_data['cs2'] = False
 
 		scraper_logger.info(f"Match {match.id} processed successfully")
 	return match_data, lineups

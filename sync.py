@@ -1,4 +1,4 @@
-from database.operations import get_match_urls, update_match_url, insert_matches, insert_lineups, get_unscraped_date_range, insert_map_urls, get_map_urls, update_map_url_status, insert_maps, insert_player_performances, update_map_status, create_match_url_records
+from database.operations import get_match_urls, update_match_url, insert_matches, insert_lineups, get_unscraped_date_range, insert_map_urls, get_map_urls, update_map_url_status, insert_maps, insert_player_performances, update_map_status, create_match_url_records, update_cs2_field
 from download import download_pages
 from scrape import extract_match_data, extract_map_page_list, extract_map_url_data, extract_map_data
 import os
@@ -171,5 +171,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-

@@ -40,6 +40,7 @@ class Match(Base):
 	best_of = Column(Integer)
 	box_str = Column(String)
 	veto = Column(String)
+	cs2 = Column(Boolean)
 
 class MapURL(Base):
 	__tablename__ = 'map_url'

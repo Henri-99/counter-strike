@@ -137,7 +137,8 @@ def insert_matches(match_data_list):
 			lan=data['lan'],
 			best_of=data['best_of'],
 			box_str=data['box_str'],
-			veto=data['veto']
+			veto=data['veto'],
+			cs2 = data['cs2']
 		)
 		session.add(match_entry)
 
@@ -262,4 +263,16 @@ def create_match_url_records():
 		)
 		session.add(new_record)
 
+	session.commit()
+
+def update_cs2_field():
+	session.query(Match).update({"cs2" : 0})
+
+	# Check if the date is after 8 October 2023 and update cs2 to 1
+	session.query(Match).filter(Match.datetime > datetime(2023, 10, 8)).update({"cs2": 1})
+
+	# Check if box_str contains "Counter-Strike 2" and update cs2 to 1
+	session.query(Match).filter(Match.box_str.like('%Counter-Strike 2%')).update({"cs2": 1})
+
+	# Commit the changes to the database
 	session.commit()
