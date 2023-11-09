@@ -1,6 +1,6 @@
 from database.operations import get_date_range
 from database.setup import session
-from database.models import MatchURL, Match, Lineup, Map, MapURL, PlayerStats
+from database.models import Match, Lineup, Map, PlayerStats
 from sqlalchemy import func, and_
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
@@ -194,15 +194,6 @@ def score_distribution(cs2=False):
 
 	return result_df
 
-def order_row(row):
-	t1, t2, count = row
-	complementary_t1 = t2
-	complementary_t2 = t1
-	return max(complementary_t1, complementary_t2), min(complementary_t1, complementary_t2), count
-
-
-
-
 def plot_maps_per_month():
 	data = records_per_month()
 	months = []
@@ -234,9 +225,6 @@ def plot_maps_per_week():
 	plt.title('Map-frequency')
 	plt.savefig('my_plot.png')
 
-
-
-
 if __name__ == "__main__":
 	pd.set_option("display.max_rows", None)
 
@@ -253,4 +241,3 @@ if __name__ == "__main__":
 	# print(rank_differential_distribution())
 
 	print(score_distribution(cs2=False))
-

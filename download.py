@@ -10,9 +10,7 @@ Date: 02/11/2023
 from zenrows import ZenRowsClient
 import time
 import logging
-import random
 import asyncio
-from urllib.parse import urlparse, parse_qs
 
 ZENROWS_API_KEY = "5771f6aa356840a80c50a447b69d8d0ad31ab888"
 DEFAULT_PARAMS = {"premium_proxy":"true"}
@@ -51,8 +49,6 @@ async def download_pages(pages):
 	tasks = [download_page(client, page, counter) for page in pages]
 	await asyncio.gather(*tasks)
 
-
-
 def format_time(total_seconds):
 	"""
 	Formats a time value into 'x:y:z' format.
@@ -75,80 +71,6 @@ def format_time(total_seconds):
 
 	# Format and return the time string
 	return f'{hours}:{minutes:02d}:{seconds:02d}'
-
-# def download_page(client, page, params):
-# 	"""
-# 	Downloads a web page using the ZenRowsClient.
-
-# 	Parameters:
-# 	client (ZenRowsClient): An instance of ZenRowsClient for making HTTP requests.
-# 	page (dict): A dictionary containing the URL to download and the path to save the content.
-# 	params (dict): Parameters to pass in the GET request.
-
-# 	Returns:
-# 	float: The time taken to download the page in seconds, or None if an error occurs.
-# 	"""
-# 	start_time = time.time()
-
-# 	tries = 3
-# 	while tries > 0:
-# 		try:
-# 			download_logger.info(f"Downloading {page['url']}")
-# 			print(page['url'])
-# 			response = client.get(page['url'], params)
-# 			with open(f"./download/{page['path']}.html", 'w', encoding='utf-8') as file:
-# 				data = response.text
-# 				if "Operation timeout exceeded (CTX0002)" in data:
-# 					raise TimeoutError
-# 				file.write(response.text)
-# 			download_logger.info(f"Successfully downloaded {page['url']}")
-# 			break
-# 		except Exception as e:
-# 			download_logger.error(f"Failed to download {page['url']}: {e}")
-# 			tries -= 1
-
-# 	return time.time() - start_time
-
-# def download_pages(page_list, params = DEFAULT_PARAMS):
-# 	"""
-# 	Download a list of web pages and track the download progress.
-
-# 	Parameters:
-# 	page_list (list of dict): A list of dictionaries, where each dictionary contains the URL to download
-# 		and the path to save the content.
-# 	params (dict): Optional parameters to pass in the GET request.
-
-# 	Returns:
-# 	list: A list of URLs for pages that were successfully downloaded.
-# 	"""
-# 	client = ZenRowsClient(ZENROWS_API_KEY, concurrency=10, retries=2)
-# 	total_pages = len(page_list)
-# 	times = []
-# 	success = []
-
-# 	# Randomize order of pages to download
-# 	page_list = random.sample(page_list, len(page_list))
-
-# 	for count, page in enumerate(page_list):
-# 		progress_percent = f"{round(100 * count / total_pages, 2):.2f}".rjust(5)
-# 		progress_absolute = f"{str(count).rjust(4)}/{total_pages}"
-# 		progress_string = f"{progress_absolute} • {progress_percent}%"
-# 		print(progress_string, end=" ", flush=True)
-		
-# 		if times:
-# 			avg_time = sum(times) / len(times)
-# 			time_remaining = format_time(avg_time * (total_pages - count)).rjust(8)
-# 			avg_time_string = f"{round(avg_time,1)}".rjust(4)
-# 			print(f"• {avg_time_string}s • {time_remaining} •", end=" ", flush=True)
-# 		else:
-# 			print("•       •          •", end=" ", flush=True)
-
-# 		time_taken = download_page(client, page, params)
-# 		if time_taken is not None:
-# 			times.append(time_taken)
-# 			success.append(page['url'])
-	
-# 	return success
 		
 if __name__ == '__main__':
 	page_list = [
