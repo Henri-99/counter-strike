@@ -48,23 +48,6 @@ def get_map_urls(downloaded=False, processed=None, limit=None):
 
 	return map_urls
 
-def get_maps(start_date=None, end_date=None, limit=None):
-	query = session.query(Map)
-	if start_date and end_date is not None:
-		query = query.filter(
-			and_(
-				Map.datetime >= start_date,
-				Map.datetime <= end_date
-			)
-		).order_by(Map.id)
-	
-	if limit is not None:
-		query = query.limit(limit)
-	
-	map_data = query.all()
-
-	return map_data
-
 def get_date_range():
 	# Query for the minimum and maximum datetime values
 	min_date = session.query(func.min(Map.datetime)).scalar()
