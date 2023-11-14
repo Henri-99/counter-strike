@@ -12,6 +12,10 @@ db_handler.setLevel(logging.INFO)
 db_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 db_logger.addHandler(db_handler)
 
+def set_map_url_processed_false():
+	session.query(MapURL).update({MapURL.processed: False})
+	session.commit()
+
 def get_match_urls(downloaded=False, processed=None, limit=None):
 	# Query the database to get a list of MatchURLs where downloaded matches the specified value
 	query = session.query(MatchURL).filter(MatchURL.downloaded == downloaded)

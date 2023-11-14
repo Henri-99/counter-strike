@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float, Date, ForeignKey
 from sqlalchemy.orm import relationship
-from database.setup import Base
+from database.setup import Base, engine
 
 class MatchURL(Base):
 	__tablename__ = 'match_url'
@@ -143,3 +143,6 @@ class Lineup(Base):
 	player4 = Column(String)
 	player5_id = Column(Integer)
 	player5 = Column(String)
+
+def setup_tables():
+	Base.metadata.create_all(engine)

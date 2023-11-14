@@ -335,10 +335,10 @@ def get_round_history(round_icons):
 	outcome_mapping = {
 		"t_win": "T",
 		"emptyHistory": "_",
-		"bomb_exploded": "B",
+		"bomb_exploded": "T",
 		"ct_win": "C",
-		"bomb_defused": "D",
-		"stopwatch": "S"
+		"bomb_defused": "C",
+		"stopwatch": "C"
 	}
 
 	round_history = ""
@@ -361,8 +361,8 @@ def process_round_history(t1_round_icons, t2_round_icons):
 
 	for i in range(16, len(t1_rounds_won)):
 		if t1_rounds_won[i] == t2_rounds_won[i]:
-			t1_rounds_won = t1_rounds_won[:i-1]
-			t2_rounds_won = t2_rounds_won[:i-1]
+			t1_rounds_won = t1_rounds_won[:i]
+			t2_rounds_won = t2_rounds_won[:i]
 			break
 
 	return t1_rounds_won, t2_rounds_won
