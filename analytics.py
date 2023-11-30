@@ -10,18 +10,14 @@ import pandas as pd
 
 def get_maps(start_date=None, end_date=None, limit=None):
 	query = session.query(Map)
-	if start_date and end_date is not None:
-		query = query.filter(
-			and_(
-				Map.datetime >= start_date,
-				Map.datetime <= end_date
-			)
-		).order_by(Map.id)
-	
+	if start_date is not None:
+		query = query.filter(Map.datetime >= start_date)
+	if end_date is not None:
+		query = query.filter(Map.datetime <= end_date)
 	if limit is not None:
 		query = query.limit(limit)
 	
-	map_data = query.all()
+	map_data = query.order_by(Map.id).all()
 
 	return map_data
 
@@ -313,6 +309,47 @@ def plot_maps_per_week():
 	plt.title('Map-frequency')
 	plt.savefig('my_plot.png')
 
+def score_win_probability(cs2 = None, lan = None, map_name = None):
+	query = session.query(Map.t1_score, Map.t2_score, Map.t1_round_history, Map.t2_round_history, Map.map_name)
+
+	query = query.filter(Map.overtime == 0) #Modify later to support OT maps
+
+	if cs2 is not None or lan is not None:
+		query = query.join(Match, Map.match_id == Match.id)
+
+	if cs2 is not None:
+		query = query.filter(Match.cs2 == 1 if cs2 else Match.cs2 == 0)
+
+	if lan is not None:
+		query = query.filter(Match.lan == 1 if lan else Match.lan == 0)
+
+	if map_name is not None:
+		query = query.filter(Map.map_name == map_name)
+		
+	map_counts = query.limit(10).all()
+
+	winner = 1 if Map.t1_score > Map.t2_score else 0
+
+	
+
+	return map_counts
+
+def score_progression(t1_round_history, t2_round_history):
+    team1_score = 0
+    team2_score = 0
+    score_progression = []
+
+    for i in range(t1_round_history):
+        if t1_round_history[i] == 'C' or t1_round_history[i] == 'T':
+            team1_score += 1
+        elif t2_round_history[i] == 'C' or t2_round_history[i] == 'T':
+            team2_score += 1
+
+        score_progression.append(f"{team1_score}-{team2_score}")
+
+    return score_progression
+
+
 if __name__ == "__main__":
 	pd.set_option("display.max_rows", None)
 
@@ -330,4 +367,8 @@ if __name__ == "__main__":
 
 	# print(score_distribution(cs2=False, lan = True))
 
-	print(winner_rank_diff_dist(cs2 = False))
+	# print(winner_rank_diff_dist(cs2 = False))
+
+	# print(score_win_probability())
+
+	print(score_progression("TBB_______________SDC"))
