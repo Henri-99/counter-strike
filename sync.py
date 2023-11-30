@@ -93,25 +93,46 @@ def process_map_url_pages(date):
 	map_urls = extract_map_url_data(date)
 	insert_map_urls(map_urls)
 
+import concurrent.futures
+
+def process_map(map_info, total_maps):
+	map_index, map_ = map_info
+	try:
+		map_stats, player_stats_list = extract_map_data(map_.id)
+		remaining_maps = total_maps - map_index - 1
+		progress_percent = ((total_maps - remaining_maps) / total_maps) * 100
+		print(f"Processed {map_.id} ({progress_percent:.2f}% complete, {remaining_maps} remaining)")
+		return map_stats, player_stats_list
+	except Exception as e:
+		main_logger.error(f"Failed to process {map_.id}: {e}")
+		return None, None
+
 def process_map_pages():
 	map_data = []
 	player_performance_data = []
 	success_ids = []
-	# Get list of maps to process
-	maps_to_process = get_map_urls(downloaded=True, processed=False)
-	for i, map_ in enumerate(maps_to_process):
-		try:
-			map_stats, player_stats_list = extract_map_data(map_.id)
-			print(f"{i+1}/{len(maps_to_process)}")
-		except Exception as e:
-			main_logger.error(f"Failed to process {map_.id}: {e}")
-			continue
-		map_data.append(map_stats)
-		player_performance_data.append(player_stats_list)
-		success_ids.append(map_stats['id'])
-	insert_maps(map_data)
-	insert_player_performances(player_performance_data)
-	update_map_url_status(success_ids, 'processed')
+
+	while True:
+		# Get list of maps to process
+		maps_to_process = get_map_urls(downloaded=True, processed=False, limit=1000)
+		total_maps = len(maps_to_process)
+		if total_maps == 0:
+			break
+
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+			# Use executor.map to process maps concurrently
+			results = executor.map(process_map, enumerate(maps_to_process), [total_maps] * total_maps)
+
+		for result in results:
+			if result is not None:
+				map_stats, player_stats_list = result
+				map_data.append(map_stats)
+				player_performance_data.append(player_stats_list)
+				success_ids.append(map_stats['id'])
+
+		insert_maps(map_data)
+		insert_player_performances(player_performance_data)
+		update_map_url_status(success_ids, 'processed')
 
 def process_match_pages():
 	match_data = []
@@ -135,7 +156,7 @@ def process_match_pages():
 def main():
 	# Get date range to scrape
 	last_date, today = get_unscraped_date_range()
-	last_date, today = ("2019-11-01", "2019-12-31")
+	# last_date, today = ("2019-11-01", "2019-12-31")
 	print(f"Syncing with HLTV... (last update: {last_date})\n")
 
 	# Download pages with map URLs
@@ -173,6 +194,8 @@ def main():
 
 
 if __name__ == '__main__':
-	# main()
+	main()
 	# setup_tables()
-	process_map_pages()
+	# process_map_pages()
+	# download_maps() 
+	# process_map_pages()
