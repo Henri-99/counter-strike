@@ -10,6 +10,7 @@ from matplotlib import font_manager
 import os
 import numpy as np
 import pandas as pd
+from collections import Counter
 
 def get_maps(start_date=None, end_date=None, limit=None):
 	query = session.query(Map)
@@ -184,29 +185,28 @@ def format_distribution(cs2 = None, lan = None):
 
 	return df
 
-def rank_distribution(cs2 = None, lan = None):
-
-	query1 = session.query(Match.team1_rank, func.count(Match.id)).group_by(Match.team1_rank)
-	query2 = session.query(Match.team2_rank, func.count(Match.id)).group_by(Match.team2_rank)
+def rank_distribution(cs2=True, lan=True):
+	query = (
+		session.query(Match.team1_rank, Match.team2_rank)
+	)
 
 	if cs2 is not None:
-		query1 = query1.filter(Match.cs2 == 1 if cs2 else Match.cs2 == 0)
-		query2 = query2.filter(Match.cs2 == 1 if cs2 else Match.cs2 == 0)
+		query = query.filter(Match.cs2 == 1 if cs2 else Match.cs2 == 0)
 
 	if lan is not None:
-		query1 = query1.filter(Match.lan == 1 if lan else Match.lan == 0)
-		query2 = query2.filter(Match.lan == 1 if lan else Match.lan == 0)
+		query = query.filter(Match.lan == 1 if lan else Match.lan == 0)
 
-	team1_rank_counts = query1.all()
-	team2_rank_counts = query2.all()
+	# Fetch the team ranks
+	team_ranks = query.all()
+	
+	df = pd.DataFrame(team_ranks)
 
-	team1_rank_df = pd.DataFrame(team1_rank_counts, columns=["team_rank", "count"])
-	team2_rank_df = pd.DataFrame(team2_rank_counts, columns=["team_rank", "count"])
-	combined_df = pd.concat([team1_rank_df, team2_rank_df])
+	df['average_rank'] = df[['team1_rank', 'team2_rank']].mean(axis=1)
 
-	result_df = combined_df.groupby("team_rank")["count"].sum().reset_index()
+	count_df = df['average_rank'].value_counts().reset_index()
+	count_df.columns = ['average_rank', 'count']
 
-	return result_df
+	return count_df.sort_values(by="average_rank", ascending=True)
 
 def rank_differential_distribution(cs2 = None, lan = None):
 	query = session.query(Match.team1_rank, Match.team2_rank).filter(Match.team1_rank.isnot(None), Match.team2_rank.isnot(None))
@@ -254,32 +254,32 @@ def score_distribution(cs2 = None, lan = None):
 	return result_df
 
 def winner_rank_diff_dist(cs2 = None, lan = None):
-    # Get team ids, ranks, winner_id. Calculate winning team rank - losing team rank
-    query = session.query(Match.team1_rank, Match.team2_rank, Match.winner, Match.team1_id).filter(
-        Match.team1_rank.isnot(None), Match.team2_rank.isnot(None), Match.winner.isnot(None)
-    )
+	# Get team ids, ranks, winner_id. Calculate winning team rank - losing team rank
+	query = session.query(Match.team1_rank, Match.team2_rank, Match.winner, Match.team1_id).filter(
+		Match.team1_rank.isnot(None), Match.team2_rank.isnot(None), Match.winner.isnot(None)
+	)
 
-    if cs2 is not None:
-        query = query.filter(Match.cs2 == 1 if cs2 else Match.cs2 == 0)
+	if cs2 is not None:
+		query = query.filter(Match.cs2 == 1 if cs2 else Match.cs2 == 0)
 
-    if lan is not None:
-        query = query.filter(Match.lan == 1 if lan else Match.lan == 0)
+	if lan is not None:
+		query = query.filter(Match.lan == 1 if lan else Match.lan == 0)
 
-    matches = query.all()
+	matches = query.all()
 
-    differences = [team2_rank - team1_rank if winner == team1_id else team1_rank - team2_rank for team1_rank, team2_rank, winner, team1_id in matches]
-    difference_counts = {}
-    
-    for diff in differences:
-        if diff not in difference_counts:
-            difference_counts[diff] = 1
-        else:
-            difference_counts[diff] += 1
+	differences = [team2_rank - team1_rank if winner == team1_id else team1_rank - team2_rank for team1_rank, team2_rank, winner, team1_id in matches]
+	difference_counts = {}
+	
+	for diff in differences:
+		if diff not in difference_counts:
+			difference_counts[diff] = 1
+		else:
+			difference_counts[diff] += 1
 
-    result_df = pd.DataFrame(list(difference_counts.items()), columns=["Rank_Difference", "Frequency"])
-    result_df = result_df.sort_values(by="Rank_Difference")
+	result_df = pd.DataFrame(list(difference_counts.items()), columns=["Rank_Difference", "Frequency"])
+	result_df = result_df.sort_values(by="Rank_Difference")
 
-    return result_df
+	return result_df
 
 def score_win_probability(cs2 = None, lan = None, map_name = None):
 	query = session.query(Map.t1_score, Map.t2_score, Map.t1_round_history, Map.t2_round_history, Map.map_name)
@@ -307,22 +307,22 @@ def score_win_probability(cs2 = None, lan = None, map_name = None):
 	return map_counts
 
 def score_progression(t1_round_history, t2_round_history):
-    team1_score = 0
-    team2_score = 0
-    score_progression = []
+	team1_score = 0
+	team2_score = 0
+	score_progression = []
 
-    for i in range(t1_round_history):
-        if t1_round_history[i] == 'C' or t1_round_history[i] == 'T':
-            team1_score += 1
-        elif t2_round_history[i] == 'C' or t2_round_history[i] == 'T':
-            team2_score += 1
+	for i in range(t1_round_history):
+		if t1_round_history[i] == 'C' or t1_round_history[i] == 'T':
+			team1_score += 1
+		elif t2_round_history[i] == 'C' or t2_round_history[i] == 'T':
+			team2_score += 1
 
-        score_progression.append(f"{team1_score}-{team2_score}")
+		score_progression.append(f"{team1_score}-{team2_score}")
 
-    return score_progression
+	return score_progression
 
 def configure_plot_settings():
-	font_manager.fontManager.addfont("C:/Users/Henri/AppData/Local/Microsoft/Windows/Fonts/Palatino.ttf")
+	font_manager.fontManager.addfont("C:/Users/9903165908084/AppData/Local/Microsoft/Windows/Fonts/Palatino.ttf")
 	mpl.rcParams['font.family'] = 'serif'
 	mpl.rcParams['font.serif'] = 'Palatino'
 	mpl.rcParams['font.size'] = 12
@@ -345,6 +345,17 @@ def plot_matches_per_month():
 	plt.legend(title='Year')
 	plt.savefig(os.path.join('figures','matches_per_month_total.png'))
 
+def plot_rank_distribution():
+	configure_plot_settings()
+
+	df = rank_distribution()[['team_rank', 'count']]
+
+	plt.plot(df['team_rank'], df['count'], label='Team Rank')
+	plt.xlabel('Rank')
+	plt.ylabel('Number of Matches Played')
+	plt.title('Number of Matches Played')
+	plt.savefig(os.path.join('figures','match_rank_distribution.png'))
+
 if __name__ == "__main__":
 
 	# print(records_per_week())
@@ -364,3 +375,5 @@ if __name__ == "__main__":
 	# print(score_win_probability())
 
 	# print(score_progression("TBB_______________SDC"))
+
+	# plot_rank_distribution()
