@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Float, Date, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.orm import relationship
 from database.setup import Base, engine
 
@@ -41,6 +41,9 @@ class Match(Base):
 	box_str = Column(String)
 	veto = Column(String)
 	cs2 = Column(Boolean)
+
+	def __repr__(self):
+		return f"<Match(ID={self.id})>"
 
 class MapURL(Base):
 	__tablename__ = 'map_url'
@@ -143,6 +146,22 @@ class Lineup(Base):
 	player4 = Column(String)
 	player5_id = Column(Integer)
 	player5 = Column(String)
+
+	def __repr__(self):
+		return f"<Lineup({self.team_name} {self.date})>"
+
+class PlayerElo(Base):
+	__tablename__ = 'player_elo'
+
+	map_id = Column(Integer, primary_key=True)
+	player_id = Column(Integer, primary_key=True)
+	date = Column(Date)
+	elo = Column(Integer)
+	maps_played = Column(Integer)
+
+	__table_args__ = (
+        PrimaryKeyConstraint('map_id', 'player_id'),
+    )
 
 def setup_tables():
 	Base.metadata.create_all(engine)
