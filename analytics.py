@@ -5,6 +5,9 @@ from sqlalchemy import func, and_
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import font_manager
+import os
 import numpy as np
 import pandas as pd
 
@@ -86,7 +89,7 @@ def get_matches_count(start_date=None, end_date=None, cs2=None, lan=None):
 def records_per_month(cs2 = None, lan = None):
 	data = []
 	start_date, end_date = get_date_range()
-	
+	end_date = end_date + timedelta(days = 30)
 	first_days = []
 	current_date = start_date
 	
@@ -278,37 +281,6 @@ def winner_rank_diff_dist(cs2 = None, lan = None):
 
     return result_df
 
-def plot_maps_per_month():
-	data = records_per_month()
-	months = []
-	map_count = []
-	for month in data:
-		months.append(month["date"])
-		map_count.append(month["map_count"])
-	
-	
-	plt.bar(months, map_count, width=10)
-	plt.xlabel('Month')
-	plt.ylabel('Maps played')
-	plt.title('Map-frequency')
-	plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
-	plt.tight_layout()  # Ensure labels fit in the plot
-	plt.savefig('my_bar_plot.png')  # Save the bar plot to a file
-
-def plot_maps_per_week():
-	data = records_per_week()
-	weeks = []
-	map_count = []
-	for week in data:
-		weeks.append(week["date"])
-		map_count.append(week["map_count"])
-	
-	plt.plot(weeks, map_count)
-	plt.xlabel('Month')
-	plt.ylabel('Maps played')
-	plt.title('Map-frequency')
-	plt.savefig('my_plot.png')
-
 def score_win_probability(cs2 = None, lan = None, map_name = None):
 	query = session.query(Map.t1_score, Map.t2_score, Map.t1_round_history, Map.t2_round_history, Map.map_name)
 
@@ -349,19 +321,39 @@ def score_progression(t1_round_history, t2_round_history):
 
     return score_progression
 
+def configure_plot_settings():
+	font_manager.fontManager.addfont("C:/Users/Henri/AppData/Local/Microsoft/Windows/Fonts/Palatino.ttf")
+	mpl.rcParams['font.family'] = 'serif'
+	mpl.rcParams['font.serif'] = 'Palatino'
+	mpl.rcParams['font.size'] = 12
+
+def plot_matches_per_month():
+	configure_plot_settings()
+
+	df = records_per_month()[['date', 'match_count']]
+
+	df['date'] = pd.to_datetime(df['date'])
+	df['year'] = df['date'].dt.year
+	df['month'] = df['date'].dt.month
+
+	pivot_table = pd.pivot_table(df, values='match_count', index='month', columns='year', aggfunc='sum', fill_value=0)
+	pivot_table.plot(kind='bar', stacked=False, figsize=(10, 6), width=0.8, colormap='cividis')
+
+	plt.xlabel('Month')
+	plt.ylabel('Number of Matches Played')
+	plt.title('Number of Matches Played Each Month (by Year)')
+	plt.legend(title='Year')
+	plt.savefig(os.path.join('figures','matches_per_month_total.png'))
 
 if __name__ == "__main__":
-	pd.set_option("display.max_rows", None)
-
-	# print(records_per_month(cs2=False, lan=True))
 
 	# print(records_per_week())
 
-	# print(map_distribution(cs2=True))
+	# print(map_distribution(lan=True))
 
-	# print(format_distribution(cs2 = True))
+	# print(format_distribution())
 
-	# print(rank_distribution(cs2 = False, lan = True))
+	print(rank_distribution(cs2 = False, lan = True))
 
 	# print(rank_differential_distribution(lan = True))
 
@@ -371,4 +363,4 @@ if __name__ == "__main__":
 
 	# print(score_win_probability())
 
-	print(score_progression("TBB_______________SDC"))
+	# print(score_progression("TBB_______________SDC"))
