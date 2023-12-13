@@ -3,6 +3,46 @@ from database.models import Match, Map
 import pandas as pd
 from datetime import datetime, timedelta
 
+# Features to implement
+
+# HLTV rank
+# opponent's HLTV rank
+# average player ELO
+# opponent's average player ELO
+# number of times times the map has been played*
+# number of times times the opponent has played the map*
+# number of maps played*
+# number of maps the opponent has played*
+# win-rate on this map*
+# opponent's win-rate on this map*
+# opponent's win-rate on this map*
+# was the map picked or not
+# was the map picked by the opponent
+# days since last played a match
+# days since opponent last played a match
+# days since the map was last played
+# days since opponent last played the map
+# days since last roster change
+# days since opponent's last roster change
+# whether the map is played on LAN or online
+# the tournament prize pool in USD
+# whether the match is an elimination match or not
+# last match-up with same opponent won or lost
+# days since last match-up with same opponent
+# historical map win-rate against this opponent*
+# historical match win-rate against this opponent*
+# match win-rate*
+# opponent match win-rate*
+# current map win-streak*
+# opponent map win-streak*
+# match format (bo1/bo3/bo5)
+# first map won/loss/unplayed
+# second map won/loss/unplayed
+# third map won/loss/unplayed
+# fourth map won/loss/unplayed
+
+
+
 # Joining Match and Map tables with Match on the left side
 query = session.query(Match, Map)\
     .join(Map, Match.id == Map.match_id)\
