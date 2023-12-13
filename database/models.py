@@ -156,7 +156,7 @@ class PlayerElo(Base):
 	map_id = Column(Integer, primary_key=True)
 	player_id = Column(Integer, primary_key=True)
 	date = Column(Date)
-	elo = Column(Integer)
+	elo = Column(Float)
 	maps_played = Column(Integer)
 
 	__table_args__ = (
