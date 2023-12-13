@@ -9,13 +9,20 @@ from database.setup import session
 from database.models import Match, Map, Lineup, PlayerElo
 import pandas as pd
 from datetime import datetime, timedelta
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, asc
+import logging
+
+main_logger = logging.getLogger('main_logger')
+main_logger.setLevel(logging.INFO)
+main_handler = logging.FileHandler('main.log')
+main_handler.setLevel(logging.INFO)
+main_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+main_logger.addHandler(main_handler)
 
 def insert_player_elos(player_elo_list):
 	try:
 		session.add_all(player_elo_list)
 		session.commit()
-		print("Records inserted successfully.")
 	except Exception as e:
 		session.rollback()
 		print(f"Error inserting records: {e}")
@@ -72,7 +79,6 @@ def add_new_players(lineup):
 	# Identify new players
 	new_players = [player_id for player_id in player_id_list if player_id not in existing_players]
 
-
 	new_player_elos = []
 	# Insert records for new players
 	for player_id in new_players:
@@ -87,8 +93,19 @@ def calculate_team_elo(elo_list):
 	return team_elo
 
 def update_elos(map_):
+	if map_.Match is None:
+		main_logger.error(f"{map_.Map.id} has no associated Match")
+		return
+
 	# Get lineups for given match
 	lineup_A, lineup_B = session.query(Lineup).filter(map_.Match.id == Lineup.match_id).all()
+
+	# Ensure lineups are correct order
+	if lineup_A.team_id != map_.Map.t1_id:
+		print("Swapping lineups")
+		temp_lineup = lineup_A
+		lineup_A = lineup_B
+		lineup_B = temp_lineup
 
 	# Initiate any new players to the database
 	add_new_players(lineup_A)
@@ -97,10 +114,6 @@ def update_elos(map_):
 	# Get player ELO dicts for both teams: [ {'player_id': 1950, 'elo': 1000.0, 'maps_played': 0}, ... ]
 	elo_list_A = get_player_elos(lineup_A)
 	elo_list_B = get_player_elos(lineup_B)
-
-	print("Player ELOs before update: ")
-	print([f"{player['player_id']}:{player['elo']}" for player in elo_list_A])
-	print([f"{player['player_id']}:{player['elo']}" for player in elo_list_B])
 
 	# Calculate expected result
 	probA, probB = calculate_expected_outcome(calculate_team_elo(elo_list_A), calculate_team_elo(elo_list_B))
@@ -115,6 +128,8 @@ def update_elos(map_):
 	elo_objects = []
 
 	for i, player in enumerate(elo_list_A):
+		if map_.Map.id == 0:
+			print()
 		elo_objects.append(PlayerElo(map_id = map_.Map.id, 
 							   player_id = player['player_id'], 
 							   date = datetime.strptime(map_.Map.datetime, "%Y-%m-%d %H:%M"), 
@@ -132,16 +147,21 @@ def update_elos(map_):
 
 	elo_list_A = get_player_elos(lineup_A)
 	elo_list_B = get_player_elos(lineup_B)
-	print("Player ELOs after update: ")
-	print([f"{player['player_id']}:{player['elo']}" for player in elo_list_A], end = " and ")
-	print([f"{player['player_id']}:{player['elo']}" for player in elo_list_B])
-	print("\n")
 
 
 if __name__ == "__main__":
 	# Get some maps
-	query = session.query(Map, Match).join(Match, Map.match_id == Match.id, isouter=True)
-	map_objects = query.limit(1000).all()
+	subquery = session.query(PlayerElo.map_id).distinct().subquery()
+	query = (
+		session.query(Map, Match)
+		.join(Match, Map.match_id == Match.id, isouter=True) 
+		.filter(Map.id.notin_(subquery))
+		.order_by(asc(Map.id))
+		# .limit(1000)
+	)
+	map_objects = query.all()
 
-	for map_ in map_objects:
+	for i, map_ in enumerate(map_objects):
+		if i%10 == 0:
+			print(f"{str(i).rjust(5)}/{len(map_objects)}: {(float(i)*100/len(map_objects)):2f}%")
 		update_elos(map_)
