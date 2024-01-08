@@ -28,6 +28,8 @@ X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
 
+# Logistic Regression
+
 from sklearn.linear_model import LogisticRegression
 def logistic_regression():
     logistic_regressor = LogisticRegression(C= 0.01, penalty='l1', solver='saga')
@@ -79,8 +81,10 @@ def logistic_regression_hyperparameter_tuning():
     print("Best Parameters for Logistic Regression:", lr_grid_search.best_params_)
     print("Best Score for Logistic Regression:", lr_grid_search.best_score_)
 
-from sklearn.ensemble import RandomForestClassifier
 
+# Random Forest
+
+from sklearn.ensemble import RandomForestClassifier
 def random_forest():
     rf_classifier = RandomForestClassifier(n_estimators = 20, max_depth=4)
 
@@ -126,5 +130,163 @@ def random_forest_hyperparameter_tuning():
     print("Best Parameters for Random Forest:", rf_grid_search.best_params_)
     print("Best Score for Random Forest:", rf_grid_search.best_score_)
 
+
+# Support Vector Machine
+
+from sklearn.svm import SVC
+def support_vector_machine():
+    svm_classifier = SVC(C=1, gamma='scale', kernel='linear')
+
+    svm_classifier.fit(X_train, y_train)
+
+    y_train_pred = svm_classifier.predict(X_train)
+    train_accuracy = accuracy_score(y_train, y_train_pred)
+    print(f"Training Accuracy: {train_accuracy}")
+
+    y_pred = svm_classifier.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+
+    print(f"Test Accuracy: {accuracy}")
+    print("Confusion Matrix:")
+    print(confusion)
+    print("Classification Report:")
+    print(report)
+
+def svm_hyperparameter_tuning():
+    svm_param_grid = {
+        'C': [0.1, 1, 10],               # Regularization parameter
+        'kernel': ['linear', 'rbf'],     # Kernel type
+        'gamma': ['scale', 'auto']       # Kernel coefficient for 'rbf'
+    }
+
+    svm = SVC()
+
+    svm_grid_search = GridSearchCV(estimator=svm, param_grid=svm_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+    svm_grid_search.fit(X_train, y_train)
+
+    print("Best Parameters for SVM:", svm_grid_search.best_params_)
+    print("Best Score for SVM:", svm_grid_search.best_score_)
+
+
+# eXtreme Gradient Boosting
+
+import xgboost as xgb
+
+def xgboost_model():
+    params = {'colsample_bytree': 0.9, 'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 300, 'subsample': 0.7}
+    xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, 
+                                       eval_metric='logloss')
+
+    xgb_classifier.fit(X_train, y_train)
+
+    y_train_pred = xgb_classifier.predict(X_train)
+    train_accuracy = accuracy_score(y_train, y_train_pred)
+    print(f"Training Accuracy: {train_accuracy}")
+
+    y_pred = xgb_classifier.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+
+    print(f"Test Accuracy: {accuracy}")
+    print("Confusion Matrix:")
+    print(confusion)
+    print("Classification Report:")
+    print(report)
+
+def xgboost_hyperparameter_tuning():
+    xgb_param_grid = {
+        'n_estimators': [100, 200, 300],    # Number of gradient boosted trees
+        'learning_rate': [0.01, 0.1, 0.2],  # Step size shrinkage used in update
+        'max_depth': [3, 4, 5],             # Maximum depth of a tree
+        'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
+        'colsample_bytree': [0.7, 0.8, 0.9] # Subsample ratio of columns when constructing each tree
+    }
+
+    xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss')
+
+    xgb_grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=xgb_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+    xgb_grid_search.fit(X_train, y_train)
+
+    print("Best Parameters for XGBoost:", xgb_grid_search.best_params_)
+    print("Best Score for XGBoost:", xgb_grid_search.best_score_)
+
+
+# Gaussian Naive Bayes
+    
+from sklearn.naive_bayes import GaussianNB
+
+def naive_bayes_model():
+    nb_classifier = GaussianNB()
+
+    nb_classifier.fit(X_train, y_train)
+
+    y_train_pred = nb_classifier.predict(X_train)
+    train_accuracy = accuracy_score(y_train, y_train_pred)
+    print(f"Training Accuracy: {train_accuracy}")
+
+    y_pred = nb_classifier.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+
+    print(f"Test Accuracy: {accuracy}")
+    print("Confusion Matrix:")
+    print(confusion)
+    print("Classification Report:")
+    print(report)
+
+# Multi-Layer Perceptron
+from sklearn.neural_network import MLPClassifier
+
+def neural_network_model():
+    params = {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+    mlp_classifier = MLPClassifier(hidden_layer_sizes=(100,), 
+                                   activation='relu', 
+                                   solver='adam', 
+                                   random_state=42)
+
+    mlp_classifier.fit(X_train, y_train)
+
+    y_train_pred = mlp_classifier.predict(X_train)
+    train_accuracy = accuracy_score(y_train, y_train_pred)
+    print(f"Training Accuracy: {train_accuracy}")
+
+    y_pred = mlp_classifier.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+
+    print(f"Test Accuracy: {accuracy}")
+    print("Confusion Matrix:")
+    print(confusion)
+    print("Classification Report:")
+    print(report)
+
+def neural_network_hyperparameter_tuning():
+    nn_param_grid = {
+        'hidden_layer_sizes': [(5,), (5,5), (5,20), (25,), (25,50), (50,),],
+        'activation': ['tanh', 'relu'],
+        'solver': ['sgd', 'adam'],
+        'learning_rate_init': [0.0001, 0.001, 0.01]
+    }
+
+    mlp = MLPClassifier(max_iter=1000, random_state=42)
+
+    nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+    nn_grid_search.fit(X_train, y_train)
+
+    print("Best Parameters for Neural Network:", nn_grid_search.best_params_)
+    print("Best Score for Neural Network:", nn_grid_search.best_score_)
+
 if __name__ == "__main__":
-    logistic_regression_hyperparameter_tuning()
+    neural_network_hyperparameter_tuning()
