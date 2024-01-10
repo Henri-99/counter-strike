@@ -7,11 +7,13 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
 
 data = pd.read_csv('temp_df.csv', index_col=0)
+data['lan'] = data['lan'].astype('category')
+data['format'] = data['format'].astype('category')
 
 X = data.drop(['win'], axis=1)
 y = data['win']
 
-# print(X.head(20))
+
 
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
@@ -22,6 +24,8 @@ y_train = data['win'].iloc[:split_index]
 X_test = data.drop(['win'], axis=1).iloc[split_index:]
 y_test = data['win'].iloc[split_index:]
 
+feature_names = X_train.columns.tolist()
+print(feature_names)
 
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
@@ -86,7 +90,7 @@ def logistic_regression_hyperparameter_tuning():
 
 from sklearn.ensemble import RandomForestClassifier
 def random_forest():
-    rf_classifier = RandomForestClassifier(n_estimators = 20, max_depth=4)
+    rf_classifier = RandomForestClassifier(n_estimators = 400, max_depth=15)
 
     rf_classifier.fit(X_train, y_train)
 
@@ -116,8 +120,8 @@ def random_forest():
 
 def random_forest_hyperparameter_tuning():
     rf_param_grid = {
-        'n_estimators': [10, 20, 100],      # no trees
-        'max_depth': [3, 4, 5, 10, 20],     # max tree depth
+        'n_estimators': [350, 400, 450, 500],      # no trees
+        'max_depth': [5, 10, 15, 20],     # max tree depth
         # 'min_samples_split': [2, 4, 6],   # samples required to split internal node
         # 'min_samples_leaf': [1, 2, 4]     # ensures leaf node has enough samples
         }
@@ -199,6 +203,17 @@ def xgboost_model():
     print("Classification Report:")
     print(report)
 
+    fig, ax = plt.subplots(figsize=(10, 8))
+    xgb.plot_importance(xgb_classifier, importance_type='gain', ax=ax, title='Feature Importance', xlabel='F score')
+
+    # Adjusting feature names in the plot
+    feature_importances = xgb_classifier.get_booster().get_score(importance_type='gain')
+    # Match feature names with their importance scores
+    sorted_features = [feature_names[int(f[1:])] for f in sorted(feature_importances, key=lambda x: feature_importances[x])]
+    ax.set_yticklabels(sorted_features, rotation='horizontal')
+
+    plt.savefig('xgboost_var_imp.png')
+
 def xgboost_hyperparameter_tuning():
     xgb_param_grid = {
         'n_estimators': [100, 200, 300],    # Number of gradient boosted trees
@@ -248,6 +263,7 @@ from sklearn.neural_network import MLPClassifier
 
 def neural_network_model():
     params = {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+    params = {'activation': 'tanh', 'hidden_layer_sizes': (5, 5), 'learning_rate_init': 0.0001, 'solver': 'sgd'}
     mlp_classifier = MLPClassifier(hidden_layer_sizes=(100,), 
                                    activation='relu', 
                                    solver='adam', 
@@ -289,4 +305,4 @@ def neural_network_hyperparameter_tuning():
     print("Best Score for Neural Network:", nn_grid_search.best_score_)
 
 if __name__ == "__main__":
-    neural_network_hyperparameter_tuning()
+    neural_network_model()
