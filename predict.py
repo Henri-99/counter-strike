@@ -36,7 +36,7 @@ X_test = scaler.transform(X_test)
 
 from sklearn.linear_model import LogisticRegression
 def logistic_regression():
-    logistic_regressor = LogisticRegression(C= 0.01, penalty='l1', solver='saga')
+    logistic_regressor = LogisticRegression(C= 0.01, penalty='l2', solver='liblinear')
     logistic_regressor.fit(X_train, y_train)
 
     y_train_pred = logistic_regressor.predict(X_train)
@@ -90,7 +90,7 @@ def logistic_regression_hyperparameter_tuning():
 
 from sklearn.ensemble import RandomForestClassifier
 def random_forest():
-    rf_classifier = RandomForestClassifier(n_estimators = 400, max_depth=15)
+    rf_classifier = RandomForestClassifier(n_estimators = 100, max_depth=2)
 
     rf_classifier.fit(X_train, y_train)
 
@@ -120,8 +120,8 @@ def random_forest():
 
 def random_forest_hyperparameter_tuning():
     rf_param_grid = {
-        'n_estimators': [350, 400, 450, 500],      # no trees
-        'max_depth': [5, 10, 15, 20],     # max tree depth
+        'n_estimators': [50, 100, 200, 350],      # no trees
+        'max_depth': [2, 3, 4, 5, 6, 7],     # max tree depth
         # 'min_samples_split': [2, 4, 6],   # samples required to split internal node
         # 'min_samples_leaf': [1, 2, 4]     # ensures leaf node has enough samples
         }
@@ -262,11 +262,8 @@ def naive_bayes_model():
 from sklearn.neural_network import MLPClassifier
 
 def neural_network_model():
-    params = {'activation': 'relu', 'hidden_layer_sizes': (50,), 'learning_rate_init': 0.001, 'solver': 'sgd'}
-    params = {'activation': 'tanh', 'hidden_layer_sizes': (5, 5), 'learning_rate_init': 0.0001, 'solver': 'sgd'}
-    mlp_classifier = MLPClassifier(hidden_layer_sizes=(100,), 
-                                   activation='relu', 
-                                   solver='adam', 
+    params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+    mlp_classifier = MLPClassifier(**params, 
                                    random_state=42)
 
     mlp_classifier.fit(X_train, y_train)
@@ -289,13 +286,20 @@ def neural_network_model():
 
 def neural_network_hyperparameter_tuning():
     nn_param_grid = {
-        'hidden_layer_sizes': [(5,), (5,5), (5,20), (25,), (25,50), (50,),],
+        'hidden_layer_sizes': [(50,),(100,), (200,), (50,50), (100,100)],
         'activation': ['tanh', 'relu'],
         'solver': ['sgd', 'adam'],
         'learning_rate_init': [0.0001, 0.001, 0.01]
     }
 
-    mlp = MLPClassifier(max_iter=1000, random_state=42)
+    nn_param_grid = {
+        'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
+        'activation': ['tanh'],
+        'solver': ['sgd'],
+        'learning_rate_init': [0.001]
+    }
+
+    mlp = MLPClassifier(max_iter=10000, random_state=42)
 
     nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=5, verbose=2, n_jobs=-1)
 
