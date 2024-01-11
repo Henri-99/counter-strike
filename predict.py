@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
+import os
 
 data = pd.read_csv('temp_df.csv', index_col=0)
 data['lan'] = data['lan'].astype('category')
@@ -25,7 +26,6 @@ X_test = data.drop(['win'], axis=1).iloc[split_index:]
 y_test = data['win'].iloc[split_index:]
 
 feature_names = X_train.columns.tolist()
-print(feature_names)
 
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
@@ -309,4 +309,25 @@ def neural_network_hyperparameter_tuning():
     print("Best Score for Neural Network:", nn_grid_search.best_score_)
 
 if __name__ == "__main__":
-    neural_network_model()
+    finished = False
+    while not finished:
+        os.system('cls')
+        model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n\nE) Exit\n\n> ")
+        os.system('cls')
+        match model_select:
+            case '1':
+                logistic_regression()
+            case '2':
+                random_forest()
+            case '3':
+                support_vector_machine()
+            case '4':
+                xgboost_model()
+            case '5':
+                naive_bayes_model()
+            case '6':
+                neural_network_model()
+            case 'E':
+                finished = True
+        if not finished:
+            pause = input("\nPress ENTER to go back\n\n> ")
