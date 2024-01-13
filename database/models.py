@@ -178,5 +178,19 @@ class PlayerTrueSkill(Base):
         PrimaryKeyConstraint('map_id', 'player_id'),
     )
 
+class PlayerMatchTrueSkill(Base):
+	__tablename__ = 'trueskill_match'
+
+	player_id = Column(Integer, primary_key=True)
+	match_id = Column(Integer)
+	date = Column(Date)
+	mu = Column(Float)
+	sigma = Column(Float)
+	matches_played = Column(Integer)
+
+	__table_args__ = (
+        PrimaryKeyConstraint('match_id', 'player_id'),
+    )
+
 def setup_tables():
 	Base.metadata.create_all(engine)
