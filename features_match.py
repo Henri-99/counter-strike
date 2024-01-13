@@ -47,44 +47,41 @@ import scipy.stats as stats
 # third map won/loss/unplayed
 # fourth map won/loss/unplayed
 
-def generate_match_map_dataframe(start_date = "2023-01-01"):
+def generate_match_dataframe(start_date = "2023-01-01"):
 
 	# Joining Match and Map tables with Match on the left side
-	query = session.query(Match, Map)\
-		.join(Map, Match.id == Map.match_id)\
+	query = session.query(Match)\
 		.filter(Match.datetime >= start_date)\
 		.filter(and_(Match.team1_rank.isnot(None), Match.team2_rank.isnot(None)))\
 		.filter(and_(Match.team1_rank <= 30, Match.team2_rank <= 30))\
-		.filter(Match.lan == 1)\
+		.filter(Match.best_of == 3)\
+		# .filter(Match.lan == 1)\
 
 	result = query.all()
 	print(f"{len(result)} records queried")
 
 	# Creating a DataFrame from the result
 	columns = [
-		"match_id", "map_id", "datetime", "team1_id", "team2_id", "team1", "team2", "team1_rank", "team2_rank", "rank_diff", "map_name", "lan", "format", "t1_score", "t2_score", "win"
+		"match_id", "datetime", "team1_id", "team2_id", "team1", "team2", "team1_rank", "team2_rank", "rank_diff", "lan", "t1_score", "t2_score", "win"
 	]
 
 	data = [
 		(
 			match.id,
-			map_.id,
-			map_.datetime,
-			map_.t1_id,
-			map_.t2_id,
+			match.datetime,
+			match.team1_id,
+			match.team2_id,
 			match.team1,
 			match.team2,
 			match.team1_rank,
 			match.team2_rank,
 			match.team2_rank - match.team1_rank,
-			map_.map_name,
 			match.lan,
-			match.best_of,
-			map_.t1_score,
-			map_.t2_score,
-			0 if map_.t2_id == map_.winner_id else 1
+			match.team1_score,
+			match.team2_score,
+			1 if match.team1_id == match.winner else 0
 		)
-		for match, map_ in result
+		for match in result
 	]
 
 	df = pd.DataFrame(data, columns=columns)
@@ -101,43 +98,22 @@ def calculate_win_rates(row, team_id_column):
 	start_date = match_datetime - timedelta(days=90)
 
 	# Query maps for the specified team within the time range
-	team_maps_query = session.query(Map)\
+	team_match_history_query = session.query(Match)\
 		.filter(
-			Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date),
-			# Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime),
-			Map.id < row['map_id'],
-			(Map.t1_id == team_id) | (Map.t2_id == team_id)
+			Match.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date),
+			Match.id < row['match_id'],
+			(Match.team1_id == team_id) | (Match.team2_id == team_id)
 		)
 	
 	# Calculate the win-rate
-	all_maps_played_count = team_maps_query.count()
-	if all_maps_played_count == 0:
-		all_maps_win_rate = 0.0
-	else:
-		win_count = team_maps_query.filter(
-			((Map.t1_id == team_id) & (Map.winner_id == Map.t1_id)) |
-			((Map.t2_id == team_id) & (Map.winner_id == Map.t2_id))
-		).count()
-		all_maps_win_rate = win_count / all_maps_played_count
-
-
-	this_map_only_query = team_maps_query.filter(Map.map_name == row['map_name'])
-
-	# Calculate the win-rate
-	map_played_count = this_map_only_query.count()
-	if map_played_count == 0:
+	matches_played = team_match_history_query.count()
+	if matches_played == 0:
 		win_rate = 0.0
 	else:
-		win_count = this_map_only_query.filter(
-			((Map.t1_id == team_id) & (Map.winner_id == Map.t1_id)) |
-			((Map.t2_id == team_id) & (Map.winner_id == Map.t2_id))
-		).count()
-		win_rate = win_count / map_played_count
+		win_count = team_match_history_query.filter(Match.winner == team_id).count()
+		win_rate = win_count / matches_played
 
-
-	
-
-	return win_rate, map_played_count, all_maps_win_rate, all_maps_played_count
+	return win_rate, matches_played
 
 # Function to calculate head-to-head stats in the previous 3 months
 def calculate_head_to_head_stats(row):
@@ -237,48 +213,47 @@ def fetch_trueskill_ratings(row):
 def generate_new_dataset_csv():
 	start_time = datetime.now()
 
-	df = generate_match_map_dataframe()
+	df = generate_match_dataframe("2022-01-01")
 	end_time = datetime.now()
 	elapsed_time = (end_time - start_time).total_seconds()
 	print(f"Time to generate match map dataframe:  {elapsed_time:.2f} seconds")
 	start_time = datetime.now()
 
-	df[['map_winrate_t1', 'map_played_count_t1', 'all_maps_win_rate_t1', 'all_maps_played_count_t1']] = df.apply(lambda row: pd.Series(calculate_win_rates(row, 'team1_id')), axis=1)
+	df[['winrate_t1', 'playcount_t1']] = df.apply(lambda row: pd.Series(calculate_win_rates(row, 'team1_id')), axis=1)
 	end_time = datetime.now()
 	elapsed_time = (end_time - start_time).total_seconds()
 	print(f"Time to calculate win rates for team1: {elapsed_time:.2f} seconds")
 	start_time = datetime.now()
 
 	
-	df[['map_winrate_t2', 'map_played_count_t2', 'all_maps_win_rate_t2', 'all_maps_played_count_t2']] = df.apply(lambda row: pd.Series(calculate_win_rates(row, 'team2_id')), axis=1)
+	df[['winrate_t2', 'playcount_t2']] = df.apply(lambda row: pd.Series(calculate_win_rates(row, 'team2_id')), axis=1)
 	end_time = datetime.now()
 	elapsed_time = (end_time - start_time).total_seconds()
 	print(f"Time to calculate win rates for team2: {elapsed_time:.2f} seconds")
 	start_time = datetime.now()
 
-	df[['h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2']] = df.apply(lambda row: pd.Series(calculate_head_to_head_stats(row)), axis=1)
-	end_time = datetime.now()
-	elapsed_time = (end_time - start_time).total_seconds()
-	print(f"Time to calculate head-to-head stats: {elapsed_time:.2f} seconds")
-	start_time = datetime.now()
+	# df[['h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2']] = df.apply(lambda row: pd.Series(calculate_head_to_head_stats(row)), axis=1)
+	# end_time = datetime.now()
+	# elapsed_time = (end_time - start_time).total_seconds()
+	# print(f"Time to calculate head-to-head stats: {elapsed_time:.2f} seconds")
+	# start_time = datetime.now()
 
-	df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
-	end_time = datetime.now()
-	elapsed_time = (end_time - start_time).total_seconds()
-	print(f"Time to calculate TrueSkill data: {elapsed_time:.2f} seconds")
+	# df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
+	# end_time = datetime.now()
+	# elapsed_time = (end_time - start_time).total_seconds()
+	# print(f"Time to calculate TrueSkill data: {elapsed_time:.2f} seconds")
 
 
-	ml_df = df[['team1_rank', 'team2_rank', 'rank_diff', 'map_played_count_t1', 'map_played_count_t2', 'map_winrate_t1', 'map_winrate_t2', 'all_maps_win_rate_t1', 'all_maps_played_count_t1', 'all_maps_win_rate_t2', 'all_maps_played_count_t2','h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2', 'lan', 'format','t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 'win']]
-	ml_df.columns = ['rank', 'opp_rank', 'rank_diff', 'map_playcount', 'opp_map_playcount', 'map_winrate', 'opp_map_winrate', 'all_maps_winrate', 'all_maps_playcount', 'opp_all_maps_winrate', 'opp_all_maps_playcount', 'h2h_maps', 'h2h_wr', 'opp_h2h_wr', 'lan', 'format','ts_mu', 'ts_sigma', 'opp_ts_mu', 'opp_ts_sigma', 'ts_win_prob', 'win']
+	ml_df = df[['team1_rank', 'team2_rank', 'rank_diff', 'playcount_t1', 'winrate_t1', 'playcount_t2', 'winrate_t2', 'lan', 'win']]
+	ml_df.columns = ['rank', 'opp_rank', 'rank_diff', 'matches_played', 'match_winrate', 'opp_matches_played', 'opp_winrate', 'lan', 'win']
 	print(ml_df.head(30))
 
 	ml_df.to_csv("temp_df.csv")
 
-
-
 if __name__ == "__main__":
-	# generate_new_dataset_csv()
+	generate_new_dataset_csv()
 
-	df = generate_match_map_dataframe("2023-12-01")
-	df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
-	print(df.head(50))
+	# df = generate_match_dataframe("2023-12-01")
+
+	# df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
+	# print(df.head(50))
