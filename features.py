@@ -47,7 +47,7 @@ import scipy.stats as stats
 # third map won/loss/unplayed
 # fourth map won/loss/unplayed
 
-def generate_match_map_dataframe(start_date = "2023-01-01"):
+def generate_match_map_dataframe(start_date = "2019-04-01"):
 
 	# Joining Match and Map tables with Match on the left side
 	query = session.query(Match, Map)\
@@ -55,7 +55,8 @@ def generate_match_map_dataframe(start_date = "2023-01-01"):
 		.filter(Match.datetime >= start_date)\
 		.filter(and_(Match.team1_rank.isnot(None), Match.team2_rank.isnot(None)))\
 		.filter(and_(Match.team1_rank <= 30, Match.team2_rank <= 30))\
-		.filter(Match.lan == 1)\
+		.filter(Match.best_of == 3)\
+		# .filter(Match.lan == 1)\
 
 	result = query.all()
 	print(f"{len(result)} records queried")
@@ -277,8 +278,8 @@ def generate_new_dataset_csv():
 
 
 if __name__ == "__main__":
-	# generate_new_dataset_csv()
+	generate_new_dataset_csv()
 
-	df = generate_match_map_dataframe("2023-12-01")
-	df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
-	print(df.head(50))
+	# df = generate_match_map_dataframe("2023-12-01")
+	# df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
+	# print(df.head(50))
