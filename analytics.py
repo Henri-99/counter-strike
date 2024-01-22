@@ -356,6 +356,40 @@ def plot_rank_distribution():
 	plt.title('Number of Matches Played')
 	plt.savefig(os.path.join('figures','match_rank_distribution.png'))
 
+def elo_plot():
+	configure_plot_settings()
+	# Assuming a logistic curve function as a base for the Elo rating system
+	def elo_curve(rating_diff, max_elo=400):
+		return 1 / (1 + 10 ** ((-rating_diff) / max_elo))
+
+	# Generate a range of rating differences
+	rating_diffs = np.linspace(-700, 700, 1000)
+
+	# Calculate the expected score for each rating difference
+	scores = elo_curve(rating_diffs)
+
+	# Plotting the curve
+	plt.figure(figsize=(10, 5))
+	plt.plot(rating_diffs, scores, color='gray')
+
+	# Adding title and labels
+	plt.title('Rating Difference vs Expected Score')
+	plt.xlabel('Difference in ratings')
+	plt.ylabel('Expected Score')
+
+	# Setting the y-axis ticks to be in percentages
+	plt.yticks(np.arange(0, 1.1, 0.1), np.round(np.arange(0, 1.1, 0.1),1))
+
+	# Adding the grid
+	plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+	plt.rcParams['axes.unicode_minus'] = False
+
+	plt.tight_layout()
+
+	# Show the plot
+	plt.savefig('figures/elo.png', bbox_inches='tight', pad_inches=0.1)
+
 if __name__ == "__main__":
 
 	# print(records_per_week())
@@ -364,7 +398,7 @@ if __name__ == "__main__":
 
 	# print(format_distribution())
 
-	print(rank_distribution(cs2 = False, lan = True))
+	# print(rank_distribution(cs2 = False, lan = True))
 
 	# print(rank_differential_distribution(lan = True))
 
@@ -377,3 +411,5 @@ if __name__ == "__main__":
 	# print(score_progression("TBB_______________SDC"))
 
 	# plot_rank_distribution()
+
+	elo_plot()
