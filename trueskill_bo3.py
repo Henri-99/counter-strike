@@ -1,6 +1,6 @@
 import trueskill
 from database.setup import session
-from database.models import Match, Map, Lineup, PlayerTrueSkill
+from database.models import Match, Lineup, PlayerMatchTrueSkill
 import pandas as pd
 from datetime import datetime, timedelta
 from sqlalchemy import func, and_, asc
@@ -18,11 +18,12 @@ sigma = 400  # Initial sigma (standard deviation)
 beta = 200  # Beta (skill variability)
 tau = 20  # Tau (dynamics factor)
 
-env = trueskill.TrueSkill(mu=mu, sigma=sigma, beta=beta, tau=tau)
+# env = trueskill.TrueSkill(mu=mu, sigma=sigma, beta=beta, tau=tau)
+env = trueskill.TrueSkill()
 
 def add_new_players(lineup):
 	player_id_list = [lineup.player1_id, lineup.player2_id, lineup.player3_id, lineup.player4_id, lineup.player5_id]
-	existing_players = session.query(PlayerTrueSkill.player_id).filter(PlayerTrueSkill.player_id.in_(player_id_list)).all()
+	existing_players = session.query(PlayerMatchTrueSkill.player_id).filter(PlayerMatchTrueSkill.player_id.in_(player_id_list)).all()
 	existing_players = {player[0] for player in existing_players}
 
 	# Identify new players
@@ -33,7 +34,7 @@ def add_new_players(lineup):
 	new_player_trueskill = []
 	# Insert records for new players
 	for player_id in new_players:
-		new_player_trueskill.append(PlayerTrueSkill(player_id=player_id, map_id=0, match_id=0, date=datetime.strptime(lineup.date, "%Y-%m-%d %H:%M"), mu=default_trueskill.mu, sigma = default_trueskill.sigma, maps_played=0))
+		new_player_trueskill.append(PlayerMatchTrueSkill(player_id=player_id, match_id=0, date=datetime.strptime(lineup.date, "%Y-%m-%d %H:%M"), mu=default_trueskill.mu, sigma = default_trueskill.sigma, matches_played=0))
 	insert_player_trueskill(new_player_trueskill)
 
 def insert_player_trueskill(player_elo_list):
@@ -48,22 +49,22 @@ def get_player_trueskill(lineup):
 	# Extract player IDs from the lineup
 	players = [lineup.player1_id, lineup.player2_id, lineup.player3_id, lineup.player4_id, lineup.player5_id]
 
-	latest_map_ids = (
-		session.query(PlayerTrueSkill.player_id, func.max(PlayerTrueSkill.map_id).label('max_map_id'))
-		.filter(PlayerTrueSkill.player_id.in_(players))
-		.group_by(PlayerTrueSkill.player_id)
+	latest_match_ids = (
+		session.query(PlayerMatchTrueSkill.player_id, func.max(PlayerMatchTrueSkill.match_id).label('max_match_id'))
+		.filter(PlayerMatchTrueSkill.player_id.in_(players))
+		.group_by(PlayerMatchTrueSkill.player_id)
 		.subquery()
 	)
 
 	# Query to get player ELOs for the latest map_id
 	ts_query = (
 		session.query(
-			PlayerTrueSkill.player_id, 
-			PlayerTrueSkill.mu, 
-			PlayerTrueSkill.sigma, 
-			PlayerTrueSkill.maps_played,
-			PlayerTrueSkill.date)
-		.join(latest_map_ids, and_(PlayerTrueSkill.player_id == latest_map_ids.c.player_id, PlayerTrueSkill.map_id == latest_map_ids.c.max_map_id))
+			PlayerMatchTrueSkill.player_id, 
+			PlayerMatchTrueSkill.mu, 
+			PlayerMatchTrueSkill.sigma, 
+			PlayerMatchTrueSkill.matches_played,
+			PlayerMatchTrueSkill.date)
+		.join(latest_match_ids, and_(PlayerMatchTrueSkill.player_id == latest_match_ids.c.player_id, PlayerMatchTrueSkill.match_id == latest_match_ids.c.max_match_id))
 	)
 
 	# Fetch all results in one query
@@ -75,23 +76,23 @@ def get_player_trueskill(lineup):
 			'player_id': result.player_id, 
 			'mu': result.mu, 
 			'sigma': result.sigma, 
-			'maps_played': result.maps_played, 
+			'matches_played': result.matches_played, 
 			'date' : result.date}
 		for result in results
 	]
 
 	return player_trueskill
 
-def update_trueskill(map_):
-	if map_.Match is None:
-		main_logger.error(f"{map_.Map.id} has no associated Match")
+def update_trueskill(match):
+	if match is None:
+		main_logger.error(f"{match.id} has no associated Match")
 		return
 
 	# Get lineups for given match
-	lineup_A, lineup_B = session.query(Lineup).filter(map_.Match.id == Lineup.match_id).all()
+	lineup_A, lineup_B = session.query(Lineup).filter(match.id == Lineup.match_id).all()
 
 	# Ensure lineups are correct order
-	if lineup_A.team_id != map_.Map.t1_id:
+	if lineup_A.team_id != match.team1_id:
 		print("Swapping lineups")
 		temp_lineup = lineup_A
 		lineup_A = lineup_B
@@ -108,7 +109,7 @@ def update_trueskill(map_):
 	ts_team_A = [env.create_rating(player['mu'], player['sigma']) for player in ts_list_A]
 	ts_team_B = [env.create_rating(player['mu'], player['sigma']) for player in ts_list_B]
 
-	outcome = [0,1] if map_.Map.t1_id == map_.Map.winner_id else [1,0]
+	outcome = [0,1] if match.team1_id == match.winner else [1,0]
 
 	updated_team1, updated_team2 = env.rate([ts_team_A, ts_team_B], ranks=outcome)
 
@@ -116,30 +117,30 @@ def update_trueskill(map_):
 	true_skill_objects = []
 
 	for i, player in enumerate(ts_list_A):
-		true_skill_objects.append(PlayerTrueSkill(map_id = map_.Map.id, 
+		true_skill_objects.append(PlayerMatchTrueSkill(
 							   player_id = player['player_id'], 
-							   match_id = map_.Match.id,
-							   date = datetime.strptime(map_.Map.datetime, "%Y-%m-%d %H:%M"), 
+							   match_id = match.id,
+							   date = datetime.strptime(match.datetime, "%Y-%m-%d %H:%M"), 
 							   mu = updated_team1[i].mu, 
 							   sigma = updated_team1[i].sigma, 
-							   maps_played = player['maps_played'] + 1))
+							   matches_played = player['matches_played'] + 1))
 	for i, player in enumerate(ts_list_B):
-		true_skill_objects.append(PlayerTrueSkill(map_id = map_.Map.id, 
+		true_skill_objects.append(PlayerMatchTrueSkill(
 							   player_id = player['player_id'], 
-							   match_id = map_.Match.id,
-							   date = datetime.strptime(map_.Map.datetime, "%Y-%m-%d %H:%M"),
+							   match_id = match.id,
+							   date = datetime.strptime(match.datetime, "%Y-%m-%d %H:%M"),
 							   mu = updated_team2[i].mu, 
 							   sigma = updated_team2[i].sigma, 
-							   maps_played = player['maps_played'] + 1))
+							   matches_played = player['matches_played'] + 1))
 	
 	insert_player_trueskill(true_skill_objects)
 
 if __name__ == "__main__":
 	# Get some maps
-	subquery = session.query(PlayerTrueSkill.map_id).distinct()
+	subquery = session.query(PlayerMatchTrueSkill.match_id).distinct()
 
 	# Determine the total number of records
-	total_count = session.query(Map).filter(Map.id.notin_(subquery)).count()
+	total_count = session.query(Match).filter(Match.id.notin_(subquery)).count()
 
 	batch_size = 500
 	processed_count = 0
@@ -147,19 +148,18 @@ if __name__ == "__main__":
 
 	while incomplete:
 		query = (
-			session.query(Map, Match)
-			.join(Match, Map.match_id == Match.id, isouter=True) 
-			.filter(Map.id.notin_(subquery))
-			.order_by(asc(Map.id))
+			session.query(Match)
+			.filter(Match.id.notin_(subquery))
+			.order_by(asc(Match.id))
 			.limit(batch_size)
 		)
-		map_objects = query.all()
+		match_objects = query.all()
 
-		if len(map_objects) < batch_size:
+		if len(match_objects) < batch_size:
 			incomplete = False
 
-		for i, map_ in enumerate(map_objects):
-			update_trueskill(map_)
+		for i, match in enumerate(match_objects):
+			update_trueskill(match)
 			processed_count += 1
 			if processed_count % 10 == 0 or processed_count == total_count:
 				print(f"{str(processed_count).rjust(5)}/{total_count}: {(float(processed_count) * 100 / total_count):.2f}%")
