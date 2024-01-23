@@ -150,6 +150,16 @@ class Lineup(Base):
 	def __repr__(self):
 		return f"<Lineup({self.team_name} {self.date})>"
 
+class LineupAge(Base):
+	__tablename__ = 'lineup_age'
+
+	id = Column(Integer, primary_key=True)
+	team_id = Column(Integer)
+	date = Column(String)
+	match_id = Column(Integer)
+	age_days = Column(Integer)
+	matches_together = Column(Integer)
+
 class PlayerElo(Base):
 	__tablename__ = 'player_elo'
 
@@ -182,7 +192,7 @@ class PlayerMatchTrueSkill(Base):
 	__tablename__ = 'trueskill_match'
 
 	player_id = Column(Integer, primary_key=True)
-	match_id = Column(Integer)
+	match_id = Column(Integer, primary_key=True)
 	date = Column(Date)
 	mu = Column(Float)
 	sigma = Column(Float)
