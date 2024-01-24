@@ -12,7 +12,7 @@ def generate_match_dataframe(start_date = "2023-01-01"):
 		.filter(Match.datetime >= start_date)\
 		.filter(and_(Match.team1_rank.isnot(None), Match.team2_rank.isnot(None)))\
 		.filter(or_(Match.team1_rank <= 30, Match.team2_rank <= 30))\
-		.filter(Match.best_of >= 3)\
+		# .filter(Match.best_of >= 3)\
 		# .filter(Match.lan == 1)\
 
 	result = query.all()
@@ -23,7 +23,7 @@ def generate_match_dataframe(start_date = "2023-01-01"):
 		"match_id", "datetime", "team1_id", "team2_id", "team1", "team2", "team1_rank", "team2_rank", "rank_diff", "lan", "elim", "t1_score", "t2_score", "win"
 	]
 	
-	words_to_check = ["elimination", "Elimination", "eliminated", "Eliminated", "lower", "Lower"]
+	words_to_check = ["elimination", "eliminated", "lower", "consolidation", "quarter", "semi", "grand"]
 
 	data = [
 		(
@@ -37,7 +37,7 @@ def generate_match_dataframe(start_date = "2023-01-01"):
 			match.team2_rank,
 			match.team2_rank - match.team1_rank,
 			1 if match.lan else 0,
-			1 if any(word in match.box_str for word in words_to_check) else 0,
+			1 if any(word in match.box_str.lower() for word in words_to_check) else 0,
 			match.team1_score,
 			match.team2_score,
 			1 if match.team1_id == match.winner else 0
