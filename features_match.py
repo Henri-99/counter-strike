@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import or_, and_, func
 import scipy.stats as stats
 
-def generate_match_dataframe(start_date = "2023-01-01"):
+def generate_match_dataframe(start_date = "2023-11-01", n_matches=None):
 
 	# Joining Match and Map tables with Match on the left side
 	query = session.query(Match)\
@@ -14,6 +14,9 @@ def generate_match_dataframe(start_date = "2023-01-01"):
 		.filter(or_(Match.team1_rank <= 30, Match.team2_rank <= 30))\
 		# .filter(Match.best_of >= 3)\
 		# .filter(Match.lan == 1)\
+
+	if n_matches:
+		query = query.limit(n_matches)
 
 	result = query.all()
 	print(f"{len(result)} records queried")
@@ -262,6 +265,11 @@ def generate_new_dataset_csv():
 	print(f"Time to calculate winstreaks: {elapsed_time:.2f} seconds")
 	start_time = datetime.now()
 
+	df[['t1_ws', 't2_ws', 't1_cooldown', 't2_cooldown']] = df.apply(lambda row: pd.Series(calculate_winstreak(row)), axis=1)
+	end_time = datetime.now()
+	elapsed_time = (end_time - start_time).total_seconds()
+	print(f"Time to calculate pistol round success: {elapsed_time:.2f} seconds")
+
 	ml_df = df[
 				[	'team1_rank', 'team2_rank', 'rank_diff', 
 					'playcount_t1', 'winrate_t1', 'playcount_t2', 'winrate_t2', 
@@ -287,10 +295,93 @@ def generate_new_dataset_csv():
 
 	ml_df.to_csv("temp_df.csv")
 
+def get_recent_map_matches(row):
+	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
+	start_date = match_datetime - timedelta(days=90)
+	team1_id = row['team1_id']
+	team2_id = row['team2_id']
+
+	# Get all match-map items
+	t1_mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter((Map.t1_id == team1_id) | (Map.t2_id == team1_id))\
+		.all()
+	t2_mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter((Map.t1_id == team2_id) | (Map.t2_id == team2_id))\
+		.all()
+	
+	return t1_mm_objects, t2_mm_objects
+
+def calculate_pistol_round_win_rate(map_match_objects, team_id):
+	# Compute pistol round success
+	def calculate_pistol_round_win_rate_for_map(round_history_string, cs2):
+		round_wins = 0
+		if round_history_string[0] != '_':
+			round_wins += 1
+		if round_history_string[12 if cs2 else 15] != '_':
+			round_wins += 1
+		return round_wins/2
+	
+	pistol_win_rate_list = []
+	for mm in map_match_objects:
+		if mm.Map.t1_id == team_id:
+			pistol_win_rate_list.append(calculate_pistol_round_win_rate_for_map(mm.Map.t1_round_history, mm.Match.cs2))
+		else:
+			pistol_win_rate_list.append(calculate_pistol_round_win_rate_for_map(mm.Map.t2_round_history, mm.Match.cs2))
+	pistol_win_rate = sum(pistol_win_rate_list) / len(pistol_win_rate_list)
+	return pistol_win_rate
+	
+def generate_features_for_row(row):
+	team1_id = row['team1_id']
+	team2_id = row['team2_id']
+
+	mm_1, mm_2 = get_recent_map_matches(row)
+
+	t1_pistol_wr = calculate_pistol_round_win_rate(mm_1, team1_id)
+	t2_pistol_wr = calculate_pistol_round_win_rate(mm_2, team2_id)
+
+	return t1_pistol_wr, t2_pistol_wr
+
+def main():
+
+	df = generate_match_dataframe(n_matches=100)
+	df[['t1_pistol_wr', 't2_pistol_wr']] = df.apply(lambda row: pd.Series(generate_features_for_row(row)), axis=1)
+
+	# ml_df = df[
+	# 			[	'team1_rank', 'team2_rank', 'rank_diff', 
+	# 				'playcount_t1', 'winrate_t1', 'playcount_t2', 'winrate_t2', 
+	# 				'h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2',
+	# 				'lan', 'elim', 
+	# 				't1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 
+	# 				'age', 'lineup_xp', 'opp_age', 'opp_xp', 
+	# 				't1_ws', 't2_ws', 't1_cooldown', 't2_cooldown',
+	# 				'win'
+	# 			]
+	# 		]
+	# ml_df.columns = [
+	# 				'rank', 'opp_rank', 'rank_diff', 
+	# 				'matches_played', 'match_winrate', 'opp_matches_played', 'opp_winrate', 
+	# 				'h2h_maps', 'h2h_wr', 'h2h_opp_wr',
+	# 				'lan', 'elim', 
+	# 				'ts_mu', 'ts_sigma', 'opp_ts_mu', 'opp_ts_sigma', 'ts_win_prob', 
+	# 				'age', 'lineup_xp', 'opp_age', 'opp_xp', 
+	# 				't1_ws', 't2_ws', 'cooldown', 'opp_cooldown',
+	# 				'win'
+	# 				]
+	print(df.head(30))
+
+
 if __name__ == "__main__":
-	generate_new_dataset_csv()
+	# generate_new_dataset_csv()
 
-	# df = generate_match_dataframe("2023-12-01")
+	# df = generate_match_dataframe()
+	# # df[['winrate_t1', 'playcount_t1']] = df.apply(lambda row: pd.Series(calculate_win_rates(row, 'team1_id')), axis=1)
+	# df.apply(lambda row: pd.Series(get_recent_map_matches(row)), axis=1)
+	# print(df)
 
-	# df[['t1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 't2_ts_win_prob']] =  df.apply(lambda row: pd.Series(fetch_trueskill_ratings(row)), axis=1)
-	# print(df.head(50))
+	main()
