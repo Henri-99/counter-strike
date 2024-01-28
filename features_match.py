@@ -272,28 +272,50 @@ def generate_new_dataset_csv():
 
 	ml_df = df[
 				[	'team1_rank', 'team2_rank', 'rank_diff', 
-					'playcount_t1', 'winrate_t1', 'playcount_t2', 'winrate_t2', 
-					'h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2',
 					'lan', 'elim', 
+					'playcount_t1', 'winrate_t1', 'playcount_t2', 'winrate_t2', 
+					't1_ws', 't2_ws', 't1_cooldown', 't2_cooldown',
+					'h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2',
 					't1_ts_mu', 't1_ts_sigma', 't2_ts_mu', 't2_ts_sigma', 't1_ts_win_prob', 
 					'age', 'lineup_xp', 'opp_age', 'opp_xp', 
-					't1_ws', 't2_ws', 't1_cooldown', 't2_cooldown',
 					'win'
 				]
 			]
 	ml_df.columns = [
 					'rank', 'opp_rank', 'rank_diff', 
-					'matches_played', 'match_winrate', 'opp_matches_played', 'opp_winrate', 
-					'h2h_maps', 'h2h_wr', 'h2h_opp_wr',
 					'lan', 'elim', 
+					'matches_played', 'match_winrate', 'opp_matches_played', 'opp_winrate', 
+					't1_ws', 't2_ws', 'cooldown', 'opp_cooldown',
+					'h2h_maps', 'h2h_wr', 'h2h_opp_wr',
 					'ts_mu', 'ts_sigma', 'opp_ts_mu', 'opp_ts_sigma', 'ts_win_prob', 
 					'age', 'lineup_xp', 'opp_age', 'opp_xp', 
-					't1_ws', 't2_ws', 'cooldown', 'opp_cooldown',
 					'win'
 					]
 	print(ml_df.head(30))
 
 	ml_df.to_csv("temp_df.csv")
+
+def get_recent_matches(row):
+	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
+	start_date = match_datetime - timedelta(days=90)
+	team1_id = row['team1_id']
+	team2_id = row['team2_id']
+
+	# Get all match-map items
+	t1_mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter((Map.t1_id == team1_id) | (Map.t2_id == team1_id))\
+		.all()
+	t2_mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter((Map.t1_id == team2_id) | (Map.t2_id == team2_id))\
+		.all()
+	
+	return t1_mm_objects, t2_mm_objects
 
 def get_recent_map_matches(row):
 	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
@@ -335,7 +357,17 @@ def calculate_pistol_round_win_rate(map_match_objects, team_id):
 			pistol_win_rate_list.append(calculate_pistol_round_win_rate_for_map(mm.Map.t2_round_history, mm.Match.cs2))
 	pistol_win_rate = sum(pistol_win_rate_list) / len(pistol_win_rate_list)
 	return pistol_win_rate
-	
+
+def calculate_map_specific_win_rates(map_match_objects, team_id):
+	# count up 
+	map_stats = []
+	# { map: 'mirage', playcount = 0, wins = 0 }
+
+	for mm in map_match_objects:
+		map_name = mm.Map.map_name
+
+
+
 def generate_features_for_row(row):
 	team1_id = row['team1_id']
 	team2_id = row['team2_id']

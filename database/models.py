@@ -163,14 +163,14 @@ class LineupAge(Base):
 class PlayerElo(Base):
 	__tablename__ = 'player_elo'
 
-	map_id = Column(Integer, primary_key=True)
+	match_id = Column(Integer, primary_key=True)
 	player_id = Column(Integer, primary_key=True)
 	date = Column(Date)
 	elo = Column(Float)
-	maps_played = Column(Integer)
+	matches_played = Column(Integer)
 
 	__table_args__ = (
-        PrimaryKeyConstraint('map_id', 'player_id'),
+        PrimaryKeyConstraint('match_id', 'player_id'),
     )
 
 class PlayerTrueSkill(Base):
@@ -201,6 +201,10 @@ class PlayerMatchTrueSkill(Base):
 	__table_args__ = (
         PrimaryKeyConstraint('match_id', 'player_id'),
     )
+
+	def __repr__(self):
+		return f"<PlayerMatchTrueSkill(ID={self.player_id}, date={self.date}, match='{self.match_id}', mu={self.my}, xp={self.matches_played})>"
+
 
 def setup_tables():
 	Base.metadata.create_all(engine)
