@@ -31,8 +31,8 @@ def get_player_elos(lineup):
 	# Extract player IDs from the lineup
 	players = [lineup.player1_id, lineup.player2_id, lineup.player3_id, lineup.player4_id, lineup.player5_id]
 
-	latest_map_ids = (
-		session.query(PlayerElo.player_id, func.max(PlayerElo.map_id).label('max_map_id'))
+	latest_match_ids = (
+		session.query(PlayerElo.player_id, func.max(PlayerElo.match_id).label('max_map_id'))
 		.filter(PlayerElo.player_id.in_(players))
 		.group_by(PlayerElo.player_id)
 		.subquery()
@@ -40,8 +40,8 @@ def get_player_elos(lineup):
 
 	# Query to get player ELOs for the latest map_id
 	elo_query = (
-		session.query(PlayerElo.player_id, PlayerElo.elo, PlayerElo.maps_played, PlayerElo.date)
-		.join(latest_map_ids, and_(PlayerElo.player_id == latest_map_ids.c.player_id, PlayerElo.map_id == latest_map_ids.c.max_map_id))
+		session.query(PlayerElo.player_id, PlayerElo.elo, PlayerElo.matches_played, PlayerElo.date)
+		.join(latest_match_ids, and_(PlayerElo.player_id == latest_match_ids.c.player_id, PlayerElo.match_id == latest_match_ids.c.max_map_id))
 	)
 
 	# Fetch all results in one query
@@ -49,7 +49,7 @@ def get_player_elos(lineup):
 
 	# Create a list of dictionaries for each player
 	player_elos = [
-		{'player_id': result.player_id, 'elo': result.elo, 'maps_played': result.maps_played, 'date' : result.date}
+		{'player_id': result.player_id, 'elo': result.elo, 'matches_played': result.matches_played, 'date' : result.date}
 		for result in results
 	]
 
@@ -61,14 +61,24 @@ def calculate_expected_outcome(rating1, rating2):
 	return expected_outcome1, expected_outcome2
 
 def update_ratings(team_ratings1, team_ratings2, expected_outcome_A, expected_outcome_B, k_factor, winner):
-	updated_ratings1 = [
-		player['elo'] + k_factor * (winner - expected_outcome_A)
-		for player in team_ratings1
-	]
-	updated_ratings2 = [
-		player['elo'] + k_factor * (1-winner - expected_outcome_B)
-		for player in team_ratings2
-	]
+	updated_ratings1, updated_ratings2 = [], []
+	
+	for player in team_ratings1:
+		if player['matches_played'] <= 10:
+			dynamic_k_factor = 50 - 4 * player['matches_played']
+			new_rating = player['elo'] + dynamic_k_factor * (winner - expected_outcome_A)
+		else:
+			new_rating = player['elo'] + k_factor * (winner - expected_outcome_A)
+		updated_ratings1.append(new_rating)
+
+	for player in team_ratings2:
+		if player['matches_played'] <= 10:
+			dynamic_k_factor = 50 - 4 * player['matches_played']
+			new_rating = player['elo'] + dynamic_k_factor * (winner - expected_outcome_B)
+		else:
+			new_rating = player['elo'] + k_factor * (winner - expected_outcome_B)
+		updated_ratings2.append(new_rating)
+
 	return updated_ratings1, updated_ratings2
 
 def add_new_players(lineup):
@@ -82,7 +92,7 @@ def add_new_players(lineup):
 	new_player_elos = []
 	# Insert records for new players
 	for player_id in new_players:
-		new_player_elos.append(PlayerElo(player_id=player_id, map_id=0, date=datetime.strptime(lineup.date, "%Y-%m-%d %H:%M"), elo=1000.0, maps_played=0))
+		new_player_elos.append(PlayerElo(player_id=player_id, match_id=0, date=datetime.strptime(lineup.date, "%Y-%m-%d %H:%M"), elo=1000.0, matches_played=0))
 	insert_player_elos(new_player_elos)
 
 def calculate_team_elo(elo_list):
@@ -92,16 +102,12 @@ def calculate_team_elo(elo_list):
 	team_elo = total_elo / 5
 	return team_elo
 
-def update_elos(map_):
-	if map_.Match is None:
-		main_logger.error(f"{map_.Map.id} has no associated Match")
-		return
-
+def update_elos(match):
 	# Get lineups for given match
-	lineup_A, lineup_B = session.query(Lineup).filter(map_.Match.id == Lineup.match_id).all()
+	lineup_A, lineup_B = session.query(Lineup).filter(match.id == Lineup.match_id).all()
 
 	# Ensure lineups are correct order
-	if lineup_A.team_id != map_.Map.t1_id:
+	if lineup_A.team_id != match.team1_id:
 		print("Swapping lineups")
 		temp_lineup = lineup_A
 		lineup_A = lineup_B
@@ -119,7 +125,7 @@ def update_elos(map_):
 	probA, probB = calculate_expected_outcome(calculate_team_elo(elo_list_A), calculate_team_elo(elo_list_B))
 
 	# Get actual result
-	map_outcome = 1 if map_.Map.t1_id == map_.Map.winner_id else 0
+	map_outcome = 1 if match.team1_id == match.winner else 0
 
 	# Compute new ELOs
 	new_elo_list_A, new_elo_list_B = update_ratings(elo_list_A, elo_list_B, probA, probB, 10, map_outcome)
@@ -128,19 +134,19 @@ def update_elos(map_):
 	elo_objects = []
 
 	for i, player in enumerate(elo_list_A):
-		if map_.Map.id == 0:
+		if match.id == 0:
 			print()
-		elo_objects.append(PlayerElo(map_id = map_.Map.id, 
+		elo_objects.append(PlayerElo(match_id = match.id, 
 							   player_id = player['player_id'], 
-							   date = datetime.strptime(map_.Map.datetime, "%Y-%m-%d %H:%M"), 
+							   date = datetime.strptime(match.datetime, "%Y-%m-%d %H:%M"), 
 							   elo = new_elo_list_A[i], 
-							   maps_played = player['maps_played'] + 1))
+							   matches_played = player['matches_played'] + 1))
 	for i, player in enumerate(elo_list_B):
-		elo_objects.append(PlayerElo(map_id = map_.Map.id, 
+		elo_objects.append(PlayerElo(match_id = match.id, 
 							   player_id = player['player_id'], 
-							   date = datetime.strptime(map_.Map.datetime, "%Y-%m-%d %H:%M"), 
+							   date = datetime.strptime(match.datetime, "%Y-%m-%d %H:%M"), 
 							   elo = new_elo_list_B[i], 
-							   maps_played = player['maps_played'] + 1))
+							   matches_played = player['matches_played'] + 1))
 	
 	insert_player_elos(elo_objects)
 
@@ -151,17 +157,16 @@ def update_elos(map_):
 
 if __name__ == "__main__":
 	# Get some maps
-	subquery = session.query(PlayerElo.map_id).distinct().subquery()
+	subquery = session.query(PlayerElo.match_id).distinct().subquery()
 	query = (
-		session.query(Map, Match)
-		.join(Match, Map.match_id == Match.id, isouter=True) 
-		.filter(Map.id.notin_(subquery))
-		.order_by(asc(Map.id))
+		session.query(Match)
+		.filter(Match.id.notin_(subquery))
+		.order_by(asc(Match.datetime))
 		# .limit(1000)
 	)
-	map_objects = query.all()
+	match_objects = query.all()
 
-	for i, map_ in enumerate(map_objects):
+	for i, match in enumerate(match_objects):
 		if i%10 == 0:
-			print(f"{str(i).rjust(5)}/{len(map_objects)}: {(float(i)*100/len(map_objects)):2f}%")
-		update_elos(map_)
+			print(f"{str(i).rjust(5)}/{len(match_objects)}: {(float(i)*100/len(match_objects)):2f}%")
+		update_elos(match)
