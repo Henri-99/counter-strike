@@ -1,7 +1,7 @@
 # Transforms a dataframe of match records into a dataframe of ML features
-
+import numpy as np
 from database.setup import session
-from database.models import Match, Map, Lineup, PlayerMatchTrueSkill, LineupAge, PlayerElo
+from database.models import Match, Map, Lineup, PlayerMatchTrueSkill, LineupAge, PlayerElo, PlayerStats
 import pandas as pd
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_, func
@@ -48,7 +48,7 @@ def generate_match_dataframe( start_date = "2019-07-01",
 			match.best_of,
 			match.team1_rank,
 			match.team2_rank,
-			match.team2_rank - match.team1_rank,
+			match.team2_rank - match.team1_rank if (match.team1_rank is not None and match.team2_rank is not None) else 0,
 			1 if match.lan else 0,
 			1 if any(word in match.box_str.lower() for word in ["elimination", "eliminated", "lower", "consolidation", "quarter", "semi", "grand"]) else 0
 		)
@@ -165,6 +165,25 @@ def get_elo(row):
 
 	return team1_elo, team2_elo, probA
 
+def impute_hltv_ranks(df):
+	intercept = 262.34
+	coefficients = [-5.64, -0.081]
+
+	imputed_ranks_count = 0
+
+	for index, row in df.iterrows():
+		if pd.isna(row['team1_rank']):
+			df.at[index, 'team1_rank'] = int(intercept + coefficients[0] * row['t1_mu'] + coefficients[1] * row['t1_elo'])
+			imputed_ranks_count += 1
+		if pd.isna(row['team2_rank']):
+			df.at[index, 'team2_rank'] = int(intercept + coefficients[0] * row['t2_mu'] + coefficients[1] * row['t2_elo'])
+			imputed_ranks_count += 1
+		
+		df.at[index, 'rank_diff'] = df.at[index, 'team1_rank'] - df.at[index, 'team2_rank']
+
+	print(f"{imputed_ranks_count} HLTV ranks imputed")
+	return df
+
 def get_lineup_xp(row):
 	team1_id, team2_id = row['team1_id'], row['team2_id']
 	match_id = row['match_id']
@@ -190,11 +209,12 @@ def get_recent_match_stats(row, time_period_days, team_id):
 		.all()
 	
 	matches_played = len(matches)
-	
+	matches_won = 0
+
 	for match in matches:
 		if match.winner == team_id:
-			match_wr += 1
-	match_wr = match_wr/matches_played
+			matches_won += 1
+	match_wr = matches_won/matches_played if matches_played > 0 else 0
 
 	def get_last_match_winners(date, team_id, match_id):
 		match_winners = session.query(Match.winner, Match.datetime)\
@@ -207,80 +227,209 @@ def get_recent_match_stats(row, time_period_days, team_id):
 
 	def calculate_days(start_date, end_date):
 			start = datetime.strptime(start_date.split(' ')[0], '%Y-%m-%d')
-			end = datetime.strptime(end_date.split(' ')[0], '%Y-%m-%d')
-			difference = (end - start).days
+			return (end_date - start).days
 
-			return difference
-
+	winstreak = 0
+	days_since_last_match = None
 	for match in history:
-		days_since_last_match = calculate_days(match.datetime, date)
+		if days_since_last_match is None:
+			days_since_last_match = calculate_days(match.datetime, date)
 		if match.winner == team_id:
 			winstreak += 1
 		else:
 			break
 	
+	if days_since_last_match is None:
+		days_since_last_match = 100
+	
 	return matches_played, match_wr, winstreak, days_since_last_match
 
 # Finally let's calculate features from their map history and player performances
 
-def get_map_features(row):
+def get_head_to_head_stats(row, time_period_days):
 	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
-	start_date = match_datetime - timedelta(days=90)
+	start_date = match_datetime - timedelta(days=time_period_days)
+	match_id = row['match_id']
+
 	team1_id = row['team1_id']
 	team2_id = row['team2_id']
 
-	# Get all match-map items
-	t1_mm_objects = session.query(Match, Map)\
-		.join(Map, Match.id == Map.match_id)\
-		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
-		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
-		.filter((Map.t1_id == team1_id) | (Map.t2_id == team1_id))
-	t2_mm_objects = session.query(Match, Map)\
-		.join(Map, Match.id == Map.match_id)\
-		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
-		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
-		.filter((Map.t1_id == team2_id) | (Map.t2_id == team2_id))
+	team_maps_query = session.query(Map)\
+		.filter(
+			Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date),
+			Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime),
+			Map.match_id != match_id,
+			((Map.t1_id == team1_id) & (Map.t2_id == team2_id)) | ((Map.t1_id == team2_id) & (Map.t2_id == team1_id))
+		)
+
+	h2h_maps_played = team_maps_query.count()
+
+	# Initialize variables
+	h2h_wr, avg_round_wp = 0, 0
+	avg_round_wp_list = []
+
+	if h2h_maps_played > 0:
+		# Win rate calculation
+		h2h_wr = team_maps_query.filter(Map.winner_id == team1_id).count() / h2h_maps_played
+
+		# Round win-percentage calculation for each map
+		for map_ in team_maps_query.all():
+			total_rounds = map_.t1_score + map_.t2_score
+			if total_rounds > 0:
+				if map_.t1_id == team1_id:
+					avg_round_wp_list.append(map_.t1_score / total_rounds)
+				else:
+					avg_round_wp_list.append(map_.t2_score / total_rounds)
+
+		# Average round win-percentage calculation
+		avg_round_wp = sum(avg_round_wp_list) / len(avg_round_wp_list) if avg_round_wp_list else 0
+
+	else:
+		h2h_maps_played, avg_round_wp, = 0, 0
 	
-	return t1_mm_objects, t2_mm_objects
+	return h2h_maps_played, h2h_wr, avg_round_wp
+
+def get_map_features(row, team_id, time_period_days):
+	def calculate_pistol_round_win_rate_for_map(round_history_string, cs2):
+		round_wins = 0
+		if round_history_string[0] != '_':
+			round_wins += 1
+		if round_history_string[12 if cs2 else 15] != '_':
+			round_wins += 1
+		return round_wins/2
+	
+	def get_avg_player_stats(map_id, team_id):
+		player_stats = session.query(PlayerStats).filter(PlayerStats.map_id == map_id, PlayerStats.team_id == team_id).all()
+		ratings, adr, kast = 0, 0, 0
+		n_players = len(player_stats)
+		for player in player_stats:
+			ratings += player.rating
+			adr += player.adr
+			kast += player.kast
+		return ratings/n_players, adr/n_players, kast/n_players
+	
+	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
+	start_date = match_datetime - timedelta(days=time_period_days)
+
+	# Get all match-map items
+	mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter((Map.t1_id == team_id) | (Map.t2_id == team_id))\
+		.all()
+	
+	hltv_rating, fk_pr, cl_pr, pl_rating, pl_adr, plr_kast, pistol_wr_list = [], [], [], [], [], [], []
+
+	for mm in mm_objects:
+		total_rounds = mm.Map.t1_score + mm.Map.t2_score
+		avg_player_rating, avg_player_adr, avg_player_kast = get_avg_player_stats(mm.Map.id, team_id)
+		if mm.Map.t1_id == team_id:
+			team_rating = mm.Map.t1_rating
+			first_kills = mm.Map.t1_first_kills
+			clutches = mm.Map.t1_clutches
+			pistol_wr = calculate_pistol_round_win_rate_for_map(mm.Map.t1_round_history, mm.Match.cs2)
+		else:
+			team_rating = mm.Map.t2_rating
+			first_kills = mm.Map.t2_first_kills
+			clutches = mm.Map.t2_clutches
+			pistol_wr = calculate_pistol_round_win_rate_for_map(mm.Map.t2_round_history, mm.Match.cs2)
+		
+		hltv_rating.append(team_rating)
+		fk_pr.append(first_kills)
+		cl_pr.append(clutches)
+		pl_rating.append(avg_player_rating)
+		pl_adr.append(avg_player_adr)
+		plr_kast.append(avg_player_kast)
+		pistol_wr_list.append(pistol_wr)
+
+	if len(hltv_rating) > 0:
+		avg_hltv_rating, sd_hltv_rating = np.mean(hltv_rating), np.std(hltv_rating)
+		avg_fk_pr, sd_fk_pr = np.mean(fk_pr), np.std(fk_pr)
+		avg_cl_pr, sd_cl_pr = np.mean(cl_pr), np.std(cl_pr)
+		avg_pl_rating, sd_pl_rating = np.mean(pl_rating), np.std(pl_rating)
+		avg_pl_adr, sd_pl_adr = np.mean(pl_adr), np.std(pl_adr)
+		avg_plr_kast, sd_plr_kast = np.mean(plr_kast), np.std(plr_kast)
+		avg_pistol_wr, sd_pistol_wr = np.mean(pistol_wr_list), np.std(pistol_wr_list)
+		return avg_hltv_rating, sd_hltv_rating, avg_fk_pr, sd_fk_pr, avg_cl_pr, sd_cl_pr, avg_pl_rating, sd_pl_rating, avg_pl_adr, sd_pl_adr, avg_plr_kast, sd_plr_kast, avg_pistol_wr, sd_pistol_wr
+	else:
+		return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 def main():
 	LOOKBACK_DAYS = 90
 
 	# team1_rank, team2_rank, rank_diff, lan, elim
-	df = generate_match_dataframe(start_date="2023-10-01", require_hltv_rank=True, min_format=3)#, n_matches=50)
+	df = generate_match_dataframe(start_date="2022-01-01", rank_threshold=20, min_format=3)#, n_matches=10)
 	print(df.shape)
 
 	# trueskill features
 	start_time = datetime.now()
 	df[['t1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob']] =  df.apply(lambda row: pd.Series(get_trueskill(row)), axis=1)
-	end_time = datetime.now()
-	elapsed_time = (end_time - start_time).total_seconds()
-	print(f"TrueSkill features: {elapsed_time:.2f} seconds")
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"TrueSkill features".ljust(25)}: {elapsed_time:.2f} seconds")
 	
 	# elo features
 	start_time = datetime.now()
 	df[['t1_elo', 't2_elo', 'elo_win_prob']] =  df.apply(lambda row: pd.Series(get_elo(row)), axis=1)
-	end_time = datetime.now()
-	elapsed_time = (end_time - start_time).total_seconds()
-	print(f"Elo features: {elapsed_time:.2f} seconds")
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Elo features".ljust(25)}: {elapsed_time:.2f} seconds")
+
+	# impute missing ranks
+	df = impute_hltv_ranks(df)
 
 	# lineup history
 	start_time = datetime.now()
 	df[['t1_age', 't1_xp', 't2_age', 't2_xp']] = df.apply(lambda row: pd.Series(get_lineup_xp(row)), axis=1)
-	end_time = datetime.now()
-	elapsed_time = (end_time - start_time).total_seconds()
-	print(f"Lineup XP features: {elapsed_time:.2f} seconds")
-	start_time = datetime.now()
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Lineup features".ljust(25)}: {elapsed_time:.2f} seconds")
 
 	# matches played, win-rate, win-streak, days since last match
 	start_time = datetime.now()
-	df[['t1_mp, t1_wr, t1_ws, t1_rust']] = df.apply(lambda row: pd.Series(get_recent_match_stats(row, LOOKBACK_DAYS, row['team1_id'])), axis=1)
-	df[['t2_mp, t2_wr, t2_ws, t2_rust']] = df.apply(lambda row: pd.Series(get_recent_match_stats(row, LOOKBACK_DAYS, row['team2_id'])), axis=1)
-	end_time = datetime.now()
-	elapsed_time = (end_time - start_time).total_seconds()
-	print(f"Match history features: {elapsed_time:.2f} seconds")
-	start_time = datetime.now()
+	df[['t1_mp', 't1_wr', 't1_ws', 't1_rust']] = df.apply(lambda row: pd.Series(get_recent_match_stats(row, LOOKBACK_DAYS, row['team1_id'])), axis=1)
+	df[['t2_mp', 't2_wr', 't2_ws', 't2_rust']] = df.apply(lambda row: pd.Series(get_recent_match_stats(row, LOOKBACK_DAYS, row['team2_id'])), axis=1)
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Match history features".ljust(25)}: {elapsed_time:.2f} seconds")
 
+	# head-to-head, maps, winrate, round win %
+	start_time = datetime.now()
+	df[['h2h_maps', 'h2h_wr', 'h2h_rwp']] = df.apply(lambda row: pd.Series(get_head_to_head_stats(row, LOOKBACK_DAYS)), axis=1)
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Head-to-head features".ljust(25)}: {elapsed_time:.2f} seconds")
+
+	start_time = datetime.now()
+	# Map-specific features
+	df[
+		[	't1_avg_hltv_rating', 
+	 		't1_sd_hltv_rating', 
+	 		't1_avg_fk_pr', 
+	 		't1_sd_fk_pr', 
+	 		't1_avg_cl_pr', 
+	 		't1_sd_cl_pr', 
+	 		't1_avg_pl_rating', 
+	 		't1_sd_pl_rating', 
+	 		't1_avg_pl_adr', 
+	 		't1_sd_pl_adr', 
+	 		't1_avg_plr_kast', 
+	 		't1_sd_plr_kast', 
+	 		't1_avg_pistol_wr', 
+	 		't1_sd_pistol_wr']] = df.apply(lambda row: pd.Series(get_map_features(row, row['team1_id'], LOOKBACK_DAYS)), axis=1)
+	df[
+		[	't2_avg_hltv_rating', 
+	 		't2_sd_hltv_rating', 
+	 		't2_avg_fk_pr', 
+	 		't2_sd_fk_pr', 
+	 		't2_avg_cl_pr', 
+	 		't2_sd_cl_pr', 
+	 		't2_avg_pl_rating', 
+	 		't2_sd_pl_rating', 
+	 		't2_avg_pl_adr', 
+	 		't2_sd_pl_adr', 
+	 		't2_avg_plr_kast', 
+	 		't2_sd_plr_kast', 
+	 		't2_avg_pistol_wr', 
+	 		't2_sd_pistol_wr']] = df.apply(lambda row: pd.Series(get_map_features(row, row['team2_id'], LOOKBACK_DAYS)), axis=1)
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Map perf features".ljust(25)}: {elapsed_time:.2f} seconds")
 
 	# Output
 	print(df.shape)
@@ -288,29 +437,21 @@ def main():
 
 	ml_df = df[
 				[	'format', 'team1_rank', 'team2_rank', 'rank_diff', 'lan', 'elim', 
-					't1_mp, t1_wr, t1_ws, t1_rust',
-					't2_mp, t2_wr, t2_ws, t2_rust',
-					# 'h2h_maps', 'h2h_wr_t1', 'h2h_wr_t2',
+					't1_mp', 't1_wr', 't1_ws', 't1_rust',
+					't2_mp', 't2_wr', 't2_ws', 't2_rust',
+					'h2h_maps', 'h2h_wr', 'h2h_rwp',
 					't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob', 
 					't1_elo', 't2_elo', 'elo_win_prob',
 					't1_age', 't1_xp', 't2_age', 't2_xp', 
+					't1_avg_hltv_rating', 
+			 		't1_sd_hltv_rating', 't1_avg_fk_pr', 't1_sd_fk_pr', 't1_avg_cl_pr', 't1_sd_cl_pr', 't1_avg_pl_rating', 't1_sd_pl_rating', 't1_avg_pl_adr', 't1_sd_pl_adr', 't1_avg_plr_kast', 't1_sd_plr_kast', 't1_avg_pistol_wr', 't1_sd_pistol_wr',
+			 		't2_sd_hltv_rating', 't2_avg_fk_pr', 't2_sd_fk_pr', 't2_avg_cl_pr', 't2_sd_cl_pr', 't2_avg_pl_rating', 't2_sd_pl_rating', 't2_avg_pl_adr', 't2_sd_pl_adr', 't2_avg_plr_kast', 't2_sd_plr_kast', 't2_avg_pistol_wr', 't2_sd_pistol_wr',
 					'win'
 				]
 			]
-	# ml_df.columns = [
-	# 				'rank', 'opp_rank', 'rank_diff', 
-	# 				'lan', 'elim', 
-	# 				'matches_played', 'match_winrate', 'opp_matches_played', 'opp_winrate', 
-	# 				't1_ws', 't2_ws', 'cooldown', 'opp_cooldown',
-	# 				'h2h_maps', 'h2h_wr', 'h2h_opp_wr',
-	# 				'ts_mu', 'ts_sigma', 'opp_ts_mu', 'opp_ts_sigma', 'ts_win_prob', 
-	# 				'age', 'lineup_xp', 'opp_age', 'opp_xp', 
-	# 				'win'
-	# 				]
-	print(ml_df.head(30))
 
 	df.to_csv("df_full.csv")
-	ml_df.to_csv("df_ml.csv")
+	ml_df.to_csv("df_ml.csv", na_rep = 'NULL')
 
 if __name__ == "__main__":
 	main()

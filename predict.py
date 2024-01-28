@@ -8,21 +8,23 @@ from sklearn.model_selection import GridSearchCV
 import os
 import csv
 
-data = pd.read_csv('temp_df.csv', index_col=0)
+data = pd.read_csv('df_ml.csv', index_col=0)
 data['lan'] = data['lan'].astype('category')
-# data['format'] = data['format'].astype('category')
+data['elim'] = data['elim'].astype('category')
+data['format'] = data['format'].astype('category')
 
 X = data.drop(['win'], axis=1)
+# X = data.drop(['win', 'h2h_maps', 't1_h2h_wr', 't2_h2h_wr', 't1_h2h_rwp', 't2_h2h_rwp'], axis=1)
 y = data['win']
 
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 # Chronological split
-split_index = int(0.8 * len(data))
-X_train = data.drop(['win'], axis=1).iloc[:split_index]
-y_train = data['win'].iloc[:split_index]
-X_test = data.drop(['win'], axis=1).iloc[split_index:]
-y_test = data['win'].iloc[split_index:]
+split_index = int(0.7 * len(data))
+X_train = X.iloc[:split_index]
+y_train = y.iloc[:split_index]
+X_test = X.iloc[split_index:]
+y_test = y.iloc[split_index:]
 
 feature_names = X_train.columns.tolist()
 
@@ -221,18 +223,18 @@ def xgboost_model():
 	# Adjusting feature names in the plot
 	feature_importances = xgb_classifier.get_booster().get_score(importance_type='gain')
 	# Match feature names with their importance scores
-	sorted_features = [feature_names[int(f[1:])] for f in sorted(feature_importances, key=lambda x: feature_importances[x])]
-	ax.set_yticklabels(sorted_features, rotation='horizontal')
+	# sorted_features = [feature_names[int(f[1:])] for f in sorted(feature_importances, key=lambda x: feature_importances[x])]
+	# ax.set_yticklabels(sorted_features, rotation='horizontal')
 
 	plt.savefig('xgboost_var_imp.png')
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
 		'n_estimators': [100, 200, 300],    # Number of gradient boosted trees
-		'learning_rate': [0.01, 0.1, 0.2],  # Step size shrinkage used in update
-		'max_depth': [3, 4, 5],             # Maximum depth of a tree
-		'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
-		'colsample_bytree': [0.7, 0.8, 0.9] # Subsample ratio of columns when constructing each tree
+		'learning_rate': [0.001, 0.01, 0.1],  # Step size shrinkage used in update
+		'max_depth': [3, 4, 5, 6],             # Maximum depth of a tree
+		# 'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
+		# 'colsample_bytree': [0.7, 0.8, 0.9] # Subsample ratio of columns when constructing each tree
 	}
 
 	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss')
@@ -323,6 +325,7 @@ if __name__ == "__main__":
 	# neural_network_hyperparameter_tuning()
 	# logistic_regression_hyperparameter_tuning()
 	# random_forest_hyperparameter_tuning()
+	# xgboost_hyperparameter_tuning()
 
 	finished = False
 	# finished = True
