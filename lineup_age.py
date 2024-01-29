@@ -65,7 +65,8 @@ def process_lineup(lineup):
 		# 2(d) Find older lineup
 		older_lineup = find_older_lineup(lineup)
 		if older_lineup and is_matching_lineup(older_lineup, lineup):
-			age_days = latest_lineup_age.age_days + calculate_age_days(latest_lineup_age.date, lineup.date)
+			older_lineup_age = session.query(LineupAge).filter(LineupAge.team_id == lineup.team_id).filter(LineupAge.date == older_lineup.date).first()
+			age_days = older_lineup_age.age_days + calculate_age_days(older_lineup.date, lineup.date)
 			insert_lineup_age(lineup, age_days, latest_lineup_age.matches_together +1)
 		else:
 			# 2(e) No matching lineup found
