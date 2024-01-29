@@ -308,6 +308,7 @@ def get_map_features(row, team_id, time_period_days):
 			kast += player.kast
 		return ratings/n_players, adr/n_players, kast/n_players
 	
+	match_id = row['match_id']
 	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
 	start_date = match_datetime - timedelta(days=time_period_days)
 
@@ -316,6 +317,7 @@ def get_map_features(row, team_id, time_period_days):
 		.join(Map, Match.id == Map.match_id)\
 		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
 		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter(Match.id != match_id)\
 		.filter((Map.t1_id == team_id) | (Map.t2_id == team_id))\
 		.all()
 	
@@ -359,9 +361,10 @@ def main():
 	LOOKBACK_DAYS = 90
 
 	# team1_rank, team2_rank, rank_diff, lan, elim
-	df = generate_match_dataframe(start_date="2022-01-01", rank_threshold=20, min_format=3)#, n_matches=10)
+	df = generate_match_dataframe(start_date="2020-01-01", rank_threshold=20, min_format=3)#, n_matches=10)
 	print(df.shape)
-
+ 
+ 
 	# trueskill features
 	start_time = datetime.now()
 	df[['t1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob']] =  df.apply(lambda row: pd.Series(get_trueskill(row)), axis=1)
