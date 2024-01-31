@@ -16,6 +16,20 @@ data['lan'] = data['lan'].astype('category')
 data['elim'] = data['elim'].astype('category')
 data['format'] = data['format'].astype('category')
 
+# Summary of descriptive statistics
+summary = data.describe()
+print(summary)
+# Box plot
+data.boxplot()
+
+# Histogram
+data.hist()
+
+# Density Plot
+data.plot(kind='density')
+
+
+
 X = data.drop(['win'], axis=1)
 y = data['win']
 
@@ -41,10 +55,23 @@ X_test_norm = pd.DataFrame(norm.transform(X_test[numerical_features]), columns=n
 # Combine with categorical features
 X_train = pd.concat([X_train_norm, X_train[categorical_features]], axis=1)
 X_test = pd.concat([X_test_norm, X_test[categorical_features]], axis=1)
-# X_train = pd.concat([X_train[numerical_features], X_train[categorical_features]], axis=1)
-# X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], axis=1)
+X_train = pd.concat([X_train[numerical_features], X_train[categorical_features]], axis=1)
+X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], axis=1)
 
+# PCA
+# from sklearn.decomposition import PCA
+# pca = PCA(n_components=10)  # choose the number of components
+# X_train = pca.fit_transform(X_train)
+# X_test = pca.transform(X_test)
 
+# LDA
+# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+# lda = LDA(n_components=1) 
+# X_train = lda.fit_transform(X_train, y_train)
+# X_test = lda.transform(X_test)
+# importance = lda.coef_[0]
+# for i, v in enumerate(importance):
+#     print('Feature: %0d, Score: %.5f' % (i, v))
 
 # Logistic Regression
 from sklearn.linear_model import LogisticRegression
@@ -356,8 +383,8 @@ if __name__ == "__main__":
 	# random_forest_hyperparameter_tuning()
 	# xgboost_hyperparameter_tuning()
 
-	finished = False
-	# finished = True
+	# finished = False
+	finished = True
 	while not finished:
 		os.system('cls')
 		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\nE) Exit\n\n> ")

@@ -453,8 +453,8 @@ def main():
 				]
 			]
 
-	df.to_csv("df_full.csv")
-	ml_df.to_csv("df_ml.csv", na_rep = 'NULL')
+	df.to_csv("csv/df_full.csv")
+	ml_df.to_csv("csv/df_ml.csv", na_rep = 'NULL')
 
 if __name__ == "__main__":
 	main()
