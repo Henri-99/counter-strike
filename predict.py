@@ -1,26 +1,26 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import GridSearchCV
 import os
 import csv
 
-data = pd.read_csv('df_ml.csv', index_col=0)
+df_full = pd.read_csv('csv/df_full.csv', index_col=0)
+data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
+
+# data = df_full.drop([''])
 data['lan'] = data['lan'].astype('category')
 data['elim'] = data['elim'].astype('category')
 data['format'] = data['format'].astype('category')
 
 X = data.drop(['win'], axis=1)
-# X = data.drop(['win', 'h2h_maps', 't1_h2h_wr', 't2_h2h_wr', 't1_h2h_rwp', 't2_h2h_rwp'], axis=1)
 y = data['win']
 
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
 # Chronological split
-split_index = int(0.7 * len(data))
+split_index = int(0.8 * len(data))
 X_train = X.iloc[:split_index]
 y_train = y.iloc[:split_index]
 X_test = X.iloc[split_index:]
@@ -28,15 +28,25 @@ y_test = y.iloc[split_index:]
 
 feature_names = X_train.columns.tolist()
 
-scaler = StandardScaler()
-# X_train = scaler.fit_transform(X_train)
-# X_test = scaler.transform(X_test)
+# Separate numerical and categorical features
+numerical_features = X_train.select_dtypes(include=['int64', 'float64']).columns
+categorical_features = X_train.select_dtypes(include=['category']).columns
 
-X_train = pd.DataFrame(scaler.fit_transform(X_train), columns=feature_names)
-X_test = pd.DataFrame(scaler.transform(X_test), columns=feature_names)
+# Standardize the numeric features
+# norm = MinMaxScaler().fit(X_train[numerical_features])
+norm = StandardScaler().fit(X_train[numerical_features])
+X_train_norm = pd.DataFrame(norm.transform(X_train[numerical_features]), columns=numerical_features, index=X_train.index)
+X_test_norm = pd.DataFrame(norm.transform(X_test[numerical_features]), columns=numerical_features, index=X_test.index)
+
+# Combine with categorical features
+X_train = pd.concat([X_train_norm, X_train[categorical_features]], axis=1)
+X_test = pd.concat([X_test_norm, X_test[categorical_features]], axis=1)
+# X_train = pd.concat([X_train[numerical_features], X_train[categorical_features]], axis=1)
+# X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], axis=1)
+
+
 
 # Logistic Regression
-
 from sklearn.linear_model import LogisticRegression
 def logistic_regression():
 	logistic_regressor = LogisticRegression(C= 1, penalty='l2', solver='liblinear')
@@ -69,21 +79,8 @@ def logistic_regression():
 		'Importance': coefficients
 	}).sort_values(by='Importance', ascending=False)
 	print(feature_importances)
-
-	coef_rank = logistic_regressor.coef_[0][0]
-	coef_opp_rank = logistic_regressor.coef_[0][1]
 	
-	probabilities = logistic_regressor.predict_proba(X)
-	decimal_data = [[f"{number:.8f}" for number in row] for row in probabilities]
-
-	# File path for the CSV
-	csv_file = 'matrix_data.csv'
-
-	# Writing to CSV
-	with open(csv_file, mode='w', newline='') as file:
-		writer = csv.writer(file)
-		writer.writerows(decimal_data)
-
+	probabilities = logistic_regressor.predict_proba(X_test)
 
 
 def logistic_regression_hyperparameter_tuning():
@@ -101,9 +98,7 @@ def logistic_regression_hyperparameter_tuning():
 	print("Best Parameters for Logistic Regression:", lr_grid_search.best_params_)
 	print("Best Score for Logistic Regression:", lr_grid_search.best_score_)
 
-
 # Random Forest
-
 from sklearn.ensemble import RandomForestClassifier
 def random_forest():
 	rf_classifier = RandomForestClassifier(n_estimators = 100, max_depth=2)
@@ -149,9 +144,8 @@ def random_forest_hyperparameter_tuning():
 
 	print("Best Parameters for Random Forest:", rf_grid_search.best_params_)
 	print("Best Score for Random Forest:", rf_grid_search.best_score_)
-
+  
 # Support Vector Machine
-
 from sklearn.svm import SVC
 def support_vector_machine():
 	svm_classifier = SVC(C=1, gamma='scale', kernel='linear')
@@ -191,13 +185,12 @@ def svm_hyperparameter_tuning():
 	print("Best Score for SVM:", svm_grid_search.best_score_)
 
 # eXtreme Gradient Boosting
-
 import xgboost as xgb
 
 def xgboost_model():
 	params = {'colsample_bytree': 0.9, 'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 300, 'subsample': 0.7}
 	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, 
-									   eval_metric='logloss')
+									   eval_metric='logloss', enable_categorical=True)
 
 	xgb_classifier.fit(X_train, y_train)
 
@@ -226,7 +219,7 @@ def xgboost_model():
 	# sorted_features = [feature_names[int(f[1:])] for f in sorted(feature_importances, key=lambda x: feature_importances[x])]
 	# ax.set_yticklabels(sorted_features, rotation='horizontal')
 
-	plt.savefig('xgboost_var_imp.png')
+	plt.savefig('figures/xgboost_var_imp.png')
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
@@ -247,7 +240,6 @@ def xgboost_hyperparameter_tuning():
 	print("Best Score for XGBoost:", xgb_grid_search.best_score_)
 
 # Gaussian Naive Bayes
-	
 from sklearn.naive_bayes import GaussianNB
 
 def naive_bayes_model():
@@ -271,12 +263,36 @@ def naive_bayes_model():
 	print("Classification Report:")
 	print(report)
 
+# k Nearest Neighbours
+from sklearn.neighbors import KNeighborsClassifier
+
+def knn_model():
+    knn_classifier = KNeighborsClassifier(n_neighbors=10)
+
+    knn_classifier.fit(X_train, y_train)
+
+    y_train_pred = knn_classifier.predict(X_train)
+    train_accuracy = accuracy_score(y_train, y_train_pred)
+    print(f"Training Accuracy: {train_accuracy}")
+
+    y_pred = knn_classifier.predict(X_test)
+
+    accuracy = accuracy_score(y_test, y_pred)
+    confusion = confusion_matrix(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+
+    print(f"Test Accuracy: {accuracy}")
+    print("Confusion Matrix:")
+    print(confusion)
+    print("Classification Report:")
+    print(report)
+
 # Multi-Layer Perceptron
 from sklearn.neural_network import MLPClassifier
 
 def neural_network_model():
-	params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
-	mlp_classifier = MLPClassifier(**params, 
+	params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.0001, 'solver': 'sgd'}
+	mlp_classifier = MLPClassifier(**params, max_iter=10000,
 								   random_state=42)
 
 	mlp_classifier.fit(X_train, y_train)
@@ -286,6 +302,7 @@ def neural_network_model():
 	print(f"Training Accuracy: {train_accuracy}")
 
 	y_pred = mlp_classifier.predict(X_test)
+	y_pred_proba = mlp_classifier.predict_proba(X_test)
 
 	accuracy = accuracy_score(y_test, y_pred)
 	confusion = confusion_matrix(y_test, y_pred)
@@ -296,6 +313,18 @@ def neural_network_model():
 	print(confusion)
 	print("Classification Report:")
 	print(report)
+
+	return y_pred_proba
+	proba_df = pd.DataFrame(y_pred_proba, columns=['0_prob', '1_prob'])
+	epsilon = 1e-6
+	proba_df['t1_odds'] = 1 / (proba_df['1_prob'] + epsilon)
+	proba_df['t2_odds'] = 1 / (proba_df['0_prob'] + epsilon)
+
+	proba_df.index = df_full.iloc[split_index:].index
+
+	df_info = df_full.iloc[split_index:]
+	result_df = pd.concat([df_info, proba_df], axis=1)
+	result_df.to_csv('predicted_probabilities.csv', index=False)
 
 def neural_network_hyperparameter_tuning():
 	nn_param_grid = {
@@ -312,7 +341,7 @@ def neural_network_hyperparameter_tuning():
 	#     'learning_rate_init': [0.001]
 	# }
 
-	mlp = MLPClassifier(max_iter=10000, random_state=42)
+	mlp = MLPClassifier(max_iter=100000, random_state=42)
 
 	nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=5, verbose=2, n_jobs=-1)
 
@@ -331,7 +360,7 @@ if __name__ == "__main__":
 	# finished = True
 	while not finished:
 		os.system('cls')
-		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n\nE) Exit\n\n> ")
+		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\nE) Exit\n\n> ")
 		os.system('cls')
 		match model_select:
 			case '1':
@@ -346,6 +375,8 @@ if __name__ == "__main__":
 				naive_bayes_model()
 			case '6':
 				neural_network_model()
+			case '7':
+				knn_model()
 			case 'E':
 				finished = True
 		if not finished:

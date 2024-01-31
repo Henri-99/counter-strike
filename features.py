@@ -11,7 +11,7 @@ from elo import calculate_expected_outcome, calculate_team_elo
 # First let's get the matches
 
 def generate_match_dataframe( start_date = "2019-07-01",
-							  rank_threshold = 30, 
+							  rank_threshold = None, 
 							  lan = None, 
 							  min_format = None, 
 							  n_matches = None, 
@@ -27,7 +27,7 @@ def generate_match_dataframe( start_date = "2019-07-01",
 	if require_hltv_rank:
 		query = query.filter(and_(Match.team1_rank.isnot(None), Match.team2_rank.isnot(None)))
 	if rank_threshold:
-		query = query.filter(or_(Match.team1_rank <= 30, Match.team2_rank <= 30))
+		query = query.filter(or_(Match.team1_rank <= rank_threshold, Match.team2_rank <= rank_threshold))
 	if n_matches:
 		query = query.limit(n_matches)
 
@@ -361,7 +361,7 @@ def main():
 	LOOKBACK_DAYS = 90
 
 	# team1_rank, team2_rank, rank_diff, lan, elim
-	df = generate_match_dataframe(start_date="2020-01-01", rank_threshold=20, min_format=3)#, n_matches=10)
+	df = generate_match_dataframe(start_date="2019-06-07")#, n_matches=10)
 	print(df.shape)
  
  

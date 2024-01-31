@@ -194,8 +194,8 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
-	# setup_tables()
+	# main()
+	setup_tables()
 	# process_map_pages()
 	# download_maps() 
 	# process_map_pages()
