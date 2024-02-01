@@ -8,7 +8,8 @@ from sklearn.model_selection import GridSearchCV
 import os
 import csv
 
-df_full = pd.read_csv('csv/df_full.csv', index_col=0)
+# df_full = pd.read_csv('csv/df_full.csv', index_col=0)
+df_full = pd.read_csv('csv/filtered_df.csv')
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
 
 # data = df_full.drop([''])
@@ -341,7 +342,7 @@ def neural_network_model():
 	print("Classification Report:")
 	print(report)
 
-	return y_pred_proba
+	# return y_pred_proba
 	proba_df = pd.DataFrame(y_pred_proba, columns=['0_prob', '1_prob'])
 	epsilon = 1e-6
 	proba_df['t1_odds'] = 1 / (proba_df['1_prob'] + epsilon)
@@ -351,7 +352,7 @@ def neural_network_model():
 
 	df_info = df_full.iloc[split_index:]
 	result_df = pd.concat([df_info, proba_df], axis=1)
-	result_df.to_csv('predicted_probabilities.csv', index=False)
+	result_df.to_csv('csv/predicted_probabilities.csv', index=False)
 
 def neural_network_hyperparameter_tuning():
 	nn_param_grid = {
@@ -383,8 +384,8 @@ if __name__ == "__main__":
 	# random_forest_hyperparameter_tuning()
 	# xgboost_hyperparameter_tuning()
 
-	# finished = False
-	finished = True
+	finished = False
+	# finished = True
 	while not finished:
 		os.system('cls')
 		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\nE) Exit\n\n> ")
