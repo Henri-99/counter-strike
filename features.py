@@ -48,7 +48,6 @@ def generate_match_dataframe( start_date = "2019-07-01",
 			match.best_of,
 			match.team1_rank,
 			match.team2_rank,
-			match.team2_rank - match.team1_rank if (match.team1_rank is not None and match.team2_rank is not None) else 0,
 			1 if match.lan else 0,
 			1 if any(word in match.box_str.lower() for word in ["elimination", "eliminated", "lower", "consolidation", "quarter", "semi", "grand"]) else 0
 		)
@@ -357,6 +356,78 @@ def get_map_features(row, team_id, time_period_days):
 	else:
 		return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
+def get_mapwise_features(row, time_period_days):
+	match_datetime = datetime.strptime(row['datetime'], "%Y-%m-%d %H:%M")
+	start_date = match_datetime - timedelta(days=time_period_days)
+	match_id, team1_id, team2_id  = row['match_id'], row['team1_id'], row['team2_id']
+	
+	t1_mm_map_names = session.query(Map.map_name)\
+	.join(Match, Match.id == Map.match_id)\
+	.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+	.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+	.filter(Match.id != match_id)\
+	.filter((Map.t1_id == team1_id) | (Map.t2_id == team1_id))\
+	.all()
+
+	t2_mm_map_names = session.query(Map.map_name)\
+	.join(Match, Match.id == Map.match_id)\
+	.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+	.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+	.filter(Match.id != match_id)\
+	.filter((Map.t1_id == team2_id) | (Map.t2_id == team2_id))\
+	.all()
+
+	t1_map_names = {result[0] for result in t1_mm_map_names}
+	t2_map_names = {result[0] for result in t2_mm_map_names}
+	map_names = list(t1_map_names.union(t2_map_names))
+
+	if 'Cache' in map_names and 'Vertigo' in map_names:
+		map_names.remove('Cache')
+	if 'Train' in map_names and 'Ancient' in map_names:
+		map_names.remove('Train')
+	if 'Dust2' in map_names and 'Anubis' in map_names:
+		map_names.remove('Dust2')
+
+	
+	# Get all match-map items
+	t1_mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter(Match.id != match_id)\
+		.filter((Map.t1_id == team1_id) | (Map.t2_id == team1_id))\
+		.all()
+
+	
+
+
+# Generate difference features
+
+def generate_diff_features(df):
+	df['rank_diff'] = df['team2_rank'] - df['team1_rank']
+	df['age_diff'] = df['t1_age'] - df['t2_age']
+	df['xp_diff'] = df['t1_xp'] - df['t2_xp']
+	df['mp_diff'] = df['t1_mp'] - df['t2_mp']
+	df['wr_diff'] = df['t1_wr'] - df['t2_wr']
+	df['ws_diff'] = df['t1_ws'] - df['t2_ws']
+	df['rust_diff'] = df['t1_rust'] - df['t2_rust']
+	df['avg_hltv_rating_diff'] = df['t1_avg_hltv_rating'] - df['t2_avg_hltv_rating']
+	df['sd_hltv_rating_diff'] = df['t1_sd_hltv_rating'] - df['t2_sd_hltv_rating']
+	df['avg_fk_pr_diff'] = df['t1_avg_fk_pr'] - df['t2_avg_fk_pr']
+	df['sd_fk_pr_diff'] = df['t1_sd_fk_pr'] - df['t2_sd_fk_pr']
+	df['avg_cl_pr_diff'] = df['t1_avg_cl_pr'] - df['t2_avg_cl_pr']
+	df['sd_cl_pr_diff'] = df['t1_sd_cl_pr'] - df['t2_sd_cl_pr']
+	df['avg_pl_rating_diff'] = df['t1_avg_pl_rating'] - df['t2_avg_pl_rating']
+	df['sd_pl_rating_diff'] = df['t1_sd_pl_rating'] - df['t2_sd_pl_rating']
+	df['avg_pl_adr_diff'] = df['t1_avg_pl_adr'] - df['t2_avg_pl_adr']
+	df['sd_pl_adr_diff'] = df['t1_sd_pl_adr'] - df['t2_sd_pl_adr']
+	df['avg_plr_kast_diff'] = df['t1_avg_plr_kast'] - df['t2_avg_plr_kast']
+	df['sd_plr_kast_diff'] = df['t1_sd_plr_kast'] - df['t2_sd_plr_kast']
+	df['avg_pistol_wr_diff'] = df['t1_avg_pistol_wr'] - df['t2_avg_pistol_wr']
+	df['sd_pistol_wr_diff'] = df['t1_sd_pistol_wr'] - df['t2_sd_pistol_wr']
+	return df
+
+
 def main():
 	LOOKBACK_DAYS = 90
 
@@ -457,4 +528,8 @@ def main():
 	ml_df.to_csv("csv/df_ml.csv", na_rep = 'NULL')
 
 if __name__ == "__main__":
-	main()
+	# main()
+
+	df = pd.read_csv('csv/filtered_df.csv')
+	df = generate_diff_features(df)
+	df.to_csv('csv/diff.csv')

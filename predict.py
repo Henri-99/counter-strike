@@ -9,7 +9,7 @@ import os
 import csv
 
 # df_full = pd.read_csv('csv/df_full.csv', index_col=0)
-df_full = pd.read_csv('csv/filtered_df.csv')
+df_full = pd.read_csv('csv/diff.csv')
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
 
 # data = df_full.drop([''])
