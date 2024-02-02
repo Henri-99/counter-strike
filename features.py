@@ -33,7 +33,7 @@ def generate_match_dataframe( start_date = "2019-07-01",
 
 	result = query.all()
 
-	columns = [ "match_id", "datetime", "team1_id", "team2_id", "team1", "team2", "t1_score", "t2_score", "win", "format", "team1_rank", "team2_rank", "rank_diff", "lan", "elim" ]
+	columns = [ "match_id", "datetime", "team1_id", "team2_id", "team1", "team2", "t1_score", "t2_score", "win", "format", "team1_rank", "team2_rank", "lan", "elim" ]
 	data = [
 		(
 			match.id,
@@ -179,8 +179,6 @@ def impute_hltv_ranks(df):
 			imputed_ranks_count += 1
 		
 		df.at[index, 'rank_diff'] = df.at[index, 'team1_rank'] - df.at[index, 'team2_rank']
-
-	print(f"{imputed_ranks_count} HLTV ranks imputed")
 	return df
 
 def get_lineup_xp(row):
@@ -361,6 +359,7 @@ def get_mapwise_features(row, time_period_days):
 	start_date = match_datetime - timedelta(days=time_period_days)
 	match_id, team1_id, team2_id  = row['match_id'], row['team1_id'], row['team2_id']
 	
+	# Get list of maps played
 	t1_mm_map_names = session.query(Map.map_name)\
 	.join(Match, Match.id == Map.match_id)\
 	.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
@@ -388,6 +387,31 @@ def get_mapwise_features(row, time_period_days):
 	if 'Dust2' in map_names and 'Anubis' in map_names:
 		map_names.remove('Dust2')
 
+	def get_map_stats(team_mm_objects, team_id, map_name):
+		query = team_mm_objects.filter(Map.map_name == map_name)
+
+		stats = {'times_played': 0, 'wins': 0, 'total_rounds': 0, 'total_round_wins': 0, 'win_rate' : 0, 'average_round_winrate' : 0}
+
+		map_playcount = query.count()
+		stats['times_played'] = map_playcount
+
+		wins = query.filter(Map.winner_id == team_id).count()
+		stats['wins'] = wins
+
+		# Query to calculate total rounds and round wins
+		maps = query.all()
+		for map_obj in maps:
+			total_rounds = map_obj.Map.t1_score + map_obj.Map.t2_score
+			team_rounds_won = map_obj.Map.t1_score if map_obj.Map.t1_id == team_id else map_obj.Map.t2_score
+			stats['total_rounds'] += total_rounds
+			stats['total_round_wins'] += team_rounds_won
+
+		# Calculate win-rate and average-round-winrate for each map
+		if stats['times_played'] > 0:
+			stats['win_rate'] = stats['wins'] / stats['times_played']
+			stats['average_round_winrate'] = stats['total_round_wins'] / stats['total_rounds'] if stats['total_rounds'] > 0 else 0
+
+		return stats['times_played'], stats['win_rate'], stats['average_round_winrate']
 	
 	# Get all match-map items
 	t1_mm_objects = session.query(Match, Map)\
@@ -396,43 +420,201 @@ def get_mapwise_features(row, time_period_days):
 		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
 		.filter(Match.id != match_id)\
 		.filter((Map.t1_id == team1_id) | (Map.t2_id == team1_id))\
-		.all()
 
+	t1_mrg_mp, t1_mrg_wr, t1_mrg_rwr = get_map_stats(t1_mm_objects, team1_id, "Mirage")
+	t1_inf_mp, t1_inf_wr, t1_inf_rwr = get_map_stats(t1_mm_objects, team1_id, "Inferno")
+	t1_ovp_mp, t1_ovp_wr, t1_ovp_rwr = get_map_stats(t1_mm_objects, team1_id, "Overpass")
+	t1_nuk_mp, t1_nuk_wr, t1_nuk_rwr = get_map_stats(t1_mm_objects, team1_id, "Nuke")
+	t1_vtg_mp, t1_vtg_wr, t1_vtg_rwr = get_map_stats(t1_mm_objects, team1_id, "Vertigo" if "Cache" not in map_names else "Cache")
+	t1_anc_mp, t1_anc_wr, t1_anc_rwr = get_map_stats(t1_mm_objects, team1_id, "Ancient" if "Train" not in map_names else "Train")
+	t1_anu_mp, t1_anu_wr, t1_anu_rwr = get_map_stats(t1_mm_objects, team1_id, "Anubis" if "Dust2" not in map_names else "Dust2")
+
+	t2_mm_objects = session.query(Match, Map)\
+		.join(Map, Match.id == Map.match_id)\
+		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
+		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
+		.filter(Match.id != match_id)\
+		.filter((Map.t1_id == team1_id) | (Map.t2_id == team2_id))\
+
+	t2_mrg_mp, t2_mrg_wr, t2_mrg_rwr = get_map_stats(t2_mm_objects, team1_id, "Mirage")
+	t2_inf_mp, t2_inf_wr, t2_inf_rwr = get_map_stats(t2_mm_objects, team1_id, "Inferno")
+	t2_ovp_mp, t2_ovp_wr, t2_ovp_rwr = get_map_stats(t2_mm_objects, team1_id, "Overpass")
+	t2_nuk_mp, t2_nuk_wr, t2_nuk_rwr = get_map_stats(t2_mm_objects, team1_id, "Nuke")
+	t2_vtg_mp, t2_vtg_wr, t2_vtg_rwr = get_map_stats(t2_mm_objects, team1_id, "Vertigo" if "Cache" not in map_names else "Cache")
+	t2_anc_mp, t2_anc_wr, t2_anc_rwr = get_map_stats(t2_mm_objects, team1_id, "Ancient" if "Train" not in map_names else "Train")
+	t2_anu_mp, t2_anu_wr, t2_anu_rwr = get_map_stats(t2_mm_objects, team1_id, "Anubis" if "Dust2" not in map_names else "Dust2")
+
+	# map_xp, map_wr, map_rwr, where each is the number of maps exceeding the opponents
+	map_xp, map_wr, map_rwr = 0, 0, 0 
+
+	# Mirage
+	if t1_mrg_mp > t2_mrg_mp:
+		map_xp += 1
+	if t1_mrg_mp < t2_mrg_mp:
+		map_xp -= 1
+	if t1_mrg_wr > t2_mrg_wr:
+		map_wr += 1
+	if t1_mrg_wr < t2_mrg_wr:
+		map_wr -= 1
+	if t1_mrg_rwr > t2_mrg_rwr:
+		map_rwr += 1
+	if t1_mrg_rwr < t2_mrg_rwr:
+		map_rwr -= 1
+
+	# Inferno
+	if t1_inf_mp > t2_inf_mp:
+		map_xp += 1
+	if t1_inf_mp < t2_inf_mp:
+		map_xp -= 1
+	if t1_inf_wr > t2_inf_wr:
+		map_wr += 1
+	if t1_inf_wr < t2_inf_wr:
+		map_wr -= 1
+	if t1_inf_rwr > t2_inf_rwr:
+		map_rwr += 1
+	if t1_inf_rwr < t2_inf_rwr:
+		map_rwr -= 1
 	
-
+	# Overpass
+	if t1_ovp_mp > t2_ovp_mp:
+		map_xp += 1
+	if t1_ovp_mp < t2_ovp_mp:
+		map_xp -= 1
+	if t1_ovp_wr > t2_ovp_wr:
+		map_wr += 1
+	if t1_ovp_wr < t2_ovp_wr:
+		map_wr -= 1
+	if t1_ovp_rwr > t2_ovp_rwr:
+		map_rwr += 1
+	if t1_ovp_rwr < t2_ovp_rwr:
+		map_rwr -= 1
+	
+	# Nuke
+	if t1_nuk_mp > t2_nuk_mp:
+		map_xp += 1
+	if t1_nuk_mp < t2_nuk_mp:
+		map_xp -= 1
+	if t1_nuk_wr > t2_nuk_wr:
+		map_wr += 1
+	if t1_nuk_wr < t2_nuk_wr:
+		map_wr -= 1
+	if t1_nuk_rwr > t2_nuk_rwr:
+		map_rwr += 1
+	if t1_nuk_rwr < t2_nuk_rwr:
+		map_rwr -= 1
+	
+	# Vertigo
+	if t1_vtg_mp > t2_vtg_mp:
+		map_xp += 1
+	if t1_vtg_mp < t2_vtg_mp:
+		map_xp -= 1
+	if t1_vtg_wr > t2_vtg_wr:
+		map_wr += 1
+	if t1_vtg_wr < t2_vtg_wr:
+		map_wr -= 1
+	if t1_vtg_rwr > t2_vtg_rwr:
+		map_rwr += 1
+	if t1_vtg_rwr < t2_vtg_rwr:
+		map_rwr -= 1
+	
+	# Ancient
+	if t1_anc_mp > t2_anc_mp:
+		map_xp += 1
+	if t1_anc_mp < t2_anc_mp:
+		map_xp -= 1
+	if t1_anc_wr > t2_anc_wr:
+		map_wr += 1
+	if t1_anc_wr < t2_anc_wr:
+		map_wr -= 1
+	if t1_anc_rwr > t2_anc_rwr:
+		map_rwr += 1
+	if t1_anc_rwr < t2_anc_rwr:
+		map_rwr -= 1
+	
+	# Anubis
+	if t1_anu_mp > t2_anu_mp:
+		map_xp += 1
+	if t1_anu_mp < t2_anu_mp:
+		map_xp -= 1
+	if t1_anu_wr > t2_anu_wr:
+		map_wr += 1
+	if t1_anu_wr < t2_anu_wr:
+		map_wr -= 1
+	if t1_anu_rwr > t2_anu_rwr:
+		map_rwr += 1
+	if t1_anu_rwr < t2_anu_rwr:
+		map_rwr -= 1
+		
+	return t1_mrg_mp, t1_mrg_wr, t1_mrg_rwr, t1_inf_mp, t1_inf_wr, t1_inf_rwr, t1_ovp_mp, t1_ovp_wr, t1_ovp_rwr, t1_nuk_mp, t1_nuk_wr, t1_nuk_rwr, t1_vtg_mp, t1_vtg_wr, t1_vtg_rwr, t1_anc_mp, t1_anc_wr, t1_anc_rwr, t1_anu_mp, t1_anu_wr, t1_anu_rwr, t2_mrg_mp, t2_mrg_wr, t2_mrg_rwr, t2_inf_mp, t2_inf_wr, t2_inf_rwr, t2_ovp_mp, t2_ovp_wr, t2_ovp_rwr, t2_nuk_mp, t2_nuk_wr, t2_nuk_rwr, t2_vtg_mp, t2_vtg_wr, t2_vtg_rwr, t2_anc_mp, t2_anc_wr, t2_anc_rwr, t2_anu_mp, t2_anu_wr, t2_anu_rwr, map_xp, map_wr, map_rwr
 
 # Generate difference features
 
 def generate_diff_features(df):
 	df['rank_diff'] = df['team2_rank'] - df['team1_rank']
-	df['age_diff'] = df['t1_age'] - df['t2_age']
-	df['xp_diff'] = df['t1_xp'] - df['t2_xp']
-	df['mp_diff'] = df['t1_mp'] - df['t2_mp']
-	df['wr_diff'] = df['t1_wr'] - df['t2_wr']
-	df['ws_diff'] = df['t1_ws'] - df['t2_ws']
-	df['rust_diff'] = df['t1_rust'] - df['t2_rust']
-	df['avg_hltv_rating_diff'] = df['t1_avg_hltv_rating'] - df['t2_avg_hltv_rating']
-	df['sd_hltv_rating_diff'] = df['t1_sd_hltv_rating'] - df['t2_sd_hltv_rating']
-	df['avg_fk_pr_diff'] = df['t1_avg_fk_pr'] - df['t2_avg_fk_pr']
-	df['sd_fk_pr_diff'] = df['t1_sd_fk_pr'] - df['t2_sd_fk_pr']
-	df['avg_cl_pr_diff'] = df['t1_avg_cl_pr'] - df['t2_avg_cl_pr']
-	df['sd_cl_pr_diff'] = df['t1_sd_cl_pr'] - df['t2_sd_cl_pr']
-	df['avg_pl_rating_diff'] = df['t1_avg_pl_rating'] - df['t2_avg_pl_rating']
-	df['sd_pl_rating_diff'] = df['t1_sd_pl_rating'] - df['t2_sd_pl_rating']
-	df['avg_pl_adr_diff'] = df['t1_avg_pl_adr'] - df['t2_avg_pl_adr']
-	df['sd_pl_adr_diff'] = df['t1_sd_pl_adr'] - df['t2_sd_pl_adr']
-	df['avg_plr_kast_diff'] = df['t1_avg_plr_kast'] - df['t2_avg_plr_kast']
-	df['sd_plr_kast_diff'] = df['t1_sd_plr_kast'] - df['t2_sd_plr_kast']
-	df['avg_pistol_wr_diff'] = df['t1_avg_pistol_wr'] - df['t2_avg_pistol_wr']
-	df['sd_pistol_wr_diff'] = df['t1_sd_pistol_wr'] - df['t2_sd_pistol_wr']
+	# df['age_diff'] = df['t1_age'] - df['t2_age']
+	# df['xp_diff'] = df['t1_xp'] - df['t2_xp']
+	# df['mp_diff'] = df['t1_mp'] - df['t2_mp']
+	# df['wr_diff'] = df['t1_wr'] - df['t2_wr']
+	# df['ws_diff'] = df['t1_ws'] - df['t2_ws']
+	# df['rust_diff'] = df['t1_rust'] - df['t2_rust']
+	# df['avg_hltv_rating_diff'] = df['t1_avg_hltv_rating'] - df['t2_avg_hltv_rating']
+	# df['sd_hltv_rating_diff'] = df['t1_sd_hltv_rating'] - df['t2_sd_hltv_rating']
+	# df['avg_fk_pr_diff'] = df['t1_avg_fk_pr'] - df['t2_avg_fk_pr']
+	# df['sd_fk_pr_diff'] = df['t1_sd_fk_pr'] - df['t2_sd_fk_pr']
+	# df['avg_cl_pr_diff'] = df['t1_avg_cl_pr'] - df['t2_avg_cl_pr']
+	# df['sd_cl_pr_diff'] = df['t1_sd_cl_pr'] - df['t2_sd_cl_pr']
+	# df['avg_pl_rating_diff'] = df['t1_avg_pl_rating'] - df['t2_avg_pl_rating']
+	# df['sd_pl_rating_diff'] = df['t1_sd_pl_rating'] - df['t2_sd_pl_rating']
+	# df['avg_pl_adr_diff'] = df['t1_avg_pl_adr'] - df['t2_avg_pl_adr']
+	# df['sd_pl_adr_diff'] = df['t1_sd_pl_adr'] - df['t2_sd_pl_adr']
+	# df['avg_plr_kast_diff'] = df['t1_avg_plr_kast'] - df['t2_avg_plr_kast']
+	# df['sd_plr_kast_diff'] = df['t1_sd_plr_kast'] - df['t2_sd_plr_kast']
+	# df['avg_pistol_wr_diff'] = df['t1_avg_pistol_wr'] - df['t2_avg_pistol_wr']
+	# df['sd_pistol_wr_diff'] = df['t1_sd_pistol_wr'] - df['t2_sd_pistol_wr']
+
+	features = [
+		'age', 'xp', 'mp', 'wr', 'ws', 'rust',
+		'avg_hltv_rating', 'sd_hltv_rating', 
+		'avg_fk_pr', 'sd_fk_pr', 
+		'avg_cl_pr', 'sd_cl_pr', 
+		'avg_pl_rating', 'sd_pl_rating', 
+		'avg_pl_adr', 'sd_pl_adr', 
+		'avg_plr_kast', 'sd_plr_kast', 
+		'avg_pistol_wr', 'sd_pistol_wr',
+		'mrg_mp', 'mrg_wr', 'mrg_rwr', 
+		'inf_mp', 'inf_wr', 'inf_rwr', 
+		'ovp_mp', 'ovp_wr', 'ovp_rwr', 
+		'nuk_mp', 'nuk_wr', 'nuk_rwr', 
+		'vtg_mp', 'vtg_wr', 'vtg_rwr', 
+		'anc_mp', 'anc_wr', 'anc_rwr', 
+		'anu_mp', 'anu_wr', 'anu_rwr'
+	]
+
+	# Generate difference features for each mapwise feature
+	for feature in features:
+		t1_feature = f't1_{feature}'
+		t2_feature = f't2_{feature}'
+		df[f'{feature}_diff'] = df[t1_feature] - df[t2_feature]
+
 	return df
 
+# Impute h2h stats
+
+def impute_h2h_values(df):
+	def impute_func(row):
+		if row['h2h_maps'] == 0:
+			return pd.Series([row['ts_win_prob'], row['ts_win_prob']], index=['h2h_wr', 'h2h_rwp'])
+		else:
+			return row[['h2h_wr', 'h2h_rwp']]
+	df[['h2h_wr', 'h2h_rwp']] = df.apply(impute_func, axis=1)
+
+	return df
 
 def main():
 	LOOKBACK_DAYS = 90
 
 	# team1_rank, team2_rank, rank_diff, lan, elim
-	df = generate_match_dataframe(start_date="2019-06-07")#, n_matches=10)
+	df = generate_match_dataframe(start_date="2019-06-07", n_matches = 5)#, n_matches=10)
 	print(df.shape)
  
  
@@ -472,38 +654,16 @@ def main():
 
 	start_time = datetime.now()
 	# Map-specific features
-	df[
-		[	't1_avg_hltv_rating', 
-	 		't1_sd_hltv_rating', 
-	 		't1_avg_fk_pr', 
-	 		't1_sd_fk_pr', 
-	 		't1_avg_cl_pr', 
-	 		't1_sd_cl_pr', 
-	 		't1_avg_pl_rating', 
-	 		't1_sd_pl_rating', 
-	 		't1_avg_pl_adr', 
-	 		't1_sd_pl_adr', 
-	 		't1_avg_plr_kast', 
-	 		't1_sd_plr_kast', 
-	 		't1_avg_pistol_wr', 
-	 		't1_sd_pistol_wr']] = df.apply(lambda row: pd.Series(get_map_features(row, row['team1_id'], LOOKBACK_DAYS)), axis=1)
-	df[
-		[	't2_avg_hltv_rating', 
-	 		't2_sd_hltv_rating', 
-	 		't2_avg_fk_pr', 
-	 		't2_sd_fk_pr', 
-	 		't2_avg_cl_pr', 
-	 		't2_sd_cl_pr', 
-	 		't2_avg_pl_rating', 
-	 		't2_sd_pl_rating', 
-	 		't2_avg_pl_adr', 
-	 		't2_sd_pl_adr', 
-	 		't2_avg_plr_kast', 
-	 		't2_sd_plr_kast', 
-	 		't2_avg_pistol_wr', 
-	 		't2_sd_pistol_wr']] = df.apply(lambda row: pd.Series(get_map_features(row, row['team2_id'], LOOKBACK_DAYS)), axis=1)
+	df[['t1_avg_hltv_rating', 't1_sd_hltv_rating', 't1_avg_fk_pr', 't1_sd_fk_pr', 't1_avg_cl_pr', 't1_sd_cl_pr', 't1_avg_pl_rating', 't1_sd_pl_rating', 't1_avg_pl_adr', 't1_sd_pl_adr', 't1_avg_plr_kast', 't1_sd_plr_kast', 't1_avg_pistol_wr', 't1_sd_pistol_wr']] = df.apply(lambda row: pd.Series(get_map_features(row, row['team1_id'], LOOKBACK_DAYS)), axis=1)
+	df[['t2_avg_hltv_rating', 't2_sd_hltv_rating', 't2_avg_fk_pr', 't2_sd_fk_pr', 't2_avg_cl_pr', 't2_sd_cl_pr', 't2_avg_pl_rating', 't2_sd_pl_rating', 't2_avg_pl_adr', 't2_sd_pl_adr', 't2_avg_plr_kast', 't2_sd_plr_kast', 't2_avg_pistol_wr', 't2_sd_pistol_wr']] = df.apply(lambda row: pd.Series(get_map_features(row, row['team2_id'], LOOKBACK_DAYS)), axis=1)
 	elapsed_time = (datetime.now() - start_time).total_seconds()
 	print(f"{"Map perf features".ljust(25)}: {elapsed_time:.2f} seconds")
+
+	# Map-stats per team features
+	start_time = datetime.now()
+	df[['t1_mrg_mp', 't1_mrg_wr', 't1_mrg_rwr', 't1_inf_mp', 't1_inf_wr', 't1_inf_rwr', 't1_ovp_mp', 't1_ovp_wr', 't1_ovp_rwr', 't1_nuk_mp', 't1_nuk_wr', 't1_nuk_rwr', 't1_vtg_mp', 't1_vtg_wr', 't1_vtg_rwr', 't1_anc_mp', 't1_anc_wr', 't1_anc_rwr', 't1_anu_mp', 't1_anu_wr', 't1_anu_rwr', 't2_mrg_mp', 't2_mrg_wr', 't2_mrg_rwr', 't2_inf_mp', 't2_inf_wr', 't2_inf_rwr', 't2_ovp_mp', 't2_ovp_wr', 't2_ovp_rwr', 't2_nuk_mp', 't2_nuk_wr', 't2_nuk_rwr', 't2_vtg_mp', 't2_vtg_wr', 't2_vtg_rwr', 't2_anc_mp', 't2_anc_wr', 't2_anc_rwr', 't2_anu_mp', 't2_anu_wr', 't2_anu_rwr', 'map_xp', 'map_wr', 'map_rwr']] = df.apply(lambda row: pd.Series(get_mapwise_features(row, LOOKBACK_DAYS)), axis=1)
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Map-stats per team".ljust(25)}: {elapsed_time:.2f} seconds")
 
 	# Output
 	print(df.shape)
@@ -524,12 +684,22 @@ def main():
 				]
 			]
 
-	df.to_csv("csv/df_full.csv")
-	ml_df.to_csv("csv/df_ml.csv", na_rep = 'NULL')
+	df.to_csv("csv/df_test.csv")
+	# ml_df.to_csv("csv/df_ml.csv", na_rep = 'NULL')
 
 if __name__ == "__main__":
 	# main()
+	df = pd.read_csv('csv/df_full.csv')
+	print(df.shape)
 
-	df = pd.read_csv('csv/filtered_df.csv')
-	df = generate_diff_features(df)
-	df.to_csv('csv/diff.csv')
+	start_time = datetime.now()
+	df[['t1_mrg_mp', 't1_mrg_wr', 't1_mrg_rwr', 't1_inf_mp', 't1_inf_wr', 't1_inf_rwr', 't1_ovp_mp', 't1_ovp_wr', 't1_ovp_rwr', 't1_nuk_mp', 't1_nuk_wr', 't1_nuk_rwr', 't1_vtg_mp', 't1_vtg_wr', 't1_vtg_rwr', 't1_anc_mp', 't1_anc_wr', 't1_anc_rwr', 't1_anu_mp', 't1_anu_wr', 't1_anu_rwr', 't2_mrg_mp', 't2_mrg_wr', 't2_mrg_rwr', 't2_inf_mp', 't2_inf_wr', 't2_inf_rwr', 't2_ovp_mp', 't2_ovp_wr', 't2_ovp_rwr', 't2_nuk_mp', 't2_nuk_wr', 't2_nuk_rwr', 't2_vtg_mp', 't2_vtg_wr', 't2_vtg_rwr', 't2_anc_mp', 't2_anc_wr', 't2_anc_rwr', 't2_anu_mp', 't2_anu_wr', 't2_anu_rwr', 'map_xp', 'map_wr', 'map_rwr']] = df.apply(lambda row: pd.Series(get_mapwise_features(row, 90)), axis=1)
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Map-stats per team".ljust(25)}: {elapsed_time:.2f} seconds")
+
+	# df = impute_h2h_values(df)
+
+
+	df.to_csv('csv/df_full_new.csv')
+
+	# df = generate_diff_features(df)

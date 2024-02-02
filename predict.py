@@ -9,7 +9,7 @@ import os
 import csv
 
 # df_full = pd.read_csv('csv/df_full.csv', index_col=0)
-df_full = pd.read_csv('csv/diff.csv')
+df_full = pd.read_csv('csv/df_30.csv')
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
 
 # data = df_full.drop([''])
@@ -18,21 +18,42 @@ data['elim'] = data['elim'].astype('category')
 data['format'] = data['format'].astype('category')
 
 # Summary of descriptive statistics
-summary = data.describe()
-print(summary)
-# Box plot
-data.boxplot()
-
-# Histogram
-data.hist()
-
-# Density Plot
-data.plot(kind='density')
-
-
+# summary = data.describe()
 
 X = data.drop(['win'], axis=1)
 y = data['win']
+
+# Choose k, the number of top features to select. For example, k=10
+from sklearn.feature_selection import SelectKBest, SelectPercentile, SequentialFeatureSelector, f_classif
+def reduce_features():
+	selector = SelectKBest(f_classif, k=20)
+	selector = SelectPercentile(f_classif, percentile=20)
+
+	X_new = selector.fit_transform(X, y)
+
+	selected_indices = selector.get_support(indices=True)
+	selected_features = X.columns[selected_indices]
+	print(selected_features)
+
+	return data[selected_features]
+# X = reduce_features()
+
+# X = data[['lan', 'elim', 'ts_win_prob', 'elo_win_prob', 'h2h_wr', 'h2h_rwp', 
+		#   'age_diff', 'xp_diff', 'mp_diff', 'wr_diff', 'ws_diff', 'rust_diff',
+        #   'avg_hltv_rating_diff', 'sd_hltv_rating_diff', 
+        #   'avg_fk_pr_diff', 'sd_fk_pr_diff', 
+        #   'avg_cl_pr_diff', 'sd_cl_pr_diff', 
+        #   'avg_pl_rating_diff', 'sd_pl_rating_diff', 
+        #   'avg_pl_adr_diff', 'sd_pl_adr_diff', 
+        #   'avg_plr_kast_diff', 'sd_plr_kast_diff', 
+        #   'avg_pistol_wr_diff', 'sd_pistol_wr_diff',
+		#   'mrg_mp_diff', 'mrg_wr_diff', 'mrg_rwr_diff', 
+		#   'inf_mp_diff', 'inf_wr_diff', 'inf_rwr_diff', 
+		#   'ovp_mp_diff', 'ovp_wr_diff', 'ovp_rwr_diff', 
+		#   'nuk_mp_diff', 'nuk_wr_diff', 'nuk_rwr_diff', 
+		#   'vtg_mp_diff', 'vtg_wr_diff', 'vtg_rwr_diff', 
+		#   'anc_mp_diff', 'anc_wr_diff', 'anc_rwr_diff', 
+		#   'anu_mp_diff', 'anu_wr_diff', 'anu_rwr_diff']]
 
 # Chronological split
 split_index = int(0.8 * len(data))
@@ -77,7 +98,8 @@ X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], a
 # Logistic Regression
 from sklearn.linear_model import LogisticRegression
 def logistic_regression():
-	logistic_regressor = LogisticRegression(C= 1, penalty='l2', solver='liblinear')
+	params = {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
+	logistic_regressor = LogisticRegression(**params)
 	logistic_regressor.fit(X_train, y_train)
 
 	y_train_pred = logistic_regressor.predict(X_train)
@@ -216,7 +238,7 @@ def svm_hyperparameter_tuning():
 import xgboost as xgb
 
 def xgboost_model():
-	params = {'colsample_bytree': 0.9, 'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 300, 'subsample': 0.7}
+	params = {'colsample_bytree': 0.8, 'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 100, 'subsample': 0.7}
 	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, 
 									   eval_metric='logloss', enable_categorical=True)
 
@@ -239,7 +261,7 @@ def xgboost_model():
 	print(report)
 
 	fig, ax = plt.subplots(figsize=(10, 8))
-	xgb.plot_importance(xgb_classifier, importance_type='gain', ax=ax, title='Feature Importance', xlabel='F score')
+	xgb.plot_importance(xgb_classifier, importance_type='gain', ax=ax, title='Feature Importance', xlabel='F score', max_num_features=18)
 
 	# Adjusting feature names in the plot
 	feature_importances = xgb_classifier.get_booster().get_score(importance_type='gain')
@@ -251,14 +273,17 @@ def xgboost_model():
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
-		'n_estimators': [100, 200, 300],    # Number of gradient boosted trees
-		'learning_rate': [0.001, 0.01, 0.1],  # Step size shrinkage used in update
-		'max_depth': [3, 4, 5, 6],             # Maximum depth of a tree
-		# 'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
-		# 'colsample_bytree': [0.7, 0.8, 0.9] # Subsample ratio of columns when constructing each tree
+		# 'n_estimators': [100, 200, 300],    # Number of gradient boosted trees
+		# 'learning_rate': [0.001, 0.01, 0.1],  # Step size shrinkage used in update
+		# 'max_depth': [3, 4, 5, 6],             # Maximum depth of a tree
+		'n_estimators': [100],    # Number of gradient boosted trees
+		'learning_rate': [0.01],  # Step size shrinkage used in update
+		'max_depth': [3],             # Maximum depth of a tree
+		'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
+		'colsample_bytree': [0.5, 0.6, 0.7] # Subsample ratio of columns when constructing each tree
 	}
 
-	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss')
+	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
 	xgb_grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=xgb_param_grid, cv=5, verbose=2, n_jobs=-1)
 
@@ -384,12 +409,11 @@ if __name__ == "__main__":
 	# random_forest_hyperparameter_tuning()
 	# xgboost_hyperparameter_tuning()
 
-	finished = False
-	# finished = True
-	while not finished:
-		os.system('cls')
-		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\nE) Exit\n\n> ")
-		os.system('cls')
+	predict = True
+	while predict:
+		# os.system('cls')
+		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\n> ")
+		# os.system('cls')
 		match model_select:
 			case '1':
 				logistic_regression()
@@ -405,7 +429,4 @@ if __name__ == "__main__":
 				neural_network_model()
 			case '7':
 				knn_model()
-			case 'E':
-				finished = True
-		if not finished:
-			pause = input("\nPress ENTER to go back\n\n> ")
+		pause = input("\nPress ENTER to go back\n\n> ")
