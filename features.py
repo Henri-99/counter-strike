@@ -434,15 +434,15 @@ def get_mapwise_features(row, time_period_days):
 		.filter(Map.datetime >= func.strftime('%Y-%m-%d %H:%M', start_date))\
 		.filter(Map.datetime < func.strftime('%Y-%m-%d %H:%M', match_datetime))\
 		.filter(Match.id != match_id)\
-		.filter((Map.t1_id == team1_id) | (Map.t2_id == team2_id))\
+		.filter((Map.t1_id == team2_id) | (Map.t2_id == team2_id))\
 
-	t2_mrg_mp, t2_mrg_wr, t2_mrg_rwr = get_map_stats(t2_mm_objects, team1_id, "Mirage")
-	t2_inf_mp, t2_inf_wr, t2_inf_rwr = get_map_stats(t2_mm_objects, team1_id, "Inferno")
-	t2_ovp_mp, t2_ovp_wr, t2_ovp_rwr = get_map_stats(t2_mm_objects, team1_id, "Overpass")
-	t2_nuk_mp, t2_nuk_wr, t2_nuk_rwr = get_map_stats(t2_mm_objects, team1_id, "Nuke")
-	t2_vtg_mp, t2_vtg_wr, t2_vtg_rwr = get_map_stats(t2_mm_objects, team1_id, "Vertigo" if "Cache" not in map_names else "Cache")
-	t2_anc_mp, t2_anc_wr, t2_anc_rwr = get_map_stats(t2_mm_objects, team1_id, "Ancient" if "Train" not in map_names else "Train")
-	t2_anu_mp, t2_anu_wr, t2_anu_rwr = get_map_stats(t2_mm_objects, team1_id, "Anubis" if "Dust2" not in map_names else "Dust2")
+	t2_mrg_mp, t2_mrg_wr, t2_mrg_rwr = get_map_stats(t2_mm_objects, team2_id, "Mirage")
+	t2_inf_mp, t2_inf_wr, t2_inf_rwr = get_map_stats(t2_mm_objects, team2_id, "Inferno")
+	t2_ovp_mp, t2_ovp_wr, t2_ovp_rwr = get_map_stats(t2_mm_objects, team2_id, "Overpass")
+	t2_nuk_mp, t2_nuk_wr, t2_nuk_rwr = get_map_stats(t2_mm_objects, team2_id, "Nuke")
+	t2_vtg_mp, t2_vtg_wr, t2_vtg_rwr = get_map_stats(t2_mm_objects, team2_id, "Vertigo" if "Cache" not in map_names else "Cache")
+	t2_anc_mp, t2_anc_wr, t2_anc_rwr = get_map_stats(t2_mm_objects, team2_id, "Ancient" if "Train" not in map_names else "Train")
+	t2_anu_mp, t2_anu_wr, t2_anu_rwr = get_map_stats(t2_mm_objects, team2_id, "Anubis" if "Dust2" not in map_names else "Dust2")
 
 	# map_xp, map_wr, map_rwr, where each is the number of maps exceeding the opponents
 	map_xp, map_wr, map_rwr = 0, 0, 0 
@@ -550,7 +550,7 @@ def get_mapwise_features(row, time_period_days):
 # Generate difference features
 
 def generate_diff_features(df):
-	df['rank_diff'] = df['team2_rank'] - df['team1_rank']
+	# df['rank_diff'] = df['team2_rank'] - df['team1_rank']
 	# df['age_diff'] = df['t1_age'] - df['t2_age']
 	# df['xp_diff'] = df['t1_xp'] - df['t2_xp']
 	# df['mp_diff'] = df['t1_mp'] - df['t2_mp']
@@ -571,6 +571,8 @@ def generate_diff_features(df):
 	# df['sd_plr_kast_diff'] = df['t1_sd_plr_kast'] - df['t2_sd_plr_kast']
 	# df['avg_pistol_wr_diff'] = df['t1_avg_pistol_wr'] - df['t2_avg_pistol_wr']
 	# df['sd_pistol_wr_diff'] = df['t1_sd_pistol_wr'] - df['t2_sd_pistol_wr']
+
+
 
 	features = [
 		'age', 'xp', 'mp', 'wr', 'ws', 'rust',
@@ -689,7 +691,7 @@ def main():
 
 if __name__ == "__main__":
 	# main()
-	df = pd.read_csv('csv/df_full.csv')
+	df = pd.read_csv('csv/df_full_old.csv')
 	print(df.shape)
 
 	start_time = datetime.now()
@@ -697,9 +699,10 @@ if __name__ == "__main__":
 	elapsed_time = (datetime.now() - start_time).total_seconds()
 	print(f"{"Map-stats per team".ljust(25)}: {elapsed_time:.2f} seconds")
 
+	start_time = datetime.now()
+	df = generate_diff_features(df)
+	elapsed_time = (datetime.now() - start_time).total_seconds()
+	print(f"{"Difference features".ljust(25)}: {elapsed_time:.2f} seconds")
 	# df = impute_h2h_values(df)
 
-
-	df.to_csv('csv/df_full_new.csv')
-
-	# df = generate_diff_features(df)
+	df.to_csv('csv/df_full_diff.csv')

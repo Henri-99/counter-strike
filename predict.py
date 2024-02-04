@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ import os
 import csv
 
 # df_full = pd.read_csv('csv/df_full.csv', index_col=0)
-df_full = pd.read_csv('csv/df_30.csv')
+df_full = pd.read_csv('csv/df_full_diff.csv', index_col=0)
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
 
 # data = df_full.drop([''])
@@ -25,31 +25,49 @@ y = data['win']
 
 # Choose k, the number of top features to select. For example, k=10
 from sklearn.feature_selection import SelectKBest, SelectPercentile, SequentialFeatureSelector, f_classif
-def reduce_features():
-	selector = SelectKBest(f_classif, k=20)
-	selector = SelectPercentile(f_classif, percentile=20)
+def reduce_features(output):
+	selector = SelectKBest(f_classif, k=24)
+	# selector = SelectPercentile(f_classif, percentile=20)
 
 	X_new = selector.fit_transform(X, y)
 
 	selected_indices = selector.get_support(indices=True)
 	selected_features = X.columns[selected_indices]
-	print(selected_features)
+
+	scores = selector.scores_
+	feature_names = X.columns
+	
+	features_scores = zip(feature_names, scores)
+	sorted_features_scores = sorted(features_scores, key=lambda x: x[1], reverse=True)[:15]
+
+	if output:
+		# Separate names and scores for plotting
+		names, scores = zip(*sorted_features_scores)
+
+		# Create bar plot
+		plt.figure(figsize=(14, 8))
+		plt.barh(names[::-1], scores[::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+		plt.ylabel('Features')
+		plt.xlabel('F-Values')
+		# plt.xticks(rotation=45)
+		plt.title('')
+		plt.savefig("figures/f-statistik.png", bbox_inches='tight',)
 
 	return data[selected_features]
-# X = reduce_features()
+X = reduce_features(output=False)
 
 # X = data[['lan', 'elim', 'ts_win_prob', 'elo_win_prob', 'h2h_wr', 'h2h_rwp', 
 		#   'age_diff', 'xp_diff', 'mp_diff', 'wr_diff', 'ws_diff', 'rust_diff',
-        #   'avg_hltv_rating_diff', 'sd_hltv_rating_diff', 
-        #   'avg_fk_pr_diff', 'sd_fk_pr_diff', 
-        #   'avg_cl_pr_diff', 'sd_cl_pr_diff', 
-        #   'avg_pl_rating_diff', 'sd_pl_rating_diff', 
-        #   'avg_pl_adr_diff', 'sd_pl_adr_diff', 
-        #   'avg_plr_kast_diff', 'sd_plr_kast_diff', 
-        #   'avg_pistol_wr_diff', 'sd_pistol_wr_diff',
+		#   'avg_hltv_rating_diff', 'sd_hltv_rating_diff', 
+		#   'avg_fk_pr_diff', 'sd_fk_pr_diff', 
+		#   'avg_cl_pr_diff', 'sd_cl_pr_diff', 
+		#   'avg_pl_rating_diff', 'sd_pl_rating_diff', 
+		#   'avg_pl_adr_diff', 'sd_pl_adr_diff', 
+		#   'avg_plr_kast_diff', 'sd_plr_kast_diff', 
+		#   'avg_pistol_wr_diff', 'sd_pistol_wr_diff',
 		#   'mrg_mp_diff', 'mrg_wr_diff', 'mrg_rwr_diff', 
 		#   'inf_mp_diff', 'inf_wr_diff', 'inf_rwr_diff', 
-		#   'ovp_mp_diff', 'ovp_wr_diff', 'ovp_rwr_diff', 
+		#   'ovp_mp_diff', 'ovp_wr_diff', 'ovp_rwr_diff',  
 		#   'nuk_mp_diff', 'nuk_wr_diff', 'nuk_rwr_diff', 
 		#   'vtg_mp_diff', 'vtg_wr_diff', 'vtg_rwr_diff', 
 		#   'anc_mp_diff', 'anc_wr_diff', 'anc_rwr_diff', 
@@ -95,43 +113,45 @@ X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], a
 # for i, v in enumerate(importance):
 #     print('Feature: %0d, Score: %.5f' % (i, v))
 
+def print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba):
+	train_accuracy = accuracy_score(y_train, y_train_pred)
+	accuracy = accuracy_score(y_test, y_pred)
+	confusion = confusion_matrix(y_test, y_pred)
+	report = classification_report(y_test, y_pred, digits = 3)
+	roc_auc = roc_auc_score(y_test, y_pred_proba)
+
+	print(f"Training: {round(train_accuracy, 3)}")
+	print(f"Testing : {round(accuracy, 3)}")
+	print(f"\n{confusion}\n")
+	print(report)
+	print(f"AUC ROC : {round(roc_auc, 3)}")
+
 # Logistic Regression
 from sklearn.linear_model import LogisticRegression
 def logistic_regression():
-	params = {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
+	params = {'C': 0.01, 'penalty': 'l2', 'solver': 'liblinear'}
 	logistic_regressor = LogisticRegression(**params)
 	logistic_regressor.fit(X_train, y_train)
-
 	y_train_pred = logistic_regressor.predict(X_train)
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	print(f"Training Accuracy: {train_accuracy}")
-
 	y_pred = logistic_regressor.predict(X_test)
+	y_pred_proba = logistic_regressor.predict_proba(X_test)[:, 1]
 
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred)
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
-	print(f"Accuracy: {accuracy}")
-	print("Confusion Matrix:")
-	print(confusion)
-	print("Classification Report:")
-	print(report)
 
 	intercept = logistic_regressor.intercept_[0]
 	coefficients = logistic_regressor.coef_[0]
-	print(intercept)
-	print(coefficients)
+	# print(intercept)
+	# print(coefficients)
 
 
 	feature_importances = pd.DataFrame({
 		'Feature': X.columns,
 		'Importance': coefficients
 	}).sort_values(by='Importance', ascending=False)
-	print(feature_importances)
+	print(feature_importances.head(20))
 	
 	probabilities = logistic_regressor.predict_proba(X_test)
-
 
 def logistic_regression_hyperparameter_tuning():
 	# Define the parameter grid for Logistic Regression
@@ -140,8 +160,13 @@ def logistic_regression_hyperparameter_tuning():
 		'penalty': ['l2', 'l1'],            # norm used in regularization
 		'solver': ['liblinear', 'saga']     # alg for optimization
 	}
+	lr_param_grid = {
+		'C': [0.0075, 0.01, 0.0125],
+		'penalty': ['l2'],
+		'solver': ['liblinear']
+	}
 	lr = LogisticRegression(max_iter=10000)
-	lr_grid_search = GridSearchCV(estimator=lr, param_grid=lr_param_grid, cv=5, verbose=2, n_jobs=-1)
+	lr_grid_search = GridSearchCV(estimator=lr, param_grid=lr_param_grid, cv=10, verbose=2, n_jobs=-1)
 
 	lr_grid_search.fit(X_train, y_train)
 
@@ -151,7 +176,8 @@ def logistic_regression_hyperparameter_tuning():
 # Random Forest
 from sklearn.ensemble import RandomForestClassifier
 def random_forest():
-	rf_classifier = RandomForestClassifier(n_estimators = 100, max_depth=2)
+	params = {'max_depth': 5, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 4, 'n_estimators': 200}
+	rf_classifier = RandomForestClassifier(**params)
 
 	rf_classifier.fit(X_train, y_train)
 
@@ -181,14 +207,22 @@ def random_forest():
 
 def random_forest_hyperparameter_tuning():
 	rf_param_grid = {
-		'n_estimators': [50, 100, 200, 350],      # no trees
-		'max_depth': [2, 3, 4, 5, 6, 7],     # max tree depth
-		'min_samples_split': [2, 4, 6],   # samples required to split internal node
-		'min_samples_leaf': [1, 2, 4]     # ensures leaf node has enough samples
-		}
+		'n_estimators': [50, 100, 200, 300],            # Number of trees in the forest
+		'max_features': ['log2', 'sqrt'], #['sqrt', 'log2', 0.2, 0.5], # Number of features to consider at every split
+		'max_depth': [2, 3, 5],                # Maximum depth of the tree
+		# 'min_samples_split': [2,4],                 # Minimum number of samples required to split a node
+		# 'min_samples_leaf': [2,4],                  # Minimum number of samples required at a leaf node
+		# 'bootstrap': [True, False],                     # Method for sampling data points (with or without replacement)
+		# 'class_weight': [None, 'balanced', 'balanced_subsample'], # Weights associated with classes
+		# 'criterion': ['gini', 'entropy'],               # Function to measure the quality of a split
+		# 'max_leaf_nodes': [None, 10, 20, 30, 50],       # Maximum number of leaf nodes
+		# 'min_impurity_decrease': [0.0, 0.1, 0.01, 0.001] # A node will be split if this split induces a decrease of the impurity
+	}
+	# {'max_depth': 7, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 350}
+
 
 	rf = RandomForestClassifier()
-	rf_grid_search = GridSearchCV(estimator=rf, param_grid=rf_param_grid, cv=5, verbose=2, n_jobs=-1)
+	rf_grid_search = GridSearchCV(estimator=rf, param_grid=rf_param_grid, cv=5, verbose=4, n_jobs=-1)
 
 	rf_grid_search.fit(X_train, y_train)
 
@@ -198,25 +232,14 @@ def random_forest_hyperparameter_tuning():
 # Support Vector Machine
 from sklearn.svm import SVC
 def support_vector_machine():
-	svm_classifier = SVC(C=1, gamma='scale', kernel='linear')
-
+	svm_classifier = SVC(C=0.1, gamma='scale', kernel='linear', probability=True)
 	svm_classifier.fit(X_train, y_train)
-
 	y_train_pred = svm_classifier.predict(X_train)
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	print(f"Training Accuracy: {train_accuracy}")
-
 	y_pred = svm_classifier.predict(X_test)
+	y_pred_proba = svm_classifier.predict_proba(X_test)[:, 1]
 
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred)
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
-	print(f"Test Accuracy: {accuracy}")
-	print("Confusion Matrix:")
-	print(confusion)
-	print("Classification Report:")
-	print(report)
 
 def svm_hyperparameter_tuning():
 	svm_param_grid = {
@@ -238,9 +261,10 @@ def svm_hyperparameter_tuning():
 import xgboost as xgb
 
 def xgboost_model():
-	params = {'colsample_bytree': 0.8, 'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 100, 'subsample': 0.7}
-	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, 
-									   eval_metric='logloss', enable_categorical=True)
+	# params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 100, 'subsample': 0.7}
+	# xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
+	params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 50, 'subsample': 0.7}
+	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
 	xgb_classifier.fit(X_train, y_train)
 
@@ -273,14 +297,15 @@ def xgboost_model():
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
-		# 'n_estimators': [100, 200, 300],    # Number of gradient boosted trees
-		# 'learning_rate': [0.001, 0.01, 0.1],  # Step size shrinkage used in update
-		# 'max_depth': [3, 4, 5, 6],             # Maximum depth of a tree
-		'n_estimators': [100],    # Number of gradient boosted trees
+		'n_estimators': [110, 120, 130],    # Number of gradient boosted trees
 		'learning_rate': [0.01],  # Step size shrinkage used in update
-		'max_depth': [3],             # Maximum depth of a tree
-		'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
-		'colsample_bytree': [0.5, 0.6, 0.7] # Subsample ratio of columns when constructing each tree
+		'max_depth': [5],             # Maximum depth of a tree
+		# 'n_estimators': [100],    # Number of gradient boosted trees
+		# 'learning_rate': [0.01],  # Step size shrinkage used in update
+		# 'max_depth': [3],             # Maximum depth of a tree
+		# 'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
+		'subsample': [0.7],       # Subsample ratio of the training instance
+		'colsample_bytree': [0.5] # Subsample ratio of columns when constructing each tree
 	}
 
 	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
@@ -296,76 +321,72 @@ def xgboost_hyperparameter_tuning():
 from sklearn.naive_bayes import GaussianNB
 
 def naive_bayes_model():
-	nb_classifier = GaussianNB()
-
+	nb_classifier = GaussianNB(var_smoothing = 1e-09)
 	nb_classifier.fit(X_train, y_train)
-
 	y_train_pred = nb_classifier.predict(X_train)
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	print(f"Training Accuracy: {train_accuracy}")
-
 	y_pred = nb_classifier.predict(X_test)
+	y_pred_proba = nb_classifier.predict_proba(X_test)[:, 1]
 
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred)
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
-	print(f"Test Accuracy: {accuracy}")
-	print("Confusion Matrix:")
-	print(confusion)
-	print("Classification Report:")
-	print(report)
+def naive_bayes_hyperparameter_tuning():
+	nb_param_grid = {
+		'var_smoothing': [1e-09, 1e-08, 1e-07, 1e-06, 1e-05]  # Variance smoothing parameter
+	}
+
+	nb = GaussianNB()
+
+	nb_grid_search = GridSearchCV(estimator=nb, param_grid=nb_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+	nb_grid_search.fit(X_train, y_train)
+
+	print("Best Parameters for Naive Bayes:", nb_grid_search.best_params_)
+	print("Best Score for Naive Bayes:", nb_grid_search.best_score_)
 
 # k Nearest Neighbours
 from sklearn.neighbors import KNeighborsClassifier
 
 def knn_model():
-    knn_classifier = KNeighborsClassifier(n_neighbors=10)
+	params = {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
+	# knn_classifier = KNeighborsClassifier(**params)
+	knn_classifier = KNeighborsClassifier()
+	knn_classifier.fit(X_train, y_train)
 
-    knn_classifier.fit(X_train, y_train)
+	y_train_pred = knn_classifier.predict(X_train)
+	y_pred = knn_classifier.predict(X_test)
+	y_pred_proba = knn_classifier.predict_proba(X_test)[:,-1]
 
-    y_train_pred = knn_classifier.predict(X_train)
-    train_accuracy = accuracy_score(y_train, y_train_pred)
-    print(f"Training Accuracy: {train_accuracy}")
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
-    y_pred = knn_classifier.predict(X_test)
+def knn_hyperparameter_tuning():
+	knn_param_grid = {
+		'n_neighbors': [3, 5, 7, 10],        # Number of neighbors
+		'weights': ['uniform', 'distance'],  # Weight function used in prediction
+		'p': [1, 2]                          # Power parameter for the Minkowski metric
+	}
 
-    accuracy = accuracy_score(y_test, y_pred)
-    confusion = confusion_matrix(y_test, y_pred)
-    report = classification_report(y_test, y_pred)
+	knn = KNeighborsClassifier()
 
-    print(f"Test Accuracy: {accuracy}")
-    print("Confusion Matrix:")
-    print(confusion)
-    print("Classification Report:")
-    print(report)
+	knn_grid_search = GridSearchCV(estimator=knn, param_grid=knn_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+	knn_grid_search.fit(X_train, y_train)
+
+	print("Best Parameters for KNN:", knn_grid_search.best_params_)
+	print("Best Score for KNN:", knn_grid_search.best_score_)
 
 # Multi-Layer Perceptron
 from sklearn.neural_network import MLPClassifier
 
 def neural_network_model():
-	params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.0001, 'solver': 'sgd'}
+	params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
 								   random_state=42)
-
 	mlp_classifier.fit(X_train, y_train)
-
 	y_train_pred = mlp_classifier.predict(X_train)
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	print(f"Training Accuracy: {train_accuracy}")
-
 	y_pred = mlp_classifier.predict(X_test)
-	y_pred_proba = mlp_classifier.predict_proba(X_test)
+	y_pred_proba = mlp_classifier.predict_proba(X_test)[:,-1]
 
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred)
-
-	print(f"Test Accuracy: {accuracy}")
-	print("Confusion Matrix:")
-	print(confusion)
-	print("Classification Report:")
-	print(report)
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
 	# return y_pred_proba
 	proba_df = pd.DataFrame(y_pred_proba, columns=['0_prob', '1_prob'])
@@ -387,12 +408,12 @@ def neural_network_hyperparameter_tuning():
 		'learning_rate_init': [0.0001, 0.001, 0.01]
 	}
 
-	# nn_param_grid = {
-	#     'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
-	#     'activation': ['tanh'],
-	#     'solver': ['sgd'],
-	#     'learning_rate_init': [0.001]
-	# }
+	nn_param_grid = {
+	    'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
+	    'activation': ['tanh'],
+	    'solver': ['sgd'],
+	    'learning_rate_init': [0.001]
+	}
 
 	mlp = MLPClassifier(max_iter=100000, random_state=42)
 
@@ -404,10 +425,13 @@ def neural_network_hyperparameter_tuning():
 	print("Best Score for Neural Network:", nn_grid_search.best_score_)
 
 if __name__ == "__main__":
-	# neural_network_hyperparameter_tuning()
 	# logistic_regression_hyperparameter_tuning()
 	# random_forest_hyperparameter_tuning()
+	# svm_hyperparameter_tuning()
 	# xgboost_hyperparameter_tuning()
+	# naive_bayes_hyperparameter_tuning()
+	# knn_hyperparameter_tuning()
+	# neural_network_hyperparameter_tuning()
 
 	predict = True
 	while predict:
