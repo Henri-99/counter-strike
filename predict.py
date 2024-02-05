@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve, recall_score, precision_score, f1_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +9,8 @@ import os
 import csv
 
 # df_full = pd.read_csv('csv/df_full.csv', index_col=0)
-df_full = pd.read_csv('csv/df_full_diff.csv', index_col=0)
+# df_full = pd.read_csv('csv/df_full_diff.csv', index_col=0)
+df_full = pd.read_csv('csv/df_15.csv', index_col=0)
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
 
 # data = df_full.drop([''])
@@ -54,7 +55,12 @@ def reduce_features(output):
 		plt.savefig("figures/f-statistik.png", bbox_inches='tight',)
 
 	return data[selected_features]
-X = reduce_features(output=False)
+# X = reduce_features(output=False)
+
+selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
+       't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
+       'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
+# X = X[selected_features]
 
 # X = data[['lan', 'elim', 'ts_win_prob', 'elo_win_prob', 'h2h_wr', 'h2h_rwp', 
 		#   'age_diff', 'xp_diff', 'mp_diff', 'wr_diff', 'ws_diff', 'rust_diff',
@@ -114,22 +120,25 @@ X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], a
 #     print('Feature: %0d, Score: %.5f' % (i, v))
 
 def print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba):
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred, digits = 3)
-	roc_auc = roc_auc_score(y_test, y_pred_proba)
+    train_accuracy = accuracy_score(y_train, y_train_pred)
+    test_accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    roc_auc = roc_auc_score(y_test, y_pred_proba)
 
-	print(f"Training: {round(train_accuracy, 3)}")
-	print(f"Testing : {round(accuracy, 3)}")
-	print(f"\n{confusion}\n")
-	print(report)
-	print(f"AUC ROC : {round(roc_auc, 3)}")
+
+
+    print("Training ACC & Test ACC & Precision & Recall & F1 Score & ROC AUC \\\\ \\hline")
+    print(f"& {train_accuracy:.3f} & {test_accuracy:.3f} & {precision:.3f} & {recall:.3f} & {f1:.3f} & {roc_auc:.3f} \\\\")
+
 
 # Logistic Regression
 from sklearn.linear_model import LogisticRegression
 def logistic_regression():
-	params = {'C': 0.01, 'penalty': 'l2', 'solver': 'liblinear'}
+	# full: C: 0.0001
+	# fs: {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
+	params = {'C': 0.1, 'penalty': 'l1', 'solver': 'saga'}
 	logistic_regressor = LogisticRegression(**params)
 	logistic_regressor.fit(X_train, y_train)
 	y_train_pred = logistic_regressor.predict(X_train)
@@ -160,11 +169,11 @@ def logistic_regression_hyperparameter_tuning():
 		'penalty': ['l2', 'l1'],            # norm used in regularization
 		'solver': ['liblinear', 'saga']     # alg for optimization
 	}
-	lr_param_grid = {
-		'C': [0.0075, 0.01, 0.0125],
-		'penalty': ['l2'],
-		'solver': ['liblinear']
-	}
+	# lr_param_grid = {
+	# 	'C': [0.0075, 0.01, 0.0125],
+	# 	'penalty': ['l2'],
+	# 	'solver': ['liblinear']
+	# }
 	lr = LogisticRegression(max_iter=10000)
 	lr_grid_search = GridSearchCV(estimator=lr, param_grid=lr_param_grid, cv=10, verbose=2, n_jobs=-1)
 
@@ -176,27 +185,16 @@ def logistic_regression_hyperparameter_tuning():
 # Random Forest
 from sklearn.ensemble import RandomForestClassifier
 def random_forest():
-	params = {'max_depth': 5, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 4, 'n_estimators': 200}
+	# full: {'max_depth': 5, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 4, 'n_estimators': 200}
+	# fs: {'max_depth': 5, 'max_features': 'log2', 'n_estimators': 300}
+	params = {'max_depth': 2, 'max_features': 'log2', 'n_estimators': 200}
 	rf_classifier = RandomForestClassifier(**params)
-
 	rf_classifier.fit(X_train, y_train)
-
 	y_train_pred = rf_classifier.predict(X_train)
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	print(f"Training Accuracy: {train_accuracy}")
-
 	y_pred = rf_classifier.predict(X_test)
+	y_pred_proba = rf_classifier.predict_proba(X_test)[:,-1]
 
-	# Evaluate the model
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred)
-
-	print(f"Test Accuracy: {accuracy}")
-	print("Confusion Matrix:")
-	print(confusion)
-	print("Classification Report:")
-	print(report)
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
 	# Feature importances
 	feature_importances = pd.DataFrame({
@@ -232,14 +230,16 @@ def random_forest_hyperparameter_tuning():
 # Support Vector Machine
 from sklearn.svm import SVC
 def support_vector_machine():
-	svm_classifier = SVC(C=0.1, gamma='scale', kernel='linear', probability=True)
+	# full = (C=0.1, gamma='scale', kernel='linear', probability=True)
+	# fs = {'C': 0.1, 'gamma': 'scale', 'kernel': 'rbf'}
+	params = {'C': 0.1, 'gamma': 'scale', 'kernel': 'linear'}
+	svm_classifier = SVC(**params, probability=True)
 	svm_classifier.fit(X_train, y_train)
 	y_train_pred = svm_classifier.predict(X_train)
 	y_pred = svm_classifier.predict(X_test)
 	y_pred_proba = svm_classifier.predict_proba(X_test)[:, 1]
 
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
-
 
 def svm_hyperparameter_tuning():
 	svm_param_grid = {
@@ -260,36 +260,32 @@ def svm_hyperparameter_tuning():
 # eXtreme Gradient Boosting
 import xgboost as xgb
 
-def xgboost_model():
+def xgboost_model(sfs = False):
 	# params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 100, 'subsample': 0.7}
 	# xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
-	params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 50, 'subsample': 0.7}
+	# full params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 50, 'subsample': 0.7}
+	params = {'learning_rate': 0.025, 'max_depth': 2, 'n_estimators': 150}
 	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
+	if sfs:
+		sfs = SequentialFeatureSelector(xgb_classifier, n_features_to_select=15, direction="forward")
+		sfs.fit(X, y)
+		selected_features = sfs.get_support()
+		feature_names = X.columns  # Assuming X is a DataFrame
+		selected_feature_names = feature_names[selected_features]
+		print(selected_feature_names)
+
 	xgb_classifier.fit(X_train, y_train)
-
 	y_train_pred = xgb_classifier.predict(X_train)
-	train_accuracy = accuracy_score(y_train, y_train_pred)
-	print(f"Training Accuracy: {train_accuracy}")
-
 	y_pred = xgb_classifier.predict(X_test)
+	y_pred_proba = xgb_classifier.predict_proba(X_test)[:, 1]
 
-	accuracy = accuracy_score(y_test, y_pred)
-	confusion = confusion_matrix(y_test, y_pred)
-	report = classification_report(y_test, y_pred)
-
-	print(f"Test Accuracy: {accuracy}")
-	print("Confusion Matrix:")
-	print(confusion)
-	print("Classification Report:")
-	print(report)
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
 	fig, ax = plt.subplots(figsize=(10, 8))
 	xgb.plot_importance(xgb_classifier, importance_type='gain', ax=ax, title='Feature Importance', xlabel='F score', max_num_features=18)
 
-	# Adjusting feature names in the plot
 	feature_importances = xgb_classifier.get_booster().get_score(importance_type='gain')
-	# Match feature names with their importance scores
 	# sorted_features = [feature_names[int(f[1:])] for f in sorted(feature_importances, key=lambda x: feature_importances[x])]
 	# ax.set_yticklabels(sorted_features, rotation='horizontal')
 
@@ -297,20 +293,17 @@ def xgboost_model():
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
-		'n_estimators': [110, 120, 130],    # Number of gradient boosted trees
-		'learning_rate': [0.01],  # Step size shrinkage used in update
-		'max_depth': [5],             # Maximum depth of a tree
-		# 'n_estimators': [100],    # Number of gradient boosted trees
-		# 'learning_rate': [0.01],  # Step size shrinkage used in update
-		# 'max_depth': [3],             # Maximum depth of a tree
+		'n_estimators': [150, 200, 250],    # Number of gradient boosted trees
+		'learning_rate': [0.025, 0.05, 0.075],  # Step size shrinkage used in update
+		'max_depth': [1, 2, 3],             # Maximum depth of a tree
 		# 'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
-		'subsample': [0.7],       # Subsample ratio of the training instance
-		'colsample_bytree': [0.5] # Subsample ratio of columns when constructing each tree
+		# 'subsample': [0.7],       # Subsample ratio of the training instance
+		# 'colsample_bytree': [0.5] # Subsample ratio of columns when constructing each tree
 	}
 
 	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
-	xgb_grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=xgb_param_grid, cv=5, verbose=2, n_jobs=-1)
+	xgb_grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=xgb_param_grid, cv=4, verbose=2, n_jobs=-1)
 
 	xgb_grid_search.fit(X_train, y_train)
 
@@ -347,9 +340,9 @@ def naive_bayes_hyperparameter_tuning():
 from sklearn.neighbors import KNeighborsClassifier
 
 def knn_model():
-	params = {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
-	# knn_classifier = KNeighborsClassifier(**params)
-	knn_classifier = KNeighborsClassifier()
+	# full params = {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
+	params = {'n_neighbors': 15, 'p': 1, 'weights': 'uniform'} 
+	knn_classifier = KNeighborsClassifier(**params)
 	knn_classifier.fit(X_train, y_train)
 
 	y_train_pred = knn_classifier.predict(X_train)
@@ -360,9 +353,11 @@ def knn_model():
 
 def knn_hyperparameter_tuning():
 	knn_param_grid = {
-		'n_neighbors': [3, 5, 7, 10],        # Number of neighbors
-		'weights': ['uniform', 'distance'],  # Weight function used in prediction
-		'p': [1, 2]                          # Power parameter for the Minkowski metric
+		'n_neighbors': [13, 14, 15, 16, 17, 18, 19],        # Number of neighbors
+		'weights': ['uniform',],  # Weight function used in prediction
+		'p': [1]                          # Power parameter for the Minkowski metric
+		# 'weights': ['uniform', 'distance'],  # Weight function used in prediction
+		# 'p': [1, 2]                          # Power parameter for the Minkowski metric
 	}
 
 	knn = KNeighborsClassifier()
@@ -378,7 +373,8 @@ def knn_hyperparameter_tuning():
 from sklearn.neural_network import MLPClassifier
 
 def neural_network_model():
-	params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	# full params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
 								   random_state=42)
 	mlp_classifier.fit(X_train, y_train)
@@ -389,16 +385,16 @@ def neural_network_model():
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
 	# return y_pred_proba
-	proba_df = pd.DataFrame(y_pred_proba, columns=['0_prob', '1_prob'])
-	epsilon = 1e-6
-	proba_df['t1_odds'] = 1 / (proba_df['1_prob'] + epsilon)
-	proba_df['t2_odds'] = 1 / (proba_df['0_prob'] + epsilon)
+	# proba_df = pd.DataFrame(y_pred_proba, columns=['0_prob', '1_prob'])
+	# epsilon = 1e-6
+	# proba_df['t1_odds'] = 1 / (proba_df['1_prob'] + epsilon)
+	# proba_df['t2_odds'] = 1 / (proba_df['0_prob'] + epsilon)
 
-	proba_df.index = df_full.iloc[split_index:].index
+	# proba_df.index = df_full.iloc[split_index:].index
 
-	df_info = df_full.iloc[split_index:]
-	result_df = pd.concat([df_info, proba_df], axis=1)
-	result_df.to_csv('csv/predicted_probabilities.csv', index=False)
+	# df_info = df_full.iloc[split_index:]
+	# result_df = pd.concat([df_info, proba_df], axis=1)
+	# result_df.to_csv('csv/predicted_probabilities.csv', index=False)
 
 def neural_network_hyperparameter_tuning():
 	nn_param_grid = {
@@ -407,13 +403,20 @@ def neural_network_hyperparameter_tuning():
 		'solver': ['sgd', 'adam'],
 		'learning_rate_init': [0.0001, 0.001, 0.01]
 	}
-
 	nn_param_grid = {
-	    'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
-	    'activation': ['tanh'],
-	    'solver': ['sgd'],
-	    'learning_rate_init': [0.001]
+		'hidden_layer_sizes': [(50,),(100,),(200,)],
+		'activation': ['tanh'],
+		'solver': ['adam'],
+		'learning_rate_init': [0.0001]
 	}
+	{'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
+
+	# nn_param_grid = {
+	#     'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
+	#     'activation': ['tanh'],
+	#     'solver': ['sgd'],
+	#     'learning_rate_init': [0.001]
+	# }
 
 	mlp = MLPClassifier(max_iter=100000, random_state=42)
 
@@ -453,4 +456,18 @@ if __name__ == "__main__":
 				neural_network_model()
 			case '7':
 				knn_model()
+			case '11':
+				logistic_regression_hyperparameter_tuning()
+			case '22':
+				random_forest_hyperparameter_tuning()
+			case '33':
+				svm_hyperparameter_tuning()
+			case '44':
+				xgboost_hyperparameter_tuning()
+			case '55':
+				naive_bayes_hyperparameter_tuning()
+			case '66':
+				neural_network_hyperparameter_tuning()
+			case '77':
+				knn_hyperparameter_tuning()
 		pause = input("\nPress ENTER to go back\n\n> ")
