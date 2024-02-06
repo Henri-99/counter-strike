@@ -3,7 +3,7 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, 
 import matplotlib.pyplot as plt
 
 # df = pd.read_csv('csv/df_full_diff.csv')
-df = pd.read_csv('csv/df_15.csv')
+df = pd.read_csv('csv/df_lan.csv')
 print(df.shape)
 y = df['win']
 X = df['ts_win_prob']
