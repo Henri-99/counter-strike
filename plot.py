@@ -105,10 +105,3 @@ def corr_plot():
     plt.savefig("figures/corr_plot.png", bbox_inches='tight')
 
 corr_plot()
-
-# Steps for today
-# 1. Generate all features for full dataset (map and diff features)
-# 2. Filter dataset to ensure one top-30 team is playing in each record
-# 3. Get list of most important features using different techniques
-# 4. Using 3 of the top features, calculate accuracy, F1-score, AUC ROC
-# 5. Write up section

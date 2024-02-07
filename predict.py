@@ -4,6 +4,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import GridSearchCV
 import os
 import csv
@@ -57,12 +58,21 @@ def reduce_features(output):
 		plt.savefig("figures/f-statistik.png", bbox_inches='tight',)
 
 	return data[selected_features]
-X = reduce_features(output=True)
+# X = reduce_features(output=False)
 
-selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
-       't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
-       'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
-# X = X[selected_features]
+# corr_matrix = pd.concat((y, X), axis = 1).corr()
+
+# # Filter out features with a correlation below the threshold
+# threshold = 0.05
+# plt.figure(figsize=(12, 10))
+# sns.heatmap(corr_matrix, annot=False, fmt=".2f", cmap='coolwarm')
+# plt.title("Correlation Matrix with 'win'")
+# plt.savefig("figures/corr_plot.png", bbox_inches='tight')
+
+# selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
+#        't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
+#        'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
+# # X = X[selected_features]
 
 # Chronological split
 split_index = int(0.8 * len(data))
@@ -105,17 +115,17 @@ X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], a
 #     print('Feature: %0d, Score: %.5f' % (i, v))
 
 def print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba):
-    train_accuracy = accuracy_score(y_train, y_train_pred)
-    test_accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
-    roc_auc = roc_auc_score(y_test, y_pred_proba)
+    train_accuracy = accuracy_score(y_train, y_train_pred)*100
+    test_accuracy = accuracy_score(y_test, y_pred)*100
+    precision = precision_score(y_test, y_pred)*100
+    recall = recall_score(y_test, y_pred)*100
+    f1 = f1_score(y_test, y_pred)*100
+    roc_auc = roc_auc_score(y_test, y_pred_proba)*100
 
 
 
     print("Training ACC & Test ACC & Precision & Recall & F1 Score & ROC AUC \\\\ \\hline")
-    print(f"& {train_accuracy:.3f} & {test_accuracy:.3f} & {precision:.3f} & {recall:.3f} & {f1:.3f} & {roc_auc:.3f} \\\\")
+    print(f"& {train_accuracy:.1f} & {test_accuracy:.1f} & {precision:.1f} & {recall:.1f} & {f1:.1f} & {roc_auc:.1f} \\\\")
 
 # Logistic Regression
 from sklearn.linear_model import LogisticRegression
@@ -123,42 +133,37 @@ def logistic_regression():
 	# full: C: 0.0001
 	# fs: {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
 	# params = {'C': 0.1, 'penalty': 'l1', 'solver': 'saga'}
-	params = {'C': 0.01, 'penalty': 'l2', 'solver': 'liblinear'}
+	params = {'C': 0.0001, 'penalty': 'l2', 'solver': 'liblinear'}
 	logistic_regressor = LogisticRegression(**params)
 	logistic_regressor.fit(X_train, y_train)
 	y_train_pred = logistic_regressor.predict(X_train)
 	y_pred = logistic_regressor.predict(X_test)
 	y_pred_proba = logistic_regressor.predict_proba(X_test)
 
-	intercept = logistic_regressor.intercept_[0]
 	coefficients = logistic_regressor.coef_[0]
-	# print(intercept)
-	# print(coefficients)
-
-
 	feature_importances = pd.DataFrame({
 		'Feature': X.columns,
-		'Importance': coefficients
-	}).sort_values(by='Importance', ascending=False)
-	print(feature_importances.head(20))
-	
+		'Importance': coefficients,
+		'Absolute Importance': abs(coefficients)
+	}).sort_values(by='Absolute Importance', ascending=False)[:16] # Sort by absolute value
+
+	plt.figure(figsize=(14, 8))
+	plt.barh(feature_importances['Feature'][::-1], feature_importances['Absolute Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+	plt.ylabel('Features')
+	plt.xlabel('Absolute Coefficient')
+	plt.title('Logistic Regression Feature Importances')
+	plt.savefig("figures/logreg-imp.png", bbox_inches='tight',)
 
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
-
 	return y_pred_proba
 
 def logistic_regression_hyperparameter_tuning():
-	# Define the parameter grid for Logistic Regression
 	lr_param_grid = {
-		'C': [0.01, 1, 10],     # inverse of regularization strength
-		'penalty': ['l2', 'l1', 'elasticnet'],            # norm used in regularization
-		'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']     # alg for optimization
+		'C': [0.01, 1, 10],
+		'penalty': ['l2', 'l1', 'elasticnet'],
+		'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
 	}
-	# lr_param_grid = {
-	# 	'C': [0.0075, 0.01, 0.0125],
-	# 	'penalty': ['l2'],
-	# 	'solver': ['liblinear']
-	# }
+
 	lr = LogisticRegression(max_iter=10000)
 	lr_grid_search = GridSearchCV(estimator=lr, param_grid=lr_param_grid, cv=4, verbose=2, n_jobs=-1)
 
@@ -182,14 +187,21 @@ def random_forest():
 
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
 
-	return y_pred_proba
 
 	# Feature importances
-	feature_importances = pd.DataFrame({
+	importances = rf_classifier.feature_importances_
+	feature_importances_rf = pd.DataFrame({
 		'Feature': X.columns,
-		'Importance': rf_classifier.feature_importances_
-	}).sort_values(by='Importance', ascending=False)
-	print(feature_importances)
+		'Importance': importances
+	}).sort_values(by='Importance', ascending=False)[:16]  # Get top 16 features
+	plt.figure(figsize=(14, 8))
+	plt.barh(feature_importances_rf['Feature'][::-1], feature_importances_rf['Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+	plt.ylabel('Features')
+	plt.xlabel('Importance')
+	plt.title('Random Forest Feature Importances')
+	plt.savefig("figures/rf-imp.png", bbox_inches='tight')
+
+	return y_pred_proba
 
 def random_forest_hyperparameter_tuning():
 	rf_param_grid = {
@@ -229,6 +241,23 @@ def support_vector_machine():
 
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
 
+	coefficients = svm_classifier.coef_[0]
+
+	# Convert to DataFrame
+	feature_importances_svm = pd.DataFrame({
+		'Feature': X.columns,
+		'Coefficient': coefficients,
+		'Absolute Coefficient': abs(coefficients)
+	}).sort_values(by='Absolute Coefficient', ascending=False)[:16]  # Get top 16 features
+
+	# Plot
+	plt.figure(figsize=(14, 8))
+	plt.barh(feature_importances_svm['Feature'][::-1], feature_importances_svm['Absolute Coefficient'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+	plt.ylabel('Features')
+	plt.xlabel('Absolute Coefficient')
+	plt.title('SVM (Linear Kernel) Feature Importances')
+	plt.savefig("figures/svm-imp.png", bbox_inches='tight')
+
 	return y_pred_proba
 
 def svm_hyperparameter_tuning():
@@ -254,7 +283,7 @@ def xgboost_model(sfs = False):
 	# params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 100, 'subsample': 0.7}
 	# xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 	# full params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 50, 'subsample': 0.7}
-	params = {'learning_rate': 0.025, 'max_depth': 2, 'n_estimators': 200}
+	params = {'colsample_bytree': 1, 'learning_rate': 0.08, 'max_depth': 1, 'n_estimators': 208, 'subsample': 0.7}
 	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
 	if sfs:
@@ -273,29 +302,34 @@ def xgboost_model(sfs = False):
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
 
 
-	fig, ax = plt.subplots(figsize=(10, 8))
-	xgb.plot_importance(xgb_classifier, importance_type='gain', ax=ax, title='Feature Importance', xlabel='F score', max_num_features=18)
+	importances = xgb_classifier.feature_importances_
+	feature_importances_xgb = pd.DataFrame({
+		'Feature': X_train.columns,
+		'Importance': importances
+	}).sort_values(by='Importance', ascending=False)[:16]  # Top 16 features
+	plt.figure(figsize=(14, 8))
+	plt.barh(feature_importances_xgb['Feature'][::-1], feature_importances_xgb['Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+	plt.ylabel('Features')
+	plt.xlabel('Importance')
+	plt.title('XGBoost Feature Importances')
+	plt.savefig("figures/xgb-imp.png", bbox_inches='tight')
 
-	feature_importances = xgb_classifier.get_booster().get_score(importance_type='gain')
-	# sorted_features = [feature_names[int(f[1:])] for f in sorted(feature_importances, key=lambda x: feature_importances[x])]
-	# ax.set_yticklabels(sorted_features, rotation='horizontal')
-	plt.savefig('figures/xgboost_var_imp.png')
+
 
 	return y_pred_proba
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
-		'n_estimators': [150, 200, 250],    # Number of gradient boosted trees
-		'learning_rate': [0.025, 0.05, 0.075],  # Step size shrinkage used in update
-		'max_depth': [1, 2, 3],             # Maximum depth of a tree
-		# 'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
+		'n_estimators': [208],    # Number of gradient boosted trees
+		'learning_rate': [0.08],  # Step size shrinkage used in update
+		'max_depth': [1],             # Maximum depth of a tree
+		'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
 		# 'subsample': [0.7],       # Subsample ratio of the training instance
-		# 'colsample_bytree': [0.5] # Subsample ratio of columns when constructing each tree
+		'colsample_bytree': [0.5, 0.75, 1] # Subsample ratio of columns when constructing each tree
 	}
-
 	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
-	xgb_grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=xgb_param_grid, cv=4, verbose=2, n_jobs=-1)
+	xgb_grid_search = GridSearchCV(estimator=xgb_classifier, param_grid=xgb_param_grid, cv=3, verbose=2, n_jobs=-1)
 
 	xgb_grid_search.fit(X_train, y_train)
 
@@ -396,19 +430,6 @@ def neural_network_model():
 
 	# 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
 
-
-	# return y_pred_proba
-	# proba_df = pd.DataFrame(y_pred_proba, columns=['0_prob', '1_prob'])
-	# epsilon = 1e-6
-	# proba_df['t1_odds'] = 1 / (proba_df['1_prob'] + epsilon)
-	# proba_df['t2_odds'] = 1 / (proba_df['0_prob'] + epsilon)
-
-	# proba_df.index = df_full.iloc[split_index:].index
-
-	# df_info = df_full.iloc[split_index:]
-	# result_df = pd.concat([df_info, proba_df], axis=1)
-	# result_df.to_csv('csv/predicted_probabilities.csv', index=False)
-
 def neural_network_hyperparameter_tuning():
 	nn_param_grid = {
 		'hidden_layer_sizes': [(12,12,12), (11,11,11),(10,10,10)],
@@ -439,28 +460,28 @@ def neural_network_hyperparameter_tuning():
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 def get_betting_report():
-	# y_proba = pd.DataFrame(knn_model(), columns=['prob_0', 'prob_1'])
-	y_proba = pd.DataFrame(knn_model(), columns=['prob_0', 'prob_1'])
+	y_proba = pd.DataFrame(neural_network_model(), columns=['prob_0', 'prob_1'])
+	# y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	x = df_full.iloc[split_index:].reset_index(drop=True)
 	df = pd.concat((x, y_proba), axis=1)
 	matches = pd.read_csv('csv/odds.csv')
 	merged_df = pd.merge(df, matches, on='match_id', how='inner')
-	merged_df = merged_df[['match_id', 'datetime_x', 'team1_x', 'team2_x', 'win', 'prob_1', 'prob_0', 't1_odds', 't2_odds', 't1_prob', 't2_prob', 't1_n_prob', 't2_n_prob', 'event_id', 'event_name']]
+
+	merged_df['prob_1'] = merged_df['ts_win_prob']
+	merged_df['prob_0'] = 1- merged_df['ts_win_prob']
+	merged_df = merged_df[['match_id', 'datetime_x', 'team1_x', 'team2_x', 'win', 'ts_win_prob', 'prob_1', 'prob_0', 't1_odds', 't2_odds', 't1_prob', 't2_prob', 't1_n_prob', 't2_n_prob', 'event_id', 'event_name']]
 	merged_df.to_csv('csv/pred_odds.csv')
 
 	correlation = merged_df['prob_1'].corr(merged_df['t1_n_prob'])
 	mae = mean_absolute_error(merged_df['prob_1'], merged_df['t1_n_prob'])
 	rmse = np.sqrt(mean_squared_error(merged_df['prob_1'], merged_df['t1_n_prob']))
 
-	# Check which columns have predicted odds better than offered odds
-		# check prob_1 > t1_prob, then bet
-	# make bets and calculate outcome
-	# sum up
+	no_matches = len(merged_df[['match_id']])
 	no_bets, wins, losses, profit = 0, 0, 0, 0
 	BET_AMOUNT = 1
 	for index,row in merged_df.iterrows():
 		teams_str = (f"{row['team1_x']} : {row['team2_x']}").ljust(34)
-		print(f"{teams_str} | {f"{row['t1_odds']:.2f}".rjust(5)} : {f"{row['t2_odds']:.2f}".rjust(5)} | {round(1/row['prob_1'], 2):.2f} : {round(1/row['prob_0'],2):.2f}", end = " | ")
+		print(f"{teams_str} | {f"{row['t1_odds']:.2f}".rjust(5)} : {f"{row['t2_odds']:.2f}".ljust(5)} | {f"{round(1/row['prob_1'], 2):.2f}".rjust(5)} : {f"{round(1/row['prob_0'],2):.2f}".ljust(5)}", end = " | ")
 		if row['prob_1'] > row['t1_prob']:
 			no_bets += 1 
 			print(f"BETTING {row['team1_x'].ljust(17)}", end = " ")
@@ -488,17 +509,16 @@ def get_betting_report():
 	
 	print(len(merged_df))
 	
-	print(correlation, mae, rmse, end = "\n\n")
-	print(no_bets, wins, losses, profit)
+	print(f"& {round(correlation*100,2)} & {round(mae*100,2)} & {round(rmse*100,2)} & {round(100*no_bets/no_matches,2)} & {round(100*wins/no_bets,2)} & {round(100*losses/no_bets,2)} & {round(profit,2)}")
 
 		
 
 
 
 if __name__ == "__main__":
-	get_betting_report()
+	# get_betting_report()
 
-	predict = False
+	predict = True
 	while predict:
 		# os.system('cls')
 		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\n> ")
