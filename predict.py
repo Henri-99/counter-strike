@@ -301,18 +301,36 @@ def xgboost_model(sfs = False):
 
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
 
+	# Plotting
+	fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba[:,-1])
+	ts_fpr, ts_tpr, ts_thresholds = roc_curve(y_test, X_test['ts_win_prob'])
+	auc = roc_auc_score(y_test, y_pred_proba[:,-1])
+	plt.figure(figsize=(9, 8))
+	plt.plot(fpr, tpr, color='#73879d', lw=2,  label=f'XGBoost ROC curve')
+	plt.plot(ts_fpr, ts_tpr, color='red', lw=2, label='TrueSkill ROC curve')
+	plt.plot([0, 1], [0, 1], color='black', lw=1, linestyle='--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.legend(loc="lower right")
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('Receiver Operating Characteristic Curve')
+	# plt.legend(loc="lower right")
+	plt.savefig("figures/xgb-auc.png", bbox_inches='tight')
 
-	importances = xgb_classifier.feature_importances_
-	feature_importances_xgb = pd.DataFrame({
-		'Feature': X_train.columns,
-		'Importance': importances
-	}).sort_values(by='Importance', ascending=False)[:16]  # Top 16 features
-	plt.figure(figsize=(14, 8))
-	plt.barh(feature_importances_xgb['Feature'][::-1], feature_importances_xgb['Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
-	plt.ylabel('Features')
-	plt.xlabel('Importance')
-	plt.title('XGBoost Feature Importances')
-	plt.savefig("figures/xgb-imp.png", bbox_inches='tight')
+
+
+	# importances = xgb_classifier.feature_importances_
+	# feature_importances_xgb = pd.DataFrame({
+	# 	'Feature': X_train.columns,
+	# 	'Importance': importances
+	# }).sort_values(by='Importance', ascending=False)[:16]  # Top 16 features
+	# plt.figure(figsize=(14, 8))
+	# plt.barh(feature_importances_xgb['Feature'][::-1], feature_importances_xgb['Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+	# plt.ylabel('Features')
+	# plt.xlabel('Importance')
+	# plt.title('XGBoost Feature Importances')
+	# plt.savefig("figures/xgb-imp.png", bbox_inches='tight')
 
 
 
@@ -404,7 +422,7 @@ from sklearn.neural_network import MLPClassifier
 def neural_network_model():
 	# full params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 	# params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
-	params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (10,100,10), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
 								   random_state=42)
 	mlp_classifier.fit(X_train, y_train)
@@ -432,13 +450,14 @@ def neural_network_model():
 
 def neural_network_hyperparameter_tuning():
 	nn_param_grid = {
-		'hidden_layer_sizes': [(12,12,12), (11,11,11),(10,10,10)],
-		# 'hidden_layer_sizes': [(50,),(100,), (200,), (50,50), (100,100)],
+		# 'hidden_layer_sizes': [(12,12,12), (11,11,11),(10,10,10)],
+		'hidden_layer_sizes': [(5,4), (6,4), (5,3), (6,3), (5,2), (5,1)],
 		'activation': ['tanh'],
 		# 'activation': ['tanh', 'relu'],
 		'solver': ['sgd'],
 		# 'solver': ['sgd', 'adam'],
-		'learning_rate_init': [0.002, 0.001],
+		'learning_rate_init': [0.001],
+		# 'learning_rate_init': [0.002, 0.001],
 		'alpha' : [0.001]
 	}
 
@@ -451,7 +470,7 @@ def neural_network_hyperparameter_tuning():
 
 	mlp = MLPClassifier(max_iter=100000, random_state=42)
 
-	nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=4, verbose=3, n_jobs=-1)
+	nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=3, verbose=3, n_jobs=-1)
 
 	nn_grid_search.fit(X_train, y_train)
 
