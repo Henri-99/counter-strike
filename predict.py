@@ -11,7 +11,7 @@ import csv
 
 # df_full = pd.read_csv('csv/df_full.csv', index_col=0)
 df_full = pd.read_csv('csv/df_full_diff.csv', index_col=0)
-# df_full = pd.read_csv('csv/df_30.csv', index_col=0)
+# df_full = pd.read_csv('csv/df_15.csv', index_col=0)
 # df_full = pd.read_csv('csv/df_bo3.csv', index_col=0)
 # df_full = pd.read_csv('csv/df_lan.csv', index_col=0)
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
@@ -69,10 +69,10 @@ def reduce_features(output):
 # plt.title("Correlation Matrix with 'win'")
 # plt.savefig("figures/corr_plot.png", bbox_inches='tight')
 
-# selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
-#        't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
-#        'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
-# # X = X[selected_features]
+selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
+       't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
+       'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
+X = X[selected_features]
 
 # Chronological split
 split_index = int(0.8 * len(data))
@@ -133,7 +133,8 @@ def logistic_regression():
 	# full: C: 0.0001
 	# fs: {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
 	# params = {'C': 0.1, 'penalty': 'l1', 'solver': 'saga'}
-	params = {'C': 0.0001, 'penalty': 'l2', 'solver': 'liblinear'}
+	# params = {'C': 0.0001, 'penalty': 'l2', 'solver': 'liblinear'}
+	params = {'C': 1, 'penalty': 'l2', 'solver': 'liblinear'}
 	logistic_regressor = LogisticRegression(**params)
 	logistic_regressor.fit(X_train, y_train)
 	y_train_pred = logistic_regressor.predict(X_train)
@@ -284,6 +285,7 @@ def xgboost_model(sfs = False):
 	# xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 	# full params = {'colsample_bytree': 0.5, 'learning_rate': 0.01, 'max_depth': 4, 'n_estimators': 50, 'subsample': 0.7}
 	params = {'colsample_bytree': 1, 'learning_rate': 0.08, 'max_depth': 1, 'n_estimators': 208, 'subsample': 0.7}
+	# params = {'learning_rate': 0.025, 'max_depth': 2, 'n_estimators': 200}
 	xgb_classifier = xgb.XGBClassifier(**params, use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
 	if sfs:
@@ -338,12 +340,11 @@ def xgboost_model(sfs = False):
 
 def xgboost_hyperparameter_tuning():
 	xgb_param_grid = {
-		'n_estimators': [208],    # Number of gradient boosted trees
-		'learning_rate': [0.08],  # Step size shrinkage used in update
-		'max_depth': [1],             # Maximum depth of a tree
-		'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
-		# 'subsample': [0.7],       # Subsample ratio of the training instance
-		'colsample_bytree': [0.5, 0.75, 1] # Subsample ratio of columns when constructing each tree
+		'n_estimators': [50, 60, 70, 80, 90],    # Number of gradient boosted trees
+		'learning_rate': [0.1],  # Step size shrinkage used in update
+		'max_depth': [1,2 ],             # Maximum depth of a tree
+		# 'subsample': [0.7, 0.8, 0.9],       # Subsample ratio of the training instance
+		# 'colsample_bytree': [0.5, 0.75, 1] # Subsample ratio of columns when constructing each tree
 	}
 	xgb_classifier = xgb.XGBClassifier(use_label_encoder=False, eval_metric='logloss', enable_categorical=True)
 
@@ -422,7 +423,8 @@ from sklearn.neural_network import MLPClassifier
 def neural_network_model():
 	# full params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 	# params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
-	params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
+	# params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
+	params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (10,100,10), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
 								   random_state=42)
 	mlp_classifier.fit(X_train, y_train)
@@ -479,15 +481,15 @@ def neural_network_hyperparameter_tuning():
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 def get_betting_report():
-	y_proba = pd.DataFrame(neural_network_model(), columns=['prob_0', 'prob_1'])
+	y_proba = pd.DataFrame(naive_bayes_model(), columns=['prob_0', 'prob_1'])
 	# y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	x = df_full.iloc[split_index:].reset_index(drop=True)
 	df = pd.concat((x, y_proba), axis=1)
 	matches = pd.read_csv('csv/odds.csv')
 	merged_df = pd.merge(df, matches, on='match_id', how='inner')
 
-	merged_df['prob_1'] = merged_df['ts_win_prob']
-	merged_df['prob_0'] = 1- merged_df['ts_win_prob']
+	# merged_df['prob_1'] = merged_df['ts_win_prob']
+	# merged_df['prob_0'] = 1- merged_df['ts_win_prob']
 	merged_df = merged_df[['match_id', 'datetime_x', 'team1_x', 'team2_x', 'win', 'ts_win_prob', 'prob_1', 'prob_0', 't1_odds', 't2_odds', 't1_prob', 't2_prob', 't1_n_prob', 't2_n_prob', 'event_id', 'event_name']]
 	merged_df.to_csv('csv/pred_odds.csv')
 
@@ -499,32 +501,43 @@ def get_betting_report():
 	no_bets, wins, losses, profit = 0, 0, 0, 0
 	BET_AMOUNT = 1
 	for index,row in merged_df.iterrows():
-		teams_str = (f"{row['team1_x']} : {row['team2_x']}").ljust(34)
-		print(f"{teams_str} | {f"{row['t1_odds']:.2f}".rjust(5)} : {f"{row['t2_odds']:.2f}".ljust(5)} | {f"{round(1/row['prob_1'], 2):.2f}".rjust(5)} : {f"{round(1/row['prob_0'],2):.2f}".ljust(5)}", end = " | ")
-		if row['prob_1'] > row['t1_prob']:
+		teams_str = (f"{row['team1_x']} : {row['team2_x']}").ljust(35)
+		t1_prediction = row['prob_1']
+		t2_prediction = row['prob_0']
+		t1_gen_odds = 1/t1_prediction
+		t2_gen_odds = 1/t2_prediction
+		if t1_gen_odds > 99.99:
+			t1_gen_odds = 99.99
+		if t2_gen_odds > 99.99:
+			t2_gen_odds = 99.99
+		t1_b_odds = row['t1_odds']
+		t2_b_odds = row['t2_odds']
+
+		print(f"{teams_str} | {f"{t1_b_odds:.2f}".rjust(5)} : {f"{t2_b_odds:.2f}".ljust(5)} | {f"{round(t1_gen_odds, 2):.2f}".rjust(5)} : {f"{round(t2_gen_odds,2):.2f}".ljust(5)}", end = " | ")
+		if t1_gen_odds < t1_b_odds:
 			no_bets += 1 
 			print(f"BETTING {row['team1_x'].ljust(17)}", end = " ")
 			if row['win'] == 1:
 				wins += 1
-				profit += BET_AMOUNT * row['t1_odds']
-				print(f"WON  + {BET_AMOUNT * row['t1_odds']}")
+				profit += BET_AMOUNT * t1_b_odds
+				print(f"WON  + {BET_AMOUNT * t1_b_odds}")
 			else:
 				losses += 1
 				profit -= BET_AMOUNT
 				print(f"LOSS - {BET_AMOUNT}")
-		elif row['prob_0'] > row['t2_prob']:
+		elif t2_gen_odds < t2_b_odds:
 			print(f"BETTING {row['team2_x'].ljust(17)}", end = " ")
 			no_bets += 1
 			if row['win'] == 0:
 				wins += 1
-				profit += BET_AMOUNT * row['t2_odds']
-				print(f"WON  + {BET_AMOUNT * row['t2_odds']}")
+				profit += BET_AMOUNT * t2_b_odds
+				print(f"WON  + {BET_AMOUNT * t2_b_odds}")
 			else:
 				losses += 1
 				profit -= BET_AMOUNT
 				print(f"LOSS - {BET_AMOUNT}")
 		else:
-			print("NO BET")
+			print("NO BET                    EVEN 0")
 	
 	print(len(merged_df))
 	
@@ -535,9 +548,9 @@ def get_betting_report():
 
 
 if __name__ == "__main__":
-	# get_betting_report()
+	get_betting_report()
 
-	predict = True
+	predict = False
 	while predict:
 		# os.system('cls')
 		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\n> ")

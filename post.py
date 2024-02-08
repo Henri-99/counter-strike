@@ -11,8 +11,8 @@ import pandas as pd
 # df_filtered.to_csv("csv/df_lan.csv", index=False)
 
 # df_full = pd.read_csv('csv/df_full.csv', index_col=0)
-df_full = pd.read_csv('csv/df_full_diff.csv', index_col=0)
-# df_full = pd.read_csv('csv/df_30.csv', index_col=0)
+# df_full = pd.read_csv('csv/df_full_diff.csv', index_col=0)
+df_full = pd.read_csv('csv/df_15.csv', index_col=0)
 # df_full = pd.read_csv('csv/df_bo3.csv', index_col=0)
 # df_full = pd.read_csv('csv/df_lan.csv', index_col=0)
 data = df_full.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
