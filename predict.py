@@ -481,7 +481,7 @@ def neural_network_hyperparameter_tuning():
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 def get_betting_report():
-	y_proba = pd.DataFrame(naive_bayes_model(), columns=['prob_0', 'prob_1'])
+	y_proba = pd.DataFrame(knn_model(), columns=['prob_0', 'prob_1'])
 	# y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	x = df_full.iloc[split_index:].reset_index(drop=True)
 	df = pd.concat((x, y_proba), axis=1)
@@ -519,8 +519,8 @@ def get_betting_report():
 			print(f"BETTING {row['team1_x'].ljust(17)}", end = " ")
 			if row['win'] == 1:
 				wins += 1
-				profit += BET_AMOUNT * t1_b_odds
-				print(f"WON  + {BET_AMOUNT * t1_b_odds}")
+				profit += BET_AMOUNT * round((t1_b_odds-1),2)
+				print(f"WON  + {BET_AMOUNT * round((t1_b_odds-1),2)}")
 			else:
 				losses += 1
 				profit -= BET_AMOUNT
@@ -530,8 +530,8 @@ def get_betting_report():
 			no_bets += 1
 			if row['win'] == 0:
 				wins += 1
-				profit += BET_AMOUNT * t2_b_odds
-				print(f"WON  + {BET_AMOUNT * t2_b_odds}")
+				profit += BET_AMOUNT * round((t2_b_odds-1),2)
+				print(f"WON  + {BET_AMOUNT * round((t2_b_odds-1),2)}")
 			else:
 				losses += 1
 				profit -= BET_AMOUNT
@@ -541,7 +541,7 @@ def get_betting_report():
 	
 	print(len(merged_df))
 	
-	print(f"& {round(correlation*100,2)} & {round(mae*100,2)} & {round(rmse*100,2)} & {round(100*no_bets/no_matches,2)} & {round(100*wins/no_bets,2)} & {round(100*losses/no_bets,2)} & {round(profit,2)}")
+	print(f"& {round(correlation*100,2):.2f} & {round(mae*100,2):.2f} & {round(rmse*100,2):.2f} & {round(100*no_bets/no_matches,2):.2f} & {round(100*wins/no_bets,2):.2f} & {round(100*losses/no_bets,2):.2f} & {round(profit,2):.2f}")
 
 		
 
