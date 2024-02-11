@@ -2,8 +2,8 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, roc_curve, confusion_matrix, classification_report, precision_score, recall_score
 import matplotlib.pyplot as plt
 
-# df = pd.read_csv('csv/df_full_diff.csv')
-df = pd.read_csv('csv/df_lan.csv')
+df = pd.read_csv('csv/df_full_diff.csv')
+# df = pd.read_csv('csv/df_lan.csv')
 print(df.shape)
 y = df['win']
 X = df['ts_win_prob']
@@ -36,13 +36,14 @@ predictions = (X_test > 0.5).astype(int)
 
 # predictions = df['predictions']
 
-train_accuracy = accuracy_score(y_train, predictions_train)
-test_accuracy = accuracy_score(y_test, predictions)
-precision = precision_score(y_test, predictions)
-recall = recall_score(y_test, predictions)
-f1 = f1_score(y_test, predictions)
-roc_auc = roc_auc_score(y_test, X_test)
-print(f"& {train_accuracy:.3f} & {test_accuracy:.3f} & {precision:.3f} & {recall:.3f} & {f1:.3f} & {roc_auc:.3f} \\\\")
+train_accuracy = accuracy_score(y_train, predictions_train)*100
+test_accuracy = accuracy_score(y_test, predictions)*100
+precision = precision_score(y_test, predictions)*100
+recall = recall_score(y_test, predictions)*100
+f1 = f1_score(y_test, predictions)*100
+roc_auc = roc_auc_score(y_test, X_test)*100
+print("Training ACC & Test ACC & Precision & Recall & F1 Score & ROC AUC \\\\ \\hline")
+print(f"& {train_accuracy:.1f} & {test_accuracy:.1f} & {precision:.1f} & {recall:.1f} & {f1:.1f} & {roc_auc:.1f} \\\\")
 
 
 cm = confusion_matrix(y_test, predictions)
