@@ -481,7 +481,7 @@ def neural_network_hyperparameter_tuning():
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 def get_betting_report():
-	y_proba = pd.DataFrame(knn_model(), columns=['prob_0', 'prob_1'])
+	y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	# y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	x = df_full.iloc[split_index:].reset_index(drop=True)
 	df = pd.concat((x, y_proba), axis=1)
