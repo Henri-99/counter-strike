@@ -69,9 +69,10 @@ def reduce_features(output):
 # plt.title("Correlation Matrix with 'win'")
 # plt.savefig("figures/corr_plot.png", bbox_inches='tight')
 
-selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
-       't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
-       'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
+# selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
+    #    't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
+    #    'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
+selected_features = ['avg_pl_rating_diff', 'ts_win_prob', 't1_mu', 't2_mu', 'team1_rank', 'rank_diff', 'map_rwr']
 X = X[selected_features]
 
 # Chronological split
@@ -133,8 +134,8 @@ def logistic_regression():
 	# full: C: 0.0001
 	# fs: {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
 	# params = {'C': 0.1, 'penalty': 'l1', 'solver': 'saga'}
-	# params = {'C': 0.0001, 'penalty': 'l2', 'solver': 'liblinear'}
-	params = {'C': 1, 'penalty': 'l2', 'solver': 'liblinear'}
+	params = {'C': 0.0001, 'penalty': 'l2', 'solver': 'liblinear'}
+	# params = {'C': 1, 'penalty': 'l2', 'solver': 'liblinear'}
 	logistic_regressor = LogisticRegression(**params)
 	logistic_regressor.fit(X_train, y_train)
 	y_train_pred = logistic_regressor.predict(X_train)
@@ -322,17 +323,17 @@ def xgboost_model(sfs = False):
 
 
 
-	# importances = xgb_classifier.feature_importances_
-	# feature_importances_xgb = pd.DataFrame({
-	# 	'Feature': X_train.columns,
-	# 	'Importance': importances
-	# }).sort_values(by='Importance', ascending=False)[:16]  # Top 16 features
-	# plt.figure(figsize=(14, 8))
-	# plt.barh(feature_importances_xgb['Feature'][::-1], feature_importances_xgb['Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
-	# plt.ylabel('Features')
-	# plt.xlabel('Importance')
-	# plt.title('XGBoost Feature Importances')
-	# plt.savefig("figures/xgb-imp.png", bbox_inches='tight')
+	importances = xgb_classifier.feature_importances_
+	feature_importances_xgb = pd.DataFrame({
+		'Feature': X_train.columns,
+		'Importance': importances
+	}).sort_values(by='Importance', ascending=False)[:16]  # Top 16 features
+	plt.figure(figsize=(14, 8))
+	plt.barh(feature_importances_xgb['Feature'][::-1], feature_importances_xgb['Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+	plt.ylabel('Features')
+	plt.xlabel('Importance')
+	plt.title('XGBoost Feature Importances')
+	plt.savefig("figures/xgb-imp.png", bbox_inches='tight')
 
 
 
@@ -401,9 +402,9 @@ def knn_model():
 
 def knn_hyperparameter_tuning():
 	knn_param_grid = {
-		'n_neighbors': [105, 110, 120],        # Number of neighbors
+		'n_neighbors': [50, 105, 110, 120],        # Number of neighbors
 		'weights': ['uniform',],  # Weight function used in prediction
-		'p': [1]                          # Power parameter for the Minkowski metric
+		'p': [1, 2]                          # Power parameter for the Minkowski metric
 		# 'weights': ['uniform', 'distance'],  # Weight function used in prediction
 		# 'p': [1, 2]                          # Power parameter for the Minkowski metric
 	}
@@ -423,8 +424,8 @@ from sklearn.neural_network import MLPClassifier
 def neural_network_model():
 	# full params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 	# params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
-	# params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
-	params = {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (10,100,10), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	# params = {'activation': 'logistic', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
+	params = {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': (5,4), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
 								   random_state=42)
 	mlp_classifier.fit(X_train, y_train)
@@ -454,7 +455,7 @@ def neural_network_hyperparameter_tuning():
 	nn_param_grid = {
 		# 'hidden_layer_sizes': [(12,12,12), (11,11,11),(10,10,10)],
 		'hidden_layer_sizes': [(5,4), (6,4), (5,3), (6,3), (5,2), (5,1)],
-		'activation': ['tanh'],
+		'activation': ['logistic'],
 		# 'activation': ['tanh', 'relu'],
 		'solver': ['sgd'],
 		# 'solver': ['sgd', 'adam'],
@@ -548,9 +549,9 @@ def get_betting_report():
 
 
 if __name__ == "__main__":
-	get_betting_report()
+	# get_betting_report()
 
-	predict = False
+	predict = True
 	while predict:
 		# os.system('cls')
 		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\n> ")

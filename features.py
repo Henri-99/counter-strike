@@ -550,7 +550,7 @@ def get_mapwise_features(row, time_period_days):
 # Generate difference features
 
 def generate_diff_features(df):
-	# df['rank_diff'] = df['team2_rank'] - df['team1_rank']
+	df['rank_diff'] = df['team2_rank'] - df['team1_rank']
 	# df['age_diff'] = df['t1_age'] - df['t2_age']
 	# df['xp_diff'] = df['t1_xp'] - df['t2_xp']
 	# df['mp_diff'] = df['t1_mp'] - df['t2_mp']
@@ -691,13 +691,13 @@ def main():
 
 if __name__ == "__main__":
 	# main()
-	df = pd.read_csv('csv/df_full_old.csv')
+	df = pd.read_csv('csv/df_full.csv')
 	print(df.shape)
 
-	start_time = datetime.now()
-	df[['t1_mrg_mp', 't1_mrg_wr', 't1_mrg_rwr', 't1_inf_mp', 't1_inf_wr', 't1_inf_rwr', 't1_ovp_mp', 't1_ovp_wr', 't1_ovp_rwr', 't1_nuk_mp', 't1_nuk_wr', 't1_nuk_rwr', 't1_vtg_mp', 't1_vtg_wr', 't1_vtg_rwr', 't1_anc_mp', 't1_anc_wr', 't1_anc_rwr', 't1_anu_mp', 't1_anu_wr', 't1_anu_rwr', 't2_mrg_mp', 't2_mrg_wr', 't2_mrg_rwr', 't2_inf_mp', 't2_inf_wr', 't2_inf_rwr', 't2_ovp_mp', 't2_ovp_wr', 't2_ovp_rwr', 't2_nuk_mp', 't2_nuk_wr', 't2_nuk_rwr', 't2_vtg_mp', 't2_vtg_wr', 't2_vtg_rwr', 't2_anc_mp', 't2_anc_wr', 't2_anc_rwr', 't2_anu_mp', 't2_anu_wr', 't2_anu_rwr', 'map_xp', 'map_wr', 'map_rwr']] = df.apply(lambda row: pd.Series(get_mapwise_features(row, 90)), axis=1)
-	elapsed_time = (datetime.now() - start_time).total_seconds()
-	print(f"{"Map-stats per team".ljust(25)}: {elapsed_time:.2f} seconds")
+	# start_time = datetime.now()
+	# df[['t1_mrg_mp', 't1_mrg_wr', 't1_mrg_rwr', 't1_inf_mp', 't1_inf_wr', 't1_inf_rwr', 't1_ovp_mp', 't1_ovp_wr', 't1_ovp_rwr', 't1_nuk_mp', 't1_nuk_wr', 't1_nuk_rwr', 't1_vtg_mp', 't1_vtg_wr', 't1_vtg_rwr', 't1_anc_mp', 't1_anc_wr', 't1_anc_rwr', 't1_anu_mp', 't1_anu_wr', 't1_anu_rwr', 't2_mrg_mp', 't2_mrg_wr', 't2_mrg_rwr', 't2_inf_mp', 't2_inf_wr', 't2_inf_rwr', 't2_ovp_mp', 't2_ovp_wr', 't2_ovp_rwr', 't2_nuk_mp', 't2_nuk_wr', 't2_nuk_rwr', 't2_vtg_mp', 't2_vtg_wr', 't2_vtg_rwr', 't2_anc_mp', 't2_anc_wr', 't2_anc_rwr', 't2_anu_mp', 't2_anu_wr', 't2_anu_rwr', 'map_xp', 'map_wr', 'map_rwr']] = df.apply(lambda row: pd.Series(get_mapwise_features(row, 90)), axis=1)
+	# elapsed_time = (datetime.now() - start_time).total_seconds()
+	# print(f"{"Map-stats per team".ljust(25)}: {elapsed_time:.2f} seconds")
 
 	start_time = datetime.now()
 	df = generate_diff_features(df)
