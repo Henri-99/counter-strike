@@ -160,3 +160,4 @@ cython_debug/
 
 *.html
 *.log
+*.db
