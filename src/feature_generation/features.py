@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from sqlalchemy import or_, and_, func
 import scipy.stats as stats
-from elo import calculate_expected_outcome, calculate_team_elo
+from feature_generation.elo import calculate_expected_outcome, calculate_team_elo
 
 # First let's get the matches
 
