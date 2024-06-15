@@ -1,0 +1,56 @@
+\chapter{Conclusion}
+\label{Conclusion}
+
+\section{Key Findings}
+
+Professional Counter-Strike matches are difficult to predict. Incorporating more than a hundred statistics into the prediction process does not measurably improve the predictive power of a model when compared to a model with fewer, more important features. The best accuracy attained for match prediction was 62.7\% when considering only matches played in a LAN environment. For matches played in a BO3 or BO5 maps format, 61.9\% of the match outcomes were correctly predicted. When considering the full dataset of matches played in any format, both online or at LAN, and by at least one Top-50 ranked team, the best accuracy decreased to 59.9\%.
+
+The machine learning models which produced the best results were XGBoost configured to have a large number of estimators with a low maximum tree depth, MLP Neural Networks with a small number of hidden layers and nodes per layer, and Support Vector Machines with a linear kernel. The performance attained by these models were a 2-3\% improvement over the base model, depending on the measure (classification accuracy, $F_1$-score, and AUC ROC).
+
+The baseline model used was a rating system known as TrueSkill, where each player or team's strength is modelled as a Gaussian distribuion. Player TrueSkill ratings are adjusted after every match played. These ratings alone provide good predictions of match outcomes without the need for machine learning techniques, and performed better than both HLTV's world ranking and an Elo rating system. The TrueSkill-related features were consistently ranked as most important by the feature selection techniques employed.
+
+The betting simulation results were surprising. Every model found at least 79\% of the matches were worth betting on. In these cases, the win-probability generated was higher than what the bookmaker odds implied for one of the teams. In these cases, a 1 unit bet was placed on the "undervalued" team. This simple betting strategy proved successful to varying degrees for each of the machine learning models. The best performing model made a profit of 32.78 units over the seven-month betting period, which translates to 0.11 units per match. More advanced betting strategies may be able to leverage the ML-generated predictions to an even greater extent.
+
+
+\section{Significance of the study}
+
+The key findings of this research bears significance to a number of stakeholders:
+\begin{itemize}
+	\item Betting Industry\\
+	Both \textbf{bookmakers} and \textbf{bettors} can benefit from this research; bookmakers can improve the accuracy of their odd-setting, while bettors can potentially improve their profitability by implementing the insights into their own betting strategies. This research could contribute to bettors making more informed decisions, thereby promoting responsible betting.
+	\item Viewer Experience\\\textbf{Commentators} use statistics to support their narratives. \textbf{Broadcasters} can enhance their streams by incorporating data-driven insights, potentially improving viewer engagement. \textbf{Counter-Strike fans} may find entertainment value from a deeper understanding of match predictability.
+	\item Tournament Organizers\\
+	Predictive information can assist \textbf{tournament organizers} to structure their tournaments and schedules in order to maximize the competitive fairness of their tournaments. They could also be used to design fair qualification systems or choose which teams to invite.
+	\item Academia\\
+	This research contributes to the understanding of esports betting and predictive modelling of professional Counter-Strike. \textbf{Future researchers} may find it to be a valuable resource for further study into these topics.
+	\item Esports Community\\
+	Professional teams (\textbf{players}, \textbf{coaches}, and \textbf{analysts}) may find the outputs from the statistical modelling valuable.
+	
+\end{itemize}
+
+\section{Limitations}
+
+Odds compilation is a private industry. The exact mechanisms used by bookmakers to price odds are not publicised. This makes it difficult to ascertain the extent to which statistical models influence the odds. Other factors, such as bookmaker risk management strategies and user betting behaviour, may also be used to generate the odds.
+
+The data used to train the models was limited to match information and statistics. External factors such as player injuries, team morale, or technical issues were therefore unaccounted for. There is inherent unpredictability to any sport; the accuracy of predictive models are thus subject to the quality of the available data and the modelling techniques employed.
+
+The feature engineering, although extensive, was not comprehensive. The historical features were generated using a three-month sliding window of a team's past performance. For newly formed line-ups, this data is not as informative as established teams. This could have been mitigated by considering a team "core" consisting of 3 or 4 players. Furthermore, 3 months may be too large or too small a window; varying this time-window was not explored. Incorporating features that more accurately describe the trends in a team's performance may lead to stronger predictions. An example of this was the 'winning streak' feature. Additional feature selection methods, as well as dimensionality reduction techniques, could have also been explored.
+
+The list of machine learning techniques implemented was not exhaustive. For example, a recurrent neural network such as long short-term memory (LSTM) may be more appropriate for chronological data. Additionally, an ensemble model taking into account the outputs of multiple models may achieve better results than any individual model. These hypotheses were not tested.
+
+The data segmentation method employed does not accurately reflect a real-world scenario, where all known match data would be used to train the model and the test would be a future fixture. An approach which better resembles real-world use would be to incrementally increase the training dataset, each time using all of the data for training, leaving only 1 match for testing. In the next iteration, this match would be added to the training set and the next match becomes the test set. This approach would be more repesentative of a real-world model, however at the cost of being significantly more computationally expensive.
+
+Finally, for testing each model's betting performance, the betting strategy used was fairly basic. More complex strategies could have been explored, such as the use of a dynamic wager which depends on the odds differential, or perhaps combining the predictions from different models. The number of matches tested was also a fairly low amount (\matchesBet{}) - more odds data could have been collected and tested.
+
+\section{Future work}
+
+Given the limitations described, future work could expand on the findings made here in a number of ways:
+
+\begin{enumerate}
+	\item An investigation of how external factors, such as player injuries, team morale, and even social media sentiments, can influence match prediction
+	\item There is room for more sophisticated feature engineering techniques. As mentioned above, adjusting the sliding window of data to find the optimal period to balance recency and relevance, as well as including features that describe the team's performance trajectory or trends.
+	\item Investigating more advanced machine learning techniques, such as LSTMs, ensemble methods, or even transformer models. These techniques may be able to outperform the models used in this research.
+	\item Application of an iterative data segmentation method, which more closely mirrors how a model would be used in real-world applications.
+	\item Collaboration with bookmakers and odds compilers to understand the methods employed in the betting industry. This may help to foster transparency and innovation in the field.
+	\item The development and testing of more complex betting strategies on a larger dataset of matches would make the findings more robust.
+\end{enumerate}
