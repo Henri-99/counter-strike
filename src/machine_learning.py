@@ -138,16 +138,18 @@ def tune_logreg():
 	lr_param_grid = {
 		'C': [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
 		'penalty': ['l2', 'l1'], # 'elasticnet'
-		'solver': ['liblinear', 'saga'] # ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
+		'solver': ['liblinear', 'saga', 'lbfgs', 'newton-cg', 'newton-cholesky', 'sag'] 
 	}
 
 	lr = LogisticRegression(max_iter=10000)
-	lr_grid_search = GridSearchCV(estimator=lr, param_grid=lr_param_grid, cv=4, verbose=2, n_jobs=-1)
+	lr_grid_search = GridSearchCV(estimator=lr, param_grid=lr_param_grid, cv=5, verbose=2, n_jobs=-1)
 
 	lr_grid_search.fit(X_train, y_train)
 
 	print("Best Parameters for Logistic Regression:", lr_grid_search.best_params_)
 	print("Best Score for Logistic Regression:", lr_grid_search.best_score_)
+
+	# best params {'C': 0.01, 'penalty': 'l2', 'solver': 'saga'}
 
 # Random forests
 def random_forests():
