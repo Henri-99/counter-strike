@@ -29,12 +29,19 @@ df['lan']       = df['lan'].astype('category')
 df['elim']      = df['elim'].astype('category')
 df['format']    = df['format'].astype('category')
 
-X = df.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score', 'win'], axis=1)
+X = df.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score', 'lan', 'win'], axis=1)
 y = df['win']
 
+# Split test:train chronologically
+split_index = int(0.8 * len(df))
+X_train = X.iloc[:split_index]
+y_train = y.iloc[:split_index]
+X_test = X.iloc[split_index:]
+y_test = y.iloc[split_index:]
+
 # Feature selection
-def select_best_k_features(k = 32, plot_var_imp = False):
-	selector = SelectKBest(f_classif, k) # or SelectPercentile(f_classif, percentile=20)
+def select_best_k_features(X, y, k = 32, plot_var_imp = False):
+	selector = SelectKBest(score_func = f_classif, k = k) # or SelectPercentile(f_classif, percentile=20)
 	selector.fit_transform(X, y)
 	selected_indices = selector.get_support(indices = True)
 	selected_features = X.columns[selected_indices]
@@ -57,16 +64,10 @@ def select_best_k_features(k = 32, plot_var_imp = False):
 
 	return selected_features
 
+selected_features = select_best_k_features(X_train, y_train)
 # selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob', 't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff, 'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
 # selected_features = ['avg_pl_rating_diff', 'ts_win_prob', 't1_mu', 't2_mu', 'team1_rank', 'rank_diff', 'map_rwr']
-X = X[select_best_k_features()] # or selected_features
-
-# Split test:train chronologically
-split_index = int(0.8 * len(df))
-X_train = X.iloc[:split_index]
-y_train = y.iloc[:split_index]
-X_test = X.iloc[split_index:]
-y_test = y.iloc[split_index:]
+X_train, X_test = X_train[selected_features], X_test[selected_features] 
 
 # Standardize numeric features
 numerical_features = X_train.select_dtypes(include=['int64', 'float64']).columns
