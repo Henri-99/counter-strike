@@ -2,50 +2,47 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import xgboost as xgb
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, mean_absolute_error, mean_squared_error, roc_auc_score, roc_curve, recall_score, precision_score, f1_score
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.feature_selection import SelectKBest, SelectPercentile, SequentialFeatureSelector, f_classif
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
+# Machine learning models
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
+import xgboost as xgb
+
+# Read data from file
 root_dir = Path(__file__).parent.parent.resolve()
 file_path = root_dir / 'data' / 'df_lan.csv'
 df = pd.read_csv(file_path)
 
-df = df.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score'], axis=1)
+# Initialise X and y
+df['rank_diff'] = df['team2_rank'] - df['team1_rank']
 df['lan']       = df['lan'].astype('category')
 df['elim']      = df['elim'].astype('category')
 df['format']    = df['format'].astype('category')
-df['rank_diff'] = df['team2_rank'] - df['team1_rank']
 
-# Summary of descriptive statistics
-# summary = df.describe()
-
-X = df.drop(['win'], axis=1)
+X = df.drop(['match_id', 'datetime', 'team1_id', 'team2_id','team1', 'team2',  't1_score', 't2_score', 'win'], axis=1)
 y = df['win']
 
-# Choose k, the number of top features to select. For example, k=10
-from sklearn.feature_selection import SelectKBest, SelectPercentile, SequentialFeatureSelector, f_classif
-def reduce_features(output):
-	selector = SelectKBest(f_classif, k=32)
-	# selector = SelectPercentile(f_classif, percentile=20)
-
-	X_new = selector.fit_transform(X, y)
-
-	selected_indices = selector.get_support(indices=True)
+# Feature selection
+def select_best_k_features(k = 32, plot_var_imp = False):
+	selector = SelectKBest(f_classif, k) # or SelectPercentile(f_classif, percentile=20)
+	selector.fit_transform(X, y)
+	selected_indices = selector.get_support(indices = True)
 	selected_features = X.columns[selected_indices]
 
-	scores = selector.scores_
-	feature_names = X.columns
-	
-	features_scores = zip(feature_names, scores)
-	sorted_features_scores = sorted(features_scores, key=lambda x: x[1], reverse=True)[:15]
-
-	if output:
+	if plot_var_imp:
+		scores = selector.scores_
+		features_scores = zip(X.columns, scores)
+		sorted_features_scores = sorted(features_scores, key=lambda x: x[1], reverse=True)[:15]
 		# Separate names and scores for plotting
 		names, scores = zip(*sorted_features_scores)
 
@@ -58,48 +55,35 @@ def reduce_features(output):
 		plt.title('')
 		plt.savefig("figures/f-statistik.png", bbox_inches='tight',)
 
-	return df[selected_features]
-# X = reduce_features(output=False)
+	return selected_features
 
-# selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob',
-    #    't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff',
-    #    'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
-selected_features = ['avg_pl_rating_diff', 'ts_win_prob', 't1_mu', 't2_mu', 'team1_rank', 'rank_diff', 'map_rwr']
-X = X[selected_features]
+# selected_features = ['team1_rank', 'team2_rank', 't1_mu', 't1_sigma', 't2_mu', 't2_sigma', 'ts_win_prob', 't1_elo', 't2_elo', 'elo_win_prob', 't1_wr', 't2_wr', 'wr_diff', 'map_wr', 'xp_diff, 'avg_hltv_rating_diff', 'avg_pl_rating_diff', 'avg_pistol_wr_diff']
+# selected_features = ['avg_pl_rating_diff', 'ts_win_prob', 't1_mu', 't2_mu', 'team1_rank', 'rank_diff', 'map_rwr']
+X = X[select_best_k_features()] # or selected_features
 
-# Chronological split
+# Split test:train chronologically
 split_index = int(0.8 * len(df))
 X_train = X.iloc[:split_index]
 y_train = y.iloc[:split_index]
 X_test = X.iloc[split_index:]
 y_test = y.iloc[split_index:]
 
-feature_names = X_train.columns.tolist()
-
-# Separate numerical and categorical features
+# Standardize numeric features
 numerical_features = X_train.select_dtypes(include=['int64', 'float64']).columns
+norm = StandardScaler().fit(X_train[numerical_features]) # or MinMaxScaler()
+X_train_scaled = pd.DataFrame(norm.transform(X_train[numerical_features]), columns=numerical_features, index=X_train.index)
+X_test_scaled = pd.DataFrame(norm.transform(X_test[numerical_features]), columns=numerical_features, index=X_test.index)
+
 categorical_features = X_train.select_dtypes(include=['category']).columns
-
-# Standardize the numeric features
-# norm = MinMaxScaler().fit(X_train[numerical_features])
-norm = StandardScaler().fit(X_train[numerical_features])
-X_train_norm = pd.DataFrame(norm.transform(X_train[numerical_features]), columns=numerical_features, index=X_train.index)
-X_test_norm = pd.DataFrame(norm.transform(X_test[numerical_features]), columns=numerical_features, index=X_test.index)
-
-# Combine with categorical features
-X_train = pd.concat([X_train_norm, X_train[categorical_features]], axis=1)
-X_test = pd.concat([X_test_norm, X_test[categorical_features]], axis=1)
-X_train = pd.concat([X_train[numerical_features], X_train[categorical_features]], axis=1)
-X_test = pd.concat([X_test[numerical_features], X_test[categorical_features]], axis=1)
+X_train = pd.concat([X_train_scaled, X_train[categorical_features]], axis=1)
+X_test = pd.concat([X_test_scaled, X_test[categorical_features]], axis=1)
 
 # PCA
-# from sklearn.decomposition import PCA
 # pca = PCA(n_components=10)  # choose the number of components
 # X_train = pca.fit_transform(X_train)
 # X_test = pca.transform(X_test)
 
 # LDA
-# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 # lda = LDA(n_components=1) 
 # X_train = lda.fit_transform(X_train, y_train)
 # X_test = lda.transform(X_test)
@@ -115,13 +99,11 @@ def print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba):
     f1 = f1_score(y_test, y_pred)*100
     roc_auc = roc_auc_score(y_test, y_pred_proba)*100
 
-
-
     print("Training ACC & Test ACC & Precision & Recall & F1 Score & ROC AUC \\\\ \\hline")
     print(f"& {train_accuracy:.1f} & {test_accuracy:.1f} & {precision:.1f} & {recall:.1f} & {f1:.1f} & {roc_auc:.1f} \\\\")
 
 # Logistic regression
-def logistic_regression():
+def logistic_regression(plot_var_imp = False):
 	# full: C: 0.0001
 	# fs: {'C': 0.001, 'penalty': 'l2', 'solver': 'liblinear'}
 	# params = {'C': 0.1, 'penalty': 'l1', 'solver': 'saga'}
@@ -133,28 +115,29 @@ def logistic_regression():
 	y_pred = logistic_regressor.predict(X_test)
 	y_pred_proba = logistic_regressor.predict_proba(X_test)
 
-	coefficients = logistic_regressor.coef_[0]
-	feature_importances = pd.DataFrame({
-		'Feature': X.columns,
-		'Importance': coefficients,
-		'Absolute Importance': abs(coefficients)
-	}).sort_values(by='Absolute Importance', ascending=False)[:16] # Sort by absolute value
+	if plot_var_imp:
+		coefficients = logistic_regressor.coef_[0]
+		feature_importances = pd.DataFrame({
+			'Feature': X.columns,
+			'Importance': coefficients,
+			'Absolute Importance': abs(coefficients)
+		}).sort_values(by='Absolute Importance', ascending=False)[:16] # Sort by absolute value
 
-	plt.figure(figsize=(14, 8))
-	plt.barh(feature_importances['Feature'][::-1], feature_importances['Absolute Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
-	plt.ylabel('Features')
-	plt.xlabel('Absolute Coefficient')
-	plt.title('Logistic Regression Feature Importances')
-	plt.savefig("figures/logreg-imp.png", bbox_inches='tight',)
+		plt.figure(figsize=(14, 8))
+		plt.barh(feature_importances['Feature'][::-1], feature_importances['Absolute Importance'][::-1], color='#abc9ea', edgecolor='#73879d', linewidth=1)
+		plt.ylabel('Features')
+		plt.xlabel('Absolute Coefficient')
+		plt.title('Logistic Regression Feature Importances')
+		plt.savefig("figures/logreg-imp.png", bbox_inches='tight',)
 
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
 	return y_pred_proba
 
 def logistic_regression_hyperparameter_tuning():
 	lr_param_grid = {
-		'C': [0.01, 1, 10],
-		'penalty': ['l2', 'l1', 'elasticnet'],
-		'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
+		'C': [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
+		'penalty': ['l2', 'l1'], # 'elasticnet'
+		'solver': ['liblinear', 'saga'] # ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
 	}
 
 	lr = LogisticRegression(max_iter=10000)
@@ -166,7 +149,7 @@ def logistic_regression_hyperparameter_tuning():
 	print("Best Score for Logistic Regression:", lr_grid_search.best_score_)
 
 # Random forests
-def random_forest():
+def random_forests():
 	# full: {'max_depth': 5, 'max_features': 'sqrt', 'min_samples_leaf': 4, 'min_samples_split': 4, 'n_estimators': 200}
 	# fs: {'max_depth': 5, 'max_features': 'log2', 'n_estimators': 300}
 	# params = {'criterion': 'gini', 'max_depth': 5, 'max_features': 'log2', 'min_samples_leaf': 4, 'min_samples_split': 4, 'n_estimators': 300}
@@ -195,7 +178,7 @@ def random_forest():
 
 	return y_pred_proba
 
-def random_forest_hyperparameter_tuning():
+def random_forests_hyperparameter_tuning():
 	rf_param_grid = {
 		'n_estimators': [130, 131, 132, 133, 134],            # Number of trees in the forest
 		'max_features': ['log2'], #['sqrt', 'log2', 0.2, 0.5], # Number of features to consider at every split
@@ -220,7 +203,6 @@ def random_forest_hyperparameter_tuning():
 	print("Best Score for Random Forest:", rf_grid_search.best_score_)
   
 # Support vector machine
-from sklearn.svm import SVC
 def support_vector_machine():
 	# full = (C=0.1, gamma='scale', kernel='linear', probability=True)
 	# fs = {'C': 0.1, 'gamma': 'scale', 'kernel': 'rbf'}
@@ -525,8 +507,9 @@ def get_betting_report():
 
 if __name__ == "__main__":
 	# get_betting_report()
+	logistic_regression_hyperparameter_tuning()
 
-	predict = True
+	predict = False
 	while predict:
 		# os.system('cls')
 		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\n> ")
@@ -535,7 +518,7 @@ if __name__ == "__main__":
 			case '1':
 				logistic_regression()
 			case '2':
-				random_forest()
+				random_forests()
 			case '3':
 				support_vector_machine()
 			case '4':
@@ -549,7 +532,7 @@ if __name__ == "__main__":
 			case '11':
 				logistic_regression_hyperparameter_tuning()
 			case '22':
-				random_forest_hyperparameter_tuning()
+				random_forests_hyperparameter_tuning()
 			case '33':
 				svm_hyperparameter_tuning()
 			case '44':
