@@ -133,7 +133,7 @@ def logistic_regression(plot_var_imp = False):
 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
 	return y_pred_proba
 
-def logistic_regression_hyperparameter_tuning():
+def tune_logreg():
 	lr_param_grid = {
 		'C': [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
 		'penalty': ['l2', 'l1'], # 'elasticnet'
@@ -178,7 +178,7 @@ def random_forests():
 
 	return y_pred_proba
 
-def random_forests_hyperparameter_tuning():
+def tune_rf():
 	rf_param_grid = {
 		'n_estimators': [130, 131, 132, 133, 134],            # Number of trees in the forest
 		'max_features': ['log2'], #['sqrt', 'log2', 0.2, 0.5], # Number of features to consider at every split
@@ -234,7 +234,7 @@ def support_vector_machine():
 
 	return y_pred_proba
 
-def svm_hyperparameter_tuning():
+def tune_svm():
 	svm_param_grid = {
 		'C': [0.1, 1, 10],               # Regularization parameter
 		'kernel': ['linear', 'rbf'],     # Kernel type
@@ -249,6 +249,124 @@ def svm_hyperparameter_tuning():
 
 	print("Best Parameters for SVM:", svm_grid_search.best_params_)
 	print("Best Score for SVM:", svm_grid_search.best_score_)
+
+# Gaussian Naive Bayes
+def naive_bayes_model():
+	nb_classifier = GaussianNB(var_smoothing = 1e-09)
+	nb_classifier.fit(X_train, y_train)
+	y_train_pred = nb_classifier.predict(X_train)
+	y_pred = nb_classifier.predict(X_test)
+	y_pred_proba = nb_classifier.predict_proba(X_test)
+
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
+	return y_pred_proba
+
+def tune_nb():
+	nb_param_grid = {
+		'var_smoothing': [1e-09, 1e-08, 1e-07, 1e-06, 1e-05]  # Variance smoothing parameter
+	}
+
+	nb = GaussianNB()
+
+	nb_grid_search = GridSearchCV(estimator=nb, param_grid=nb_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+	nb_grid_search.fit(X_train, y_train)
+
+	print("Best Parameters for Naive Bayes:", nb_grid_search.best_params_)
+	print("Best Score for Naive Bayes:", nb_grid_search.best_score_)
+
+# k-nearest neighbours
+def knn_model():
+	# full params = {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
+	params = {'n_neighbors': 110, 'p': 1, 'weights': 'uniform'}
+	knn_classifier = KNeighborsClassifier(**params)
+	knn_classifier.fit(X_train, y_train)
+
+	y_train_pred = knn_classifier.predict(X_train)
+	y_pred = knn_classifier.predict(X_test)
+	y_pred_proba = knn_classifier.predict_proba(X_test)
+
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
+
+	return y_pred_proba
+
+def tune_knn():
+	knn_param_grid = {
+		'n_neighbors': [50, 105, 110, 120],        # Number of neighbors
+		'weights': ['uniform',],  # Weight function used in prediction
+		'p': [1, 2]                          # Power parameter for the Minkowski metric
+		# 'weights': ['uniform', 'distance'],  # Weight function used in prediction
+		# 'p': [1, 2]                          # Power parameter for the Minkowski metric
+	}
+
+	knn = KNeighborsClassifier()
+
+	knn_grid_search = GridSearchCV(estimator=knn, param_grid=knn_param_grid, cv=5, verbose=2, n_jobs=-1)
+
+	knn_grid_search.fit(X_train, y_train)
+
+	print("Best Parameters for KNN:", knn_grid_search.best_params_)
+	print("Best Score for KNN:", knn_grid_search.best_score_)
+
+# Multilayer Perceptron
+def multilayer_perceptron():
+	# full params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	# params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
+	# params = {'activation': 'logistic', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
+	params = {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': (5,4), 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	mlp_classifier = MLPClassifier(**params, max_iter=10000,
+								   random_state=42)
+	mlp_classifier.fit(X_train, y_train)
+	y_train_pred = mlp_classifier.predict(X_train)
+	y_pred = mlp_classifier.predict(X_test)
+	y_pred_proba = mlp_classifier.predict_proba(X_test)
+
+	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
+
+	return y_pred_proba
+
+	# while True:
+	# 	layers = input("Enter layers > ")
+	# 	hidden = tuple([int(x) for x in layers.split(',')])
+			
+	# 	params = {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': hidden, 'learning_rate_init': 0.001, 'solver': 'sgd'}
+	# 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
+	# 								random_state=42)
+	# 	mlp_classifier.fit(X_train, y_train)
+	# 	y_train_pred = mlp_classifier.predict(X_train)
+	# 	y_pred = mlp_classifier.predict(X_test)
+	# 	y_pred_proba = mlp_classifier.predict_proba(X_test)[:,-1]
+
+	# 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
+
+def tune_mlp():
+	nn_param_grid = {
+		# 'hidden_layer_sizes': [(12,12,12), (11,11,11),(10,10,10)],
+		'hidden_layer_sizes': [(5,4), (6,4), (5,3), (6,3), (5,2), (5,1)],
+		'activation': ['logistic'],
+		# 'activation': ['tanh', 'relu'],
+		'solver': ['sgd'],
+		# 'solver': ['sgd', 'adam'],
+		'learning_rate_init': [0.001],
+		# 'learning_rate_init': [0.002, 0.001],
+		'alpha' : [0.001]
+	}
+
+	# nn_param_grid = {
+	#     'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
+	#     'activation': ['tanh'],
+	#     'solver': ['sgd'],
+	#     'learning_rate_init': [0.001]
+	# }
+
+	mlp = MLPClassifier(max_iter=100000, random_state=42)
+
+	nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=3, verbose=3, n_jobs=-1)
+
+	nn_grid_search.fit(X_train, y_train)
+
+	print("Best Parameters for Neural Network:", nn_grid_search.best_params_)
+	print("Best Score for Neural Network:", nn_grid_search.best_score_)
 
 # XGBoost
 def xgboost_model(sfs = False, plot_roc = False, plot_var_imp = False):
@@ -307,7 +425,7 @@ def xgboost_model(sfs = False, plot_roc = False, plot_var_imp = False):
 
 	return y_pred_proba
 
-def xgboost_hyperparameter_tuning():
+def tune_xgb():
 	xgb_param_grid = {
 		'n_estimators': [50, 60, 70, 80, 90],    # Number of gradient boosted trees
 		'learning_rate': [0.1],  # Step size shrinkage used in update
@@ -324,125 +442,7 @@ def xgboost_hyperparameter_tuning():
 	print("Best Parameters for XGBoost:", xgb_grid_search.best_params_)
 	print("Best Score for XGBoost:", xgb_grid_search.best_score_)
 
-# Gaussian Naive Bayes
-def naive_bayes_model():
-	nb_classifier = GaussianNB(var_smoothing = 1e-09)
-	nb_classifier.fit(X_train, y_train)
-	y_train_pred = nb_classifier.predict(X_train)
-	y_pred = nb_classifier.predict(X_test)
-	y_pred_proba = nb_classifier.predict_proba(X_test)
-
-	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
-	return y_pred_proba
-
-def naive_bayes_hyperparameter_tuning():
-	nb_param_grid = {
-		'var_smoothing': [1e-09, 1e-08, 1e-07, 1e-06, 1e-05]  # Variance smoothing parameter
-	}
-
-	nb = GaussianNB()
-
-	nb_grid_search = GridSearchCV(estimator=nb, param_grid=nb_param_grid, cv=5, verbose=2, n_jobs=-1)
-
-	nb_grid_search.fit(X_train, y_train)
-
-	print("Best Parameters for Naive Bayes:", nb_grid_search.best_params_)
-	print("Best Score for Naive Bayes:", nb_grid_search.best_score_)
-
-# k Nearest Neighbours
-def knn_model():
-	# full params = {'n_neighbors': 10, 'p': 1, 'weights': 'distance'}
-	params = {'n_neighbors': 110, 'p': 1, 'weights': 'uniform'}
-	knn_classifier = KNeighborsClassifier(**params)
-	knn_classifier.fit(X_train, y_train)
-
-	y_train_pred = knn_classifier.predict(X_train)
-	y_pred = knn_classifier.predict(X_test)
-	y_pred_proba = knn_classifier.predict_proba(X_test)
-
-	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
-
-	return y_pred_proba
-
-def knn_hyperparameter_tuning():
-	knn_param_grid = {
-		'n_neighbors': [50, 105, 110, 120],        # Number of neighbors
-		'weights': ['uniform',],  # Weight function used in prediction
-		'p': [1, 2]                          # Power parameter for the Minkowski metric
-		# 'weights': ['uniform', 'distance'],  # Weight function used in prediction
-		# 'p': [1, 2]                          # Power parameter for the Minkowski metric
-	}
-
-	knn = KNeighborsClassifier()
-
-	knn_grid_search = GridSearchCV(estimator=knn, param_grid=knn_param_grid, cv=5, verbose=2, n_jobs=-1)
-
-	knn_grid_search.fit(X_train, y_train)
-
-	print("Best Parameters for KNN:", knn_grid_search.best_params_)
-	print("Best Score for KNN:", knn_grid_search.best_score_)
-
-# Multi-Layer Perceptron
-def neural_network_model():
-	# full params = {'activation': 'tanh', 'hidden_layer_sizes': (100,100), 'learning_rate_init': 0.001, 'solver': 'sgd'}
-	# params = {'activation': 'tanh', 'hidden_layer_sizes': (100,), 'learning_rate_init': 0.0001, 'solver': 'adam'}
-	# params = {'activation': 'logistic', 'alpha': 0.001, 'hidden_layer_sizes': (5, 4), 'learning_rate_init': 0.001, 'solver': 'sgd'}	
-	params = {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': (5,4), 'learning_rate_init': 0.001, 'solver': 'sgd'}
-	mlp_classifier = MLPClassifier(**params, max_iter=10000,
-								   random_state=42)
-	mlp_classifier.fit(X_train, y_train)
-	y_train_pred = mlp_classifier.predict(X_train)
-	y_pred = mlp_classifier.predict(X_test)
-	y_pred_proba = mlp_classifier.predict_proba(X_test)
-
-	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba[:,-1])
-
-	return y_pred_proba
-
-	# while True:
-	# 	layers = input("Enter layers > ")
-	# 	hidden = tuple([int(x) for x in layers.split(',')])
-			
-	# 	params = {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': hidden, 'learning_rate_init': 0.001, 'solver': 'sgd'}
-	# 	mlp_classifier = MLPClassifier(**params, max_iter=10000,
-	# 								random_state=42)
-	# 	mlp_classifier.fit(X_train, y_train)
-	# 	y_train_pred = mlp_classifier.predict(X_train)
-	# 	y_pred = mlp_classifier.predict(X_test)
-	# 	y_pred_proba = mlp_classifier.predict_proba(X_test)[:,-1]
-
-	# 	print_stats(y_train, y_train_pred, y_test, y_pred, y_pred_proba)
-
-def neural_network_hyperparameter_tuning():
-	nn_param_grid = {
-		# 'hidden_layer_sizes': [(12,12,12), (11,11,11),(10,10,10)],
-		'hidden_layer_sizes': [(5,4), (6,4), (5,3), (6,3), (5,2), (5,1)],
-		'activation': ['logistic'],
-		# 'activation': ['tanh', 'relu'],
-		'solver': ['sgd'],
-		# 'solver': ['sgd', 'adam'],
-		'learning_rate_init': [0.001],
-		# 'learning_rate_init': [0.002, 0.001],
-		'alpha' : [0.001]
-	}
-
-	# nn_param_grid = {
-	#     'hidden_layer_sizes': [(100,100),(200,200),(200,100),(100, 100, 100), (100, 200, 100), (100, 200, 50)],
-	#     'activation': ['tanh'],
-	#     'solver': ['sgd'],
-	#     'learning_rate_init': [0.001]
-	# }
-
-	mlp = MLPClassifier(max_iter=100000, random_state=42)
-
-	nn_grid_search = GridSearchCV(estimator=mlp, param_grid=nn_param_grid, cv=3, verbose=3, n_jobs=-1)
-
-	nn_grid_search.fit(X_train, y_train)
-
-	print("Best Parameters for Neural Network:", nn_grid_search.best_params_)
-	print("Best Score for Neural Network:", nn_grid_search.best_score_)
-
-def get_betting_report():
+def betting_simulation():
 	y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	# y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	x = df.iloc[split_index:].reset_index(drop=True)
@@ -506,41 +506,21 @@ def get_betting_report():
 	print(f"& {round(correlation*100,2):.2f} & {round(mae*100,2):.2f} & {round(rmse*100,2):.2f} & {round(100*no_bets/no_matches,2):.2f} & {round(100*wins/no_bets,2):.2f} & {round(100*losses/no_bets,2):.2f} & {round(profit,2):.2f}")
 
 if __name__ == "__main__":
-	# get_betting_report()
-	logistic_regression_hyperparameter_tuning()
+	
+	# logistic_regression()
+	# random_forests()
+	# support_vector_machine()
+	# xgboost_model()
+	# naive_bayes_model()
+	# multilayer_perceptron()
+	# knn_model()
 
-	predict = False
-	while predict:
-		# os.system('cls')
-		model_select = input("Select an ML model to evaluate:\n1) Logistic Regression\n2) Random Forest\n3) Support Vector Machine\n4) XGBoost\n5) Gaussian Naive Bayes\n6) MLP Neural Network\n7) k-Nearest Neighbours\n\n> ")
-		# os.system('cls')
-		match model_select:
-			case '1':
-				logistic_regression()
-			case '2':
-				random_forests()
-			case '3':
-				support_vector_machine()
-			case '4':
-				xgboost_model()
-			case '5':
-				naive_bayes_model()
-			case '6':
-				neural_network_model()
-			case '7':
-				knn_model()
-			case '11':
-				logistic_regression_hyperparameter_tuning()
-			case '22':
-				random_forests_hyperparameter_tuning()
-			case '33':
-				svm_hyperparameter_tuning()
-			case '44':
-				xgboost_hyperparameter_tuning()
-			case '55':
-				naive_bayes_hyperparameter_tuning()
-			case '66':
-				neural_network_hyperparameter_tuning()
-			case '77':
-				knn_hyperparameter_tuning()
-		pause = input("\nPress ENTER to go back\n\n> ")
+	tune_logreg()
+	# tune_rf()
+	# tune_svm()
+	# tune_xgb()
+	# tune_nb()
+	# tune_mlp()
+	# tune_knn()
+	
+	# betting_simulation()
