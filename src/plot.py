@@ -6,8 +6,12 @@ import os
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from pathlib import Path
 
-df = pd.read_csv("csv/df_full_diff.csv", index_col=0)
+root_dir = Path(__file__).parent.parent.resolve()
+file_path = root_dir / 'data' / 'df_full_diff.csv'
+output_path = root_dir / 'paper' / 'figures'
+df = pd.read_csv(file_path)
 
 # font_manager.fontManager.addfont("C:/Users/9903165908084/AppData/Local/Microsoft/Windows/Fonts/Palatino.ttf")
 # mpl.rcParams['font.family'] = 'serif'
@@ -23,25 +27,25 @@ def plot_box_ratings():
 
 	plt.subplot(1, 3, 1)
 	plt.ylim(0, 1)
-	sns.boxplot(x='win', y='ts_win_prob', hue="win", data=df, showfliers=False, legend=None)
+	sns.boxplot(x='win', y='ts_win_prob', hue="win", data=df, showfliers=True, legend=None)
 	plt.title(f'TrueSkill win probability')
 	plt.xlabel('Class')
 	plt.ylabel('')
 
 	plt.subplot(1, 3, 2)
 	plt.ylim(0, 1)
-	sns.boxplot(x='win', y='elo_win_prob', hue="win", data=df, showfliers=False, legend=None)
+	sns.boxplot(x='win', y='elo_win_prob', hue="win", data=df, showfliers=True, legend=None)
 	plt.title(f'Elo win probability')
 	plt.xlabel('Class')
 	plt.ylabel('')
 
 	plt.subplot(1, 3, 3)
-	sns.boxplot(x='win', y='rank_diff', hue="win", data=df, showfliers=False, legend=None)
+	sns.boxplot(x='win', y='rank_diff', hue="win", data=df, showfliers=True, legend=None)
 	plt.title(f'HLTV ranking difference')
 	plt.xlabel('Class')
 	plt.ylabel('')
 
-	plt.savefig("figures/class-box-1.png", bbox_inches='tight', facecolor=plt.gcf().get_facecolor())
+	plt.savefig(output_path / 'class-box-new-1.png', bbox_inches='tight', facecolor=plt.gcf().get_facecolor())
 
 def plot_box_team_stats():
 	# Boxplot for win-rate
@@ -49,14 +53,14 @@ def plot_box_team_stats():
 
 	plt.subplot(1, 3, 1)
 	# plt.ylim(0, 1)
-	sns.boxplot(x='win', y='wr_diff', hue="win", data=df, showfliers=False, legend=None)
+	sns.boxplot(x='win', y='wr_diff', hue="win", data=df, showfliers=True, legend=None)
 	plt.title(f'Difference in overall match win-rate')
 	plt.xlabel('Class')
 	plt.ylabel('')
 
 	plt.subplot(1, 3, 2)
 	# plt.ylim(0, 1)
-	sns.boxplot(x='win', y='map_wr', hue="win", data=df, showfliers=False, legend=None)
+	sns.boxplot(x='win', y='map_wr', hue="win", data=df, showfliers=True, legend=None)
 	plt.title(f'Number of maps where team had a higher win-rate')
 	plt.xlabel('Class')
 	plt.ylabel('')
@@ -65,12 +69,12 @@ def plot_box_team_stats():
 	print(df.shape)
 	print(df_filtered.shape)
 	plt.subplot(1, 3, 3)
-	sns.boxplot(x='win', y='h2h_wr', hue="win", data=df_filtered, showfliers=False, legend=None)
+	sns.boxplot(x='win', y='h2h_wr', hue="win", data=df_filtered, showfliers=True, legend=None)
 	plt.title(f'Head-to-head historical map win-rate')
 	plt.xlabel('Class')
 	plt.ylabel('')
-	
-	plt.savefig("figures/class-box-2.png", bbox_inches='tight', facecolor=plt.gcf().get_facecolor())
+
+	plt.savefig(output_path / 'class-box-new-2.png', bbox_inches='tight', facecolor=plt.gcf().get_facecolor())
 
 	# columns_to_plot_updated = ['rank_diff', 'win_rate_diff']
 	# for i, col in enumerate(columns_to_plot_updated, 1):
@@ -130,5 +134,7 @@ def corr_plot():
 	plt.title("Correlation Matrix with 'win'")
 	plt.savefig("figures/corr_plot.png", bbox_inches='tight')
 
-corr_plot()
+# corr_plot()
 # plot_scatter()
+# plot_box_ratings()
+plot_box_team_stats()
