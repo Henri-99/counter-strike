@@ -403,13 +403,13 @@ To obtain the distribution of these statistics over the course of the last 90 da
 
 The majority of the features discussed this far are measurements of a single team's performance, either team A or team B for a given match. For predicting the winner of a match, it is common to compare the statistics between each team. This can be done using a relative feature. For example, the TrueSkill win probability and difference in HLTV world ranking incorporate information relating to both teams in question.
 
-In order to compute these relative features, the difference between each pair of features was calculated and included as an extra feature. This added a significant number of features to the dataset. It is important to acknowledge that having more features is not always a good thing, if fewer features can produce the same (or better) results. This will be further discussed in the Modelling section.
+In order to compute these relative features, the difference between each pair of features was calculated and included as an extra feature. This added a significant number of features to the dataset. It is important to acknowledge that having more features is not always a good thing, if fewer features can produce the same (or better) results. This will be further explored later.
 
 \subsection{Miscellaneous features}
 
 Finally, three categorical features were included. \textbf{lan} indicates whether a match is played in a LAN environment, and \textbf{elim} implies a "high-stakes" elimination match; this applies to all matches where the loser would be eliminated from the tournament, including lower-bracket and play-off matches. These features were included to account for the fact that teams may play better or worse under these high-pressure circumstances. The final feature was simply the match \textbf{format}, be it BO1, BO3, or BO5.
 
-Each feature that has been discussed in summarized in Table \ref{tab:features} below. 142 features were generated in total.
+Each feature that has been discussed in summarized in Table \ref{tab:features} below. Many of the features listed correspond to 3 features: one for either team, as well as the relative feature, which in most cases is just the difference between the value of that feature for the two teams. 142 features were generated in total.
 
 \begin{table}[h]
 	\centering
@@ -498,12 +498,14 @@ The dataset spans every official match played by Top-50 ranked teams between \da
 
 The dataset is well-balanced, with 51.91\% of the match records having a class label of 1, and 48.09\% having a class label of 0. In other words, team 1 won 51.91\% of the matches and team 2 won 48.09\%. 
 
-Plotting the distribution of different features for either target class is a useful way to visualize the extent to which features correlate with the target class. From Figure \ref{fig:win_prob_class_dist}, it is clear that TrueSkill makes more confident predictions than the Elo rating system, as the inter-quartile range is greater for both classes. The Elo rating system rates the majority of matches as being relatively even. All three features exhibit larger median values for the winning class ($y=1$). In each boxplot, values that are located 1.5 times the inter-quartile range below the first quartile and above the third quartile are considered outliers, and excluded from the plot.
+Plotting the distribution of different features for either target class is a useful way to visualize the extent to which features correlate with the target class. From Figure \ref{fig:win_prob_class_dist}, it is clear that TrueSkill makes more confident predictions than the Elo rating system, as the inter-quartile range is greater for both classes. The Elo rating system rates the majority of matches as being relatively even. The HLTV ranking difference refers to the value of team 2's rank less team 1's rank (a positive value indicates that team 1 had a higher rank than team 2). All three features exhibit larger median values for the winning class ($y=1$).
+
+In each boxplot, values that are located 1.5 times the inter-quartile range below the first quartile and above the third quartile are considered outliers, and appear on the plot as hollow points.
 
 \begin{figure}[h]
 	\centering
 	\begin{adjustbox}{center}
-			\includegraphics[width=1.2\textwidth]{Figures/class-box-1.png}
+			\includegraphics[width=1.2\textwidth]{Figures/class-box-new-1.png}
 	\end{adjustbox}
 	\caption{Boxplot of 'TrueSkill win probability', 'ELO win probability', and 'HLTV ranking difference' for either class}
 	\label{fig:win_prob_class_dist}
@@ -514,7 +516,7 @@ A similar trend is observed in Figure \ref{fig:win_rate_class_dist}, which plots
 \begin{figure}[h]
 	\centering
 	\begin{adjustbox}{center}
-		\includegraphics[width=1.2\textwidth]{Figures/class-box-2.png}
+		\includegraphics[width=1.2\textwidth]{Figures/class-box-new-2.png}
 	\end{adjustbox}
 	\caption{Boxplot of 'difference in match win-rate', 'maps with a higher win-rate', and 'head-to-head historical map win-rate' for either class}
 	\label{fig:win_rate_class_dist}
@@ -625,184 +627,245 @@ The \textbf{HLTV world ranking model}, which assumes the higher-ranked team will
 
 \section{Modelling}
 
+After considering the methods used in the literature, the following supervised learning models were selected and trained to predict the match winner:
+
+\begin{itemize}
+	\item Logistic regression
+	\item Random forests
+	\item Support vector machine
+	\item $k$-nearest neighbours
+	\item Gaussian Naive Bayes
+	\item Multilayer perceptron
+	\item XGBoost
+\end{itemize}
+
 \subsection{Data segmentation}
 
-To accurately assess the performance of any ML model, it must be tested on data which has not been used during training. The data should therefore be split into a training set and a testing set. Because the match data is chronological time-series data, it would not be appropriate to randomize the data prior to splitting, which is a common practice. It is more appropriate to segment the data chronologically.
+To accurately assess the performance of any ML model, it must be tested on data which has not been used during training. The data should therefore be split into a training set and a testing set. Because the match data is chronological time-series data, it would not be appropriate to randomise the data prior to splitting, which is a common practice. It is more appropriate to segment the data chronologically.
 
-A portion of the earliest match data was excluded from both training and testing. These matches were used to generate features for the later matches. This served two main purposes: the initialization of Elo and TrueSkill ratings, and for providing historical data for most of the match- and performance-history features. This "initialization" set amounted to the first 10\% of the dataset, which was 1127 matches, or just over five months of matches. This ensured that the first record of the training set, starting in June 2019, already had access to accurate ratings and sufficient match records.
+A portion of the earliest match data was excluded from both training and testing. These matches were used to generate features for the later matches. This served two main purposes: the initialisation of Elo and TrueSkill ratings, and for providing historical data for most of the match- and performance-history features. This initialisation set amounted to the first 10\% of the dataset, which was 1127 matches spanning a period of five months. This ensured that the features generated for the first match in the training set could draw upon accurate player ratings and sufficient match history for each team.
 
-The remaining data was then split with a ratio of 80:20 for the training and testing sets. This amounted to 8116 match records for training and 2029 for testing. The test set included every match played in 2023. It should be noted that under real-world circumstances, the training data would include every observation barring one - the fixture being predicted.
+The remaining 90\% of the data shall henceforth be referred to as the \textit{full dataset}. It was split with a ratio of 80:20 for the training and testing sets. The test set consisted of every match played in 2023. This amounted to 8116 match records for training and 2029 for testing.
+
+Filters were later applied to the full dataset in order to identify if certain types of matches were easier to predict than others. The different scenarios tested were:
+\begin{enumerate}
+	\item the full dataset,
+	\item a dataset which excluded all Best-of-1 (single map) matches,
+	\item a dataset which excluded matches without a team ranked in the Top-30,
+	\item a dataset which excluded matches without a team ranked in the Top-15, and
+	\item a dataset which excluded all matches which were played online (i.e. LAN matches only)
+\end{enumerate}
+
+The same process was performed for each dataset: data segmentation, feature scaling, feature selection, hyperparameter tuning, and performance evaluation.
 
 \subsection{Feature scaling}
 
-Some models, such as those which use gradient descent for optimization, are sensitive to the magnitude of features. This means that each numeric feature should be \textit{scaled} prior to training. There are two methods of scaling features, namely \textit{normalization} and \textit{standardization}. In normalization, each feature is scaled to fit into the range $[0, 1]$ by subtracting the minimum value and dividing by the range, ($max-min$). Although normalized data preserves the distribution of the original data, it is more sensitive to outliers. 
+Some models, such as those which use gradient descent for optimisation, are sensitive to the magnitude of features. This means that each numeric feature should be \textit{scaled} prior to training. There are two methods of scaling features, namely \textit{normalisation} and \textit{standardisation}. In normalisation, each feature is scaled to fit into the range $[0, 1]$ by subtracting the minimum value and dividing by the range, ($max-min$). Although normalised data preserves the distribution of the original data, it is more sensitive to outliers. 
 
-In standardization, the data is transformed to have a zero mean and unit variance using the familiar equation:
+In standardisation, the data is transformed to have a zero mean and unit variance using the familiar equation:
 
 \[ z_i = \frac{x_i-\mu}{\sigma} \]
 
 Where $z_i$ is the new value, $x_i$ is the original value, $\mu$ and $\sigma$ are the mean and standard deviation of $x$.
 
-Both techniques were implemented using the \texttt{\textbf{MinMaxScaler}} and \texttt{\textbf{StandardScaler}} classes from scikit-learn. During testing, it was found that normalization degraded model performance significantly when compared to both the unscaled and standardized data. This is because normalization is sensitive to outliers, which were present in many of the features. It was therefore decided to scale the features using standardization. 
-
-\subsection{Model implementation}
-
-There are a range of supervised learning models that are appropriate for binary classification. The following models were implemented:
-
-\begin{itemize}
-	\item Logistic Regression
-	\item Random Forest
-	\item Support Vector Machine
-	\item XGBoost
-	\item Gaussian Naive Bayes
-	\item Multi-layer Perceptron
-	\item k-Nearest Neighbours
-\end{itemize}
+Both techniques were implemented using the \texttt{\textbf{MinMaxScaler}} and \texttt{\textbf{StandardScaler}} classes from scikit-learn. During testing, it was found that normalisation degraded model performance significantly when compared to both the unscaled and standardised data. This is because normalisation is sensitive to outliers, which were present in many of the features. It was therefore decided to scale the features using standardisation. 
 
 \subsection{Hyperparameter tuning}
 
-Each machine learning model has configuration settings which dictate the structure and computational performance of the model. These settings are known as \textit{hyperparameters}. An example of a hyperparameter is the maximum depth of the decision trees in the Random Forest algorithm, or the choice of kernel in Support Vector Machines.  A description of each hyperparameter that was tuned for each of the models listed above is provided in Table \ref{table:hyperparameters}.
+Each ML model has configuration settings which dictate the structure and computational performance of the model. These settings are known as \textit{hyperparameters}. An example of a hyperparameter is the maximum depth of the decision trees used in random forests, or the choice of kernel used in a SVM.
 
-It is good practice to partition a portion of the training set into a validation set. This set is then used for testing models with different configurations of hyperparameters. A technique known as $k$-fold cross-validation can also be used, where the training data is split into $k$ folds (partitions). The training is then performed repeatedly with a different fold used as the validation set for each iteration. This approach provides a proxy for estimating the out-of-sample performance, ensuring that a balanced measure of performance is attained for each configuration of hyperparameters.
+When tuning these parameters to find the optimal configuration, it is a good practice to partition a portion of the training set into a validation set. The performance of models with different configurations can be compared by testing them on the validation set.
 
-The \texttt{\textbf{GridSearchCV}} class from scikit-learn was utilized to test several different hyperparameters grids (configurations) using $k$-fold cross-validation. The configuration with the best average classification accuracy was found for each model after multiple iterations. These configurations are described in the Results chapter.
+A technique known as $k$-fold cross-validation splits the training data into $k$ folds (partitions). The training is then performed repeatedly with a different fold used as the validation set for each iteration. This approach provides a proxy for estimating the out-of-sample performance, ensuring that a balanced measure of performance is attained for each configuration of hyperparameters.
 
+The \texttt{\textbf{GridSearchCV}} class from scikit-learn was utilized to test several different hyperparameters grids (configurations) using $k$-fold cross-validation. For many of the hyperparameters, a broad initial range of values was used. This range was progressively narrowed down in an iterative process until the configuration yielding the greatest average classification accuracy on the validation set was found.
 
-% \begin{table}[h]
-% 	\centering
-% 	\small
-% 	\begin{tabular}{|l|l|}
-% 		\hline
-% 		\rule{0pt}{3ex}\textbf{Hyperparameter} & \textbf{Description}\\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{Logistic Regression}} \\
-% 		\hline
-% 		C & Inverse of regularization strength \\
-% 		penalty & Type of regularization \\
-% 		solver & Optimization algorithm \\
-% 		max\_iter & Maximum iterations for solvers \\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{k-Nearest Neighbours}} \\
-% 		\hline
-% 		n\_neighbors & Number of neighbors to use \\
-% 		weights & Weight function in prediction  \\
-% 		algorithm & Algorithm to compute nearest neighbors \\
-% 		p & Power parameter for Minkowski metric \\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{Random Forest}} \\
-% 		\hline
-% 		n\_estimators & Number of trees in the forest  \\
-% 		max\_depth & Maximum depth of the tree  \\
-% 		min\_samples\_split & Min samples to split a node  \\
-% 		min\_samples\_leaf & Min samples to be at a leaf node  \\
-% 		max\_features & Number of features for best split  \\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{Support Vector Classifier}} \\
-% 		\hline
-% 		C & Regularization parameter  \\
-% 		kernel & Kernel type  \\
-% 		degree & Degree of polynomial kernel  \\
-% 		gamma & Kernel coefficient \\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{Gaussian Naive Bayes}} \\
-% 		\hline
-% 		var\_smoothing & Variance smoothing  \\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{Multi-layer Perceptron}} \\
-% 		\hline
-% 		hidden\_layer\_sizes & Neurons in hidden layers \\
-% 		activation & Activation function \\
-% 		solver & Solver for weight optimization  \\
-% 		alpha & L2 penalty (regularization term) \\
-% 		learning\_rate & Learning rate for weight updates \\
-% 		\hline
-% 		\multicolumn{2}{|c|}{\rule{0pt}{2.6ex}\textit{XGBoost}} \\
-% 		\hline
-% 		n\_estimators & Number of gradient boosted trees  \\
-% 		learning\_rate & Step size shrinkage  \\
-% 		max\_depth & Maximum depth of a tree  \\
-% 		subsample & Subsample ratio of the training instances  \\
-% 		colsample\_bytree & Subsample ratio of columns for each tree \\
-% 		gamma & Min loss reduction for partition on a leaf node \\
-% 		\hline
-% 	\end{tabular}
-% 	\caption{Hyperparameters for various ML models}
-% 	\label{table:hyperparameters}
-% \end{table}
+The hyperparameters for each method and the range of values considered are explained in the following subsections.
+
+\subsubsection{Logistic regression}
+
+Table \ref{tab:lr_params} presents the hyperparameters of the logistic regression model and the respective ranges of values explored during the tuning process.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\multicolumn{1}{c}{\textbf{Hyperparameter}} & \multicolumn{1}{c}{\textbf{Values Tested}} \\
+		\midrule
+		1/Regularisation strength (C)              & $10^{-5}$ - $10^{2}$ \\
+		Regularisation type                       & None, L1 (Lasso), L2 (Ridge) \\
+		Solver                                    & liblinear, lbfgs, saga \\
+		\bottomrule
+	\end{tabular}
+	\caption{Logistic regression hyperparameters and the range of values tested}
+	\label{tab:lr_params}
+\end{table}
+
+Regularisation introduces a penalty term to the loss function which helps control the size of the coefficients. This can mitigate the risk of overfitting by preventing the model from relying too heavily on any single predictor variable. There are two \textit{types} of regularisation, Lasso and Ridge.
+
+$C$ is the inverse of the \textit{regularisation strength} parameter $\lambda$. Higher values of $C$ therefore correspond to less regularisation, while lower values enforce stronger regularisation.
+
+The \textit{solver} is the algorithm used to minimise the loss function. 
+
+\subsubsection{Random forests}
+
+Table \ref{tab:rf_params} presents the hyperparameters of the random forests model and the respective ranges of values used in the tuning process.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\multicolumn{1}{c}{\textbf{Hyperparameter}} & \multicolumn{1}{c}{\textbf{Values Tested}} \\
+		\midrule
+		Number of estimators       & 20 - 500 \\
+		Maximum depth              & 2 - None \\
+		Minimum samples for split  & 2 - 10 \\
+		Minimum samples per leaf   & 1 - 10 \\
+		Maximum features           & 1 - None \\
+		\bottomrule
+	\end{tabular}
+	\caption{Random forests hyperparameters and the range of values tested}
+	\label{tab:rf_params}
+\end{table}
+
+The \textit{number of estimators} is the number of decision trees to include in the ensemble. Increasing this value can improve performance but also increases computational cost.
+
+The \textit{maximum depth} limits the maximum depth of each decision tree. Deeper trees can capture more complex relationships but may overfit the data. 
+
+The \textit{minimum samples for split} are the amount of samples needed at a node in order to split it further. The \textit{minimum samples per leaf} are the lowest amount of samples that can exist at a leaf node. The greater these values, the simpler the trees become.
+
+The \textit{maximum features} refers to the maximum amount of features considered when looking for the best split. Limiting the number of features reduces the risk of overfitting.
+
+\subsubsection{Support vector machine}
+
+Table \ref{tab:svc_params} presents the hyperparameters of the support vector machine and the respective ranges of values explored during the tuning process.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\multicolumn{1}{c}{\textbf{Hyperparameter}} & \multicolumn{1}{c}{\textbf{Values Tested}} \\
+		\midrule
+		Kernel                     & 'linear', 'poly', 'rbf', 'sigmoid' \\
+		Regularisation (C)         & $10^{-3}$ - $10^{3}$ \\
+		Degree (for 'poly' kernel) & 2 - 5 \\
+		Gamma (for 'rbf' kernel)   & $10^{-5}$ - $10^{0}$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{Support Vector Classifier hyperparameters and the range of values tested}
+	\label{tab:svc_params}
+\end{table}
+
+The \textit{kernel} function defines the shape of the decision boundary.
+
+For a support vector classifier, Ridge regularisation is implemented by means of a penalty term for the complexity of the decision boundary. The \textit{regularisation} parameter C is the inverse of the strength of regularisation, where lower values of C correspond to stronger regularisation, while higher values correspond to weaker regularisation
+
+For the polynomial kernel, the \textit{degree} specifies the polynomial order, and for the RBF kernel, the \textit{gamma} parameter defines the kernel width.
+
+\subsubsection{\textit{k}-nearest neighbours}
+Table \ref{tab:knn_params} presents the hyperparameters of the $k$-nearest neighbours classifier and the respective ranges of values explored during the tuning process.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\multicolumn{1}{c}{\textbf{Hyperparameter}} & \multicolumn{1}{c}{\textbf{Values Tested}} \\
+		\midrule
+		Number of neighbours			   & 1 - 30 \\
+		Weight function			           & 'uniform', 'distance' \\
+		Algorithm                          & 'auto' \\
+		Power parameter (p)                & 1 - 2 \\
+		\bottomrule
+	\end{tabular}
+	\caption{$k$-nearest neighbours hyperparameters and the range of values tested}
+	\label{tab:knn_params}
+\end{table}
+
+The \textit{number of neighbours} are the number of neighbouring data points which are considered for classification. A higher value can reduce noise but may also smooth out decision boundaries.
+
+The \textit{weight function} assigns a weight to each neighbour based on its distance from the query point. 'uniform' gives equal weight to all neighbours, while 'distance' weights closer neighbours more heavily.
+
+The \textit{algorithm} parameter specifies the algorithm used for computing nearest neighbors. 'auto' selects the best approach based on the dataset.
+
+The \textit{power} parameter (p) is used for the Minkowski metric, which calculates the distance between data points. The Manhattan distance is used when $p=1$, and the Euclidean distance is used when $p=2$.
+
+\subsubsection{Gaussian Naive Bayes}
+
+The Gaussian Naive Bayes classifier is a relatively simple model and has only a single hyperparameter, \textit{var\_smoothing}, which is a small positive value added to the variance of each Gaussian used in the model. Adding this smoothing value can prevent numerical instabilities if the variance of a feature approaches 0. The range of values tested was $10^{-10}$ - $10^{-5}$.
+
+\subsubsection{Multilayer perceptron}
+
+Table \ref{tab:mlp_params} presents the hyperparameters of the MLP classifier and the respective ranges of values explored during the tuning process.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\multicolumn{1}{c}{\textbf{Hyperparameter}} & \multicolumn{1}{c}{\textbf{Values Tested}} \\
+		\midrule
+		Hidden layer sizes  				& \textit{see below} \\
+		Activation function 				& 'identity', 'logistic', 'tanh', 'relu' \\
+		Solver 								& 'lbfgs', 'sgd', 'adam' \\
+		Learning rate 						& 'constant', 'invscaling', 'adaptive' \\
+		Alpha 								& 0.0001, 0.001, 0.01, 0.1 \\
+		Batch size 							& 'auto', 20 - 400 \\
+		Max iterations					    & 200 - 10000 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Multilayer perceptron hyperparameters and the range of values tested}
+	\label{tab:mlp_params}
+\end{table}
+
+The \textit{hidden layer sizes} are the number of neurons in each hidden layer. Different configurations of hidden layers can affect the model's ability to capture complex patterns. The hidden-layer topologies tested include wide (200,200), narrow (20,20), bottleneck (200, 50, 200), and hierarchical (200, 100, 50). The amount of neurons in each hidden layer in each topology was varied from 1 to 400. The maximum number of hidden layers tested was five.
+
+The \textit{activation function} defines the function used for activating neurons in the hidden layers, where 'identity' is a linear activation, 'logistic' is the sigmoid function, 'tanh' is the hyperbolic tangent, and 'relu' is the rectified linear unit.
+
+The \textit{solver} is the optimization algorithm used to update the weights. 'lbfgs' is an quasi-Newton method, 'sgd' is stochastic gradient descent, and 'adam' is a stochastic gradient-based optimizer.
+
+The \textit{learning rate} controls the step size used when updating the weights. 'constant' uses a fixed learning rate (0.001), 'invscaling' gradually decreases the learning rate, and 'adaptive' maintains the learning rate unless the training loss ceases to improve.
+
+The \textit{alpha} parameter is the regularisation term, similar to $\lambda$ in logistic regression and SVMs.
+
+The \textit{batch size} is the number of samples processed before the model is updated. Smaller batch sizes allow the model to learn faster but can be more unstable, while larger batch sizes provide more stable updates but may take longer to converge.
+
+The \textit{max iterations} parameter is the maximum number of iterations the solver will run for. This allows "early stopping" if convergence is not reached after max\_iter. For stochastic solvers (‘sgd’, ‘adam’), this is the number of times each data point is used (epochs).
+
+\subsubsection{XGBoost}
+Table \ref{tab:xgb_params} presents the hyperparameters of the XGBoost classifier and the respective ranges of values explored during the tuning process.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{ll}
+		\toprule
+		\multicolumn{1}{c}{\textbf{Hyperparameter}} & \multicolumn{1}{c}{\textbf{Values Tested}} \\
+		\midrule
+		Number of estimators	  				  & 50 - 10000 \\
+		Learning rate        					  & 0.001, 0.01, 0.1, 0.2, 0.3 \\
+		Max depth            					  & 2 - 10 \\
+		Subsample 								  & 0.5 - 1.0 \\
+		Colsample by tree 					 	  & 0.5 - 1.0 \\
+		Gamma 									  & 0, 0.1, 0.2, 0.3 \\
+		\bottomrule
+	\end{tabular}
+	\caption{XGBoost hyperparameters and the range of values tested}
+	\label{tab:xgb_params}
+\end{table}
+
+The \textit{number of estimators} is the number of trees in the model. More trees can increase the model's performance but also the risk of overfitting.
+
+The \textit{learning rate} (eta) controls the step size at each iteration while minimising the loss function. Lower learning rates make the model more robust to overfitting by shrinking the feature weights.
+
+The \textit{max depth} parameter defines the maximum depth of a tree. Deeper trees can model more complex relationships but are more prone to overfitting.
+
+The \textit{subsample} parameter is the fraction of samples to be used for fitting each tree, while \textit{colsample by tree} is the fraction of features to be used for each tree. These parameters prevent overfitting by adding randomness.
+
+The \textit{gamma} parameter specifies the minimum reduction in loss needed to split a node, thereby controlling the complexity of the trees.
  
- \begin{table}[h]
- 	\centering
- 	\small
- 	\begin{adjustbox}{center}
- 	\begin{tabular}{|l|l|l|}
- 		\hline
- 		\rule{0pt}{2.5ex}\textbf{Hyperparameter} & \textbf{Description} & \textbf{Range of Values Tested} \\
- 		\hline
- 		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Logistic Regression}} \\
- 		\hline
- 		C & Inverse of regularization strength & 0.01, 0.1, 1, 10, 100 \\
- 		penalty & Type of regularization & "l1", "l2", "elasticnet" \\
- 		solver & Optimization algorithm & "liblinear", "sag", "saga" \\
- 		\hline
- 		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Random Forest}} \\
- 		\hline
- 		n\_estimators & Number of trees in the forest & 100-400 \\
- 		max\_depth & Maximum depth of the tree & 1-12 \\
- 		min\_samples\_split & Min samples to split a node & 2-10 \\
- 		min\_samples\_leaf & Min samples to be at a leaf node & 1-4 \\
- 		max\_features & Number of features for best split & "sqrt", "log2", None \\
- 		\hline
- 		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Support Vector Machine}} \\
- 		\hline
- 		C & Regularization parameter & 0.1, 1, 10, 100 \\
- 		kernel & Kernel type & "linear", "poly", "rbf", "sigmoid" \\
- 		degree & Degree of polynomial kernel & 2, 3, 4 \\
- 		gamma & Kernel coefficient & "scale", "auto", 0.01, 0.1, 1 \\
- 		\hline
- 		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{XGBoost}} \\
- 		\hline
- 		n\_estimators & Number of gradient boosted trees & 100-400 \\
- 		learning\_rate & Step size shrinkage & 0.001, 0.01, 0.1 \\
- 		max\_depth & Maximum depth of a tree & 1-12 \\
- 		subsample & Subsample ratio of the training instances & 0.5, 0.75, 1 \\
- 		colsample\_bytree & Subsample ratio of columns for each tree & 0.5, 0.75, 1 \\
- 		gamma & Min loss reduction for partition on a leaf node & 0, 0.1, 0.2, 0.3 \\
- 		\hline
- 		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Gaussian Naive Bayes}} \\
- 		\hline
- 		var\_smoothing & Variance smoothing & 1e-9, 1e-8, 1e-7 \\
- 		\hline
- 		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Multi-layer Perceptron}} \\
- 		\hline
- 		hidden\_layer\_sizes & Neurons in hidden layers & (1-100,), (*,1-100), (*,*,1-100)\footnotemark[3] \\
- 		activation & Activation function & "relu", "logistic" \\
- 		solver & Solver for weight optimization & "sgd", "adam" \\
- 		alpha & L2 penalty (regularization term) & 0.0001, 0.001, 0.01 \\
- 		learning\_rate & Learning rate for weight updates & "constant", "adaptive" \\
- 		\hline
-  		\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{k-Nearest Neighbours}} \\
-		\hline
-		n\_neighbors & Number of neighbors to use & 2-120 \\
-		weights & Weight function in prediction & "uniform", "distance" \\
-		algorithm & Algorithm to compute nearest neighbors & "auto", "ball\_tree", "kd\_tree" \\
-		p & Power parameter for Minkowski metric & 1 (Manhattan), 2 (Euclidean) \\
-		\hline
- 	\end{tabular}
- 	 	\end{adjustbox}
- 	
- 	\caption{Hyperparameters and range of values tested for each ML model implemented}
- 	\label{table:hyperparameters}
- \end{table}
- 
-\footnotetext[3]{Different hidden-layer topologies were tested including wide, narrow, symmetrical, bottleneck, and hierarchical}
-
-\clearpage
-
 \subsection{Performance evaluation}
 
-After training, each model will classify every observation (match) in the test set into either class, $y=1$ (team 1 wins), or $y=0$ (team 1 loses, team 2 wins). 
+Once each model has been trained, each match in the test set is classified into either class, $y=1$ (team 1 wins), or $y=0$ (team 1 loses, i.e. team 2 wins). 
 
-The percentage of matches that were correctly classified is reported as the testing classification accuracy, labelled as \textbf{Test ACC}. 
+The classification accuracy refers to the percentage of matches that was correctly classified by each model. It is reported as \textbf{Test ACC} in the results tables in the following chapter. 
 
 \textbf{Precision} is a measure of the accuracy of positive predictions. It is the percentage of matches that were actually won out of the set of positive predictions. \textbf{Recall}, also known as sensitivity, measures the proportion of true positives that are correctly classified by the model.
 

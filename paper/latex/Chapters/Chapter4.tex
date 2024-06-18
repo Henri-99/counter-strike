@@ -3,21 +3,11 @@
 
 \section{Model Performance}
 
-The performance of each machine learning model is reported under different circumstances. Filters were applied to the dataset in order to identify if certain types of matches were easier to predict than others. The different scenarios tested were:
-\begin{enumerate}
-	\item the full dataset which includes all matches
-	\item the full dataset using selected features
-	\item a dataset which excluded Best-of-1 matches
-	\item a dataset which excluded matches without a team ranked in the Top-30
-	\item a dataset which excluded matches without a team ranked in the Top-15
-	\item a dataset which excluded all matches played online
-\end{enumerate}
-
-All figures reported in the tables to follow are percentages, unless specified otherwise. The best result achieved in each category is highlighted in \textbf{bold}.
+The performance of each machine learning model on each dataset is presented in the following tables. The classification accuracy on the training set, as well as the classification accuracy, precision, recall, F1 score, and ROC AUC on the test set, are reported. All values are reported as percentages unless otherwise indicated. The best result achieved for each metric is highlighted in \textbf{bold}.
 
 \subsection{Full dataset}
 
-The first scenario entailed training each model using all 142 features. The full dataset consists of 10145 matches, with 8116 used for training and 2029 for testing. The results obtained for this setup are tabulated in Table \ref{table:1}. The precision, recall, F1 score, and ROC AUC scores were obtained for the test set.
+The full dataset consists of 10145 matches, with 8116 used for training and 2029 for testing. Each model was first trained using all 142 features. The results obtained for this setup are tabulated in Table \ref{table:1}.
 
 \begin{table}[h!]
 	\centering
@@ -42,7 +32,7 @@ The first scenario entailed training each model using all 142 features. The full
 	\label{table:1}
 \end{table}
 
-The machine learning models did not significantly outperform the TrueSkill baseline model, with the improvement in classification accuracy varying from -2\% to 2\%. XGBoost and MLP NN had the best overall performance with a classification accuracy of 60.0\% and 59.7\%  respectively. XGBoost had the highest recall, $F_1$ score, and AUC ROC, indicating slightly better ability to discriminate between classes.
+The ML models did not significantly outperform the TrueSkill baseline model, with the improvement in classification accuracy varying from -2\% to 2\%. XGBoost and MLP had the best overall performance with a classification accuracy of 60.0\% and 59.7\%  respectively. XGBoost had the highest recall, $F_1$ score, and AUC ROC, indicating slightly better ability to discriminate between classes.
 
 The optimal set of hyperparameters for each model was found using grid search and is captured in Table \ref{table:hyperparameters} below.
 
@@ -117,9 +107,9 @@ The optimal set of hyperparameters for each model was found using grid search an
 % MLP {'activation': 'relu', 'alpha': 0.001, 'hidden_layer_sizes': (10,100,10), 'learning_rate_init': 0.001, 'solver': 'sgd'}
 % KNN {'n_neighbors': 110, 'p': 1, 'weights': 'uniform'}
 
-As a consequence of the large number of features, the models were prone to overfit the training data. This was especially pronounced with random forests, XGBoost, and multilayer perceptron, which when initially configured could achieve near perfect accuracy on the training set, but otherwise performed poorly on the test set. In the case of random forests and XGBoost, this was mitigated by reducing the maximum depth of the trees to only 2 splits. For the MLP, the number of nodes per hidden layer had to be quite low (5,4) to avoid overfitting.
+As a consequence of the large number of features, the models were prone to overfit the training data. This was especially pronounced with random forests, XGBoost, and MLP, which when initially configured could achieve near perfect accuracy on the training set, but otherwise performed poorly on the test set. In the case of random forests and XGBoost, this was mitigated by reducing the maximum depth of the trees to only 2 splits. For MLP, the number of nodes per hidden layer had to be quite low (5,4) to avoid overfitting.
 
-The weakest performers were $k$-Nearest Neighbours and Gaussian Naive Bayes, exhibiting worse performance than the TrueSkill base model.
+The weakest performers were $k$-nearest neighbours and Gaussian Naive Bayes, exhibiting worse performance than the TrueSkill base model.
 
 The ROC curve for TrueSkill and the best performing ML model, XGBoost, are plotted in Figure \ref{fig:xgb-roc}. It is evident that both models are better at predicting match outcomes than random chance, however XGBoost is slightly superior with an AUC of 0.641 vs 0.624.
 
@@ -134,7 +124,7 @@ The ROC curve for TrueSkill and the best performing ML model, XGBoost, are plott
 
 \subsubsection{Feature importance}
 
-Feature selection methods such as filter and wrapper methods have already been discussed in Section \ref{feature-selection}. Some models can also be used to determine feature importance. In a regularised logistic regression model, the magnitude of the coefficients for each feature are indicative of their importance given a large enough regularization penalty. 
+Feature selection methods such as filter and wrapper methods have already been discussed in section \ref{feature-selection}. Some models can also be used to determine feature importance. In a regularised logistic regression model, the magnitude of the coefficients for each feature are indicative of their importance given a large enough regularization penalty. 
 
 For SVMs with linear kernels, the weights assigned to each feature indicate their importance. With tree-based methods like random forests and XGBoost, the features yielding the largest average reduction in the loss function are more important. Figure \ref{fig:xgbimp} shows the feature importances determined by XGBoost.
 
@@ -147,7 +137,7 @@ For SVMs with linear kernels, the weights assigned to each feature indicate thei
 	\label{fig:xgbimp}
 \end{figure}
 
-In contrast to the filter methods in Section \ref{feature-selection}, XGBoost considers the difference in average player statistics (rating, KAST, ADR, and HLTV rating) between the two teams to be highly relevant measures. Both TrueSkill and Elo win probabilities are taken into account as well, whereas previously the Elo measure was discarded. 
+In contrast to the filter methods in section \ref{feature-selection}, XGBoost considers the difference in average player statistics (rating, KAST, ADR, and HLTV rating) between the two teams to be highly relevant measures. Both TrueSkill and Elo win probabilities are taken into account as well, whereas previously the Elo measure was discarded. 
 
 With logistic regression, the feature importances differed considerably. As seen in Figure \ref{fig:logimp}, the TrueSkill win probability and $\mu,\sigma$ values for either team were very important, followed by the difference in average map win-rate, round win-rate per map. HLTV world ranking, and win-streak.
 
@@ -163,9 +153,7 @@ With logistic regression, the feature importances differed considerably. As seen
 	\label{fig:logimp}
 \end{figure}
 
-\subsubsection{Performance using Feature Selection}
-
-The results reported in Table \ref{table:2} below were obtained after reducing the number of features to 18, which translates to a 87\% reduction in the data provided to each model. This smaller set of features was determined using the list of feature importance graphs produced from the previous analysis. The number of observations in the training and testing sets remained the same as the previous scenario.
+The results reported in Table \ref{table:2} below were obtained after reducing the number of features to 18, an 87\% reduction in the data provided to each model. This smaller set of features was determined using the list of feature importance graphs produced from the previous analysis. The number of matches in the training and testing sets remained the same.
 
 \begin{table}[h!]
 	\centering
@@ -194,9 +182,11 @@ The results reported in Table \ref{table:2} below were obtained after reducing t
 
 % XGBoost: {'colsample_bytree': 1, 'learning_rate': 0.08, 'max_depth': 1, 'n_estimators': 208, 'subsample': 0.7}
 
-The reduction in the number of features did not significantly degrade performance. In fact, the Recall, $F_1$ score, and ROC AUC all increased on average - likely due to a reduction in noise. This strongly suggests that many of the features do not meaningfully contribute to an accurate match prediction and can safely be ignored for the remaining analysis.
+The reduction in the number of features did not significantly degrade performance. In fact, the Recall, $F_1$ score, and ROC AUC all increased on average - likely due to a reduction in noise. This strongly suggests that many of the features do not meaningfully contribute to an accurate match prediction and can safely be ignored.
 
-Occam's razor recommends searching for an explanation constructed from the smallest possible set of elements. This begs the question: how many features can be removed from the dataset without incurring a considerable loss in performance? Another test was performed by reducing the total number of features to just seven features: difference in average player rating, TrueSkill win probability and both teams' $\mu$-values, the difference in their HLTV world ranking, the first team's HLTV world ranking, and the number of maps where the first team had a higher round win-rate than their opponent. The results are shown below in Table \ref{table:7features}.
+Occam's razor recommends searching for an explanation constructed from the smallest possible set of elements. This begs the question: how many features can be removed from the dataset without incurring a considerable loss in performance? 
+
+Another test was performed by reducing the total number of features to just seven features: difference in average player rating, TrueSkill win probability and both teams' $\mu$-values, the difference in their HLTV world ranking, the first team's HLTV world ranking, and the number of maps where the first team had a higher round win-rate than their opponent. The results are shown below in Table \ref{table:7features}.
 
 \begin{table}[h!]
 	\centering
@@ -305,7 +295,7 @@ LAN tournaments are often prestigious events, and it is usually only the top tea
 	\label{table:0}
 \end{table}
 
-SVM was the surprising winner under these circumstances, with random forests the runner-up. XGBoost and the MLP did not fare as well as before. This was the first time an ML model achieved an accuracy in excess of 62\%. The dataset was, however, far smaller for this filter than with previous testing. That being said, the 2.8\% improvement over the baseline TrueSkill model was more significant than previous deltas. These results empirically support the idea that LAN matches are more predictable than online matches.
+SVM performed the best under these circumstances followed by random forests. XGBoost and the MLP did not perform as well as before. This was the first time an ML model achieved an accuracy in excess of 62\%. This dataset was, however, far smaller than the prior datsets. The best model achieved a 2.8\% improvement over the baseline TrueSkill model, which was more significant than previously obtained. These results empirically support the idea that LAN matches are more predictable than online matches.
 
 % Hyperparameters used
 % LOG {'C': 0.01, 'penalty': 'l2', 'solver': 'liblinear'}
@@ -323,7 +313,6 @@ As discussed previously, the full dataset includes all matches played where at l
 \textbf{Top-30}
 
 This filter removed a sizeable number of matches from the dataset, leaving 7115 for analysis. 5692 were used for training the models and 1423 for testing.
-
 
 \begin{table}[h!]
 	\centering
@@ -348,11 +337,11 @@ This filter removed a sizeable number of matches from the dataset, leaving 7115 
 	\label{table:4}
 \end{table}
 
-The results obtained were very similar to the full dataset, with the baseline benchmark only improving its accuracy by 0.1\%. XGBoost and MLP once again proved to be the strongest models, which was expected given the earlier results. That being said, the best accuracy attained actually decreased slightly, from 59.8\% to 59.5\%.
+The results obtained were very similar to the full dataset, with the baseline benchmark only improving its accuracy by 0.1\%. XGBoost and MLP once again proved to be the best performing models, which was expected given the earlier results. That being said, the best accuracy attained actually decreased slightly, from 59.8\% to 59.5\%.
 
 \textbf{Top-15}
 
-The ranking threshold was tightened to include only matches with at least one Top-15 team. This constrained the dataset to 3756 matches, of which 3004 were used for training and 752 for testing.
+The ranking threshold was further constrained to only include matches with at least one Top-15 team. This dataset had 3756 matches, of which 3004 were used for training and 752 for testing.
 
 \begin{table}[h!]
 	\centering
@@ -377,20 +366,19 @@ The ranking threshold was tightened to include only matches with at least one To
 	\label{table:5}
 \end{table}
 
-The results here mirror what was found with the LAN-only filter. Indeed, there is significant overlap between these two datasets, as teams which attend LAN events tend to be higher-ranked. XGBoost proved its superior classification ability once more, attaining 62\%. It is noteworthy that each model (except Gaussian Naive Bayes) exhibited significantly better recall than precision. This means that the models tend towards positive classifications: true positives were often identified, however, more false positives also occurred.
+The results here mirror what was found with the LAN-only filter. Indeed, there is significant overlap between these two datasets, as teams which attend LAN events also tend to be higher-ranked. XGBoost obtained the highest classification ability once more, 62\%. It is noteworthy that each model (except Gaussian Naive Bayes) exhibited significantly better recall than precision. This means that the models tend towards positive classifications: true positives were often identified, however, more false positives also occurred.
 
-The improvement in model performance is likely due to the increased proportion of lopsided matches (Top-15 vs a lower ranked team) present in this subset of the data, which should be easier to predict.
+One explanation for the improvement in model performance is that there is a greater proportion of mis-matches (Top-15 vs a lower ranked team) present in this subset of the data, which should be easier to predict.
 
 \subsection{Summary}
 
-Machine learning techniques outperform the baseline classification performance, albeit usually only by a few percentage points. XGBoost was found to consistently outperform the other methods employed, achieving 62\% accuracy on the dataset which excluded BO1s. SVM and MLP also delivered good performance, sometimes beating XGBoost. In the LAN-only subset, SVM achieved 62.7\% accuracy.
+Machine learning techniques outperform the baseline classification performance, albeit usually only by a few percentage points. XGBoost was found to consistently achieve better performance than the other methods employed, notably obtaining 62\% accuracy on the dataset which excluded BO1s. SVM and MLP also delivered good performance, sometimes beating XGBoost. In the LAN-only subset, SVM achieved 62.7\% accuracy.
 
 The results suggest that LAN matches are more predictable than online matches, and that matches involving a higher-ranked team are generally easier to predict than a match with lower ranked teams. Additionally, BO3 and BO5 matches are easier to predict than BO1 matches.
 
-Furthermore, it was found that incorporating many features did not measurably improve the predictive power of the models. Key features could be identified using filter and wrapper techniques, but also from feature importance metrics produced by the models themselves. Training using a smaller subset of only the most relevant features reduced the tendency for models to overfit the training data while simultaneously reducing the computational requirements. These smaller models produced almost identical performance to the fully-featured models. 
+Furthermore, it was found that incorporating many features did not measurably improve the predictive power of the models. Key features could be identified and selected using filter and wrapper techniques, but also from feature importance metrics produced by the models themselves. Training using a smaller subset of only the most relevant features reduced the tendency for models to overfit the training data while simultaneously reducing the computational requirements. These smaller models produced almost identical performance to the fully-featured models. 
 
-
-\section{Betting odds: generated vs real}
+\section{Betting odds and simulation}
 
 The odds generated by the various models all exhibited a high correlation with the bookmaker odds, as shown in Table \ref{table:bettingperformance}. As explained in \ref{bettingstats}, the correlation, mean absolute error (MAE), and root-mean squared error (RMSE) for each model is reported. These measure the discrepancy between real odds offered by bookmakers and the odds generated by the models. Bet \% refers to the proportion of matches which were deemed to be worth betting on. The P/L column is the total number of betting units won or lost by the end of the betting period.
 
