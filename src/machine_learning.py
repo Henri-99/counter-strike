@@ -137,8 +137,8 @@ def logistic_regression(plot_var_imp = False):
 def tune_logreg():
 	lr_param_grid = {
 		'C': [1e-4, 1e-3, 1e-2, 0.1, 1, 10, 100],
-		'penalty': ['l2', 'l1'], # 'elasticnet'
-		'solver': ['liblinear', 'saga', 'lbfgs', 'newton-cg', 'newton-cholesky', 'sag'] 
+		'penalty': ['None', 'l2', 'l1'],
+		'solver': ['liblinear', 'saga', 'lbfgs'] 
 	}
 
 	lr = LogisticRegression(max_iter=10000)
@@ -149,7 +149,7 @@ def tune_logreg():
 	print("Best Parameters for Logistic Regression:", lr_grid_search.best_params_)
 	print("Best Score for Logistic Regression:", lr_grid_search.best_score_)
 
-	# best params {'C': 0.01, 'penalty': 'l2', 'solver': 'saga'}
+	# best params {'C': 0.005, 'penalty': 'l2', 'solver': 'saga'}
 
 # Random forests
 def random_forests():
@@ -183,16 +183,11 @@ def random_forests():
 
 def tune_rf():
 	rf_param_grid = {
-		'n_estimators': [130, 131, 132, 133, 134],            # Number of trees in the forest
-		'max_features': ['log2'], #['sqrt', 'log2', 0.2, 0.5], # Number of features to consider at every split
-		'max_depth': [8, 9, 10],                # Maximum depth of the tree
-		# 'min_samples_split': [2,4],                 # Minimum number of samples required to split a node
-		# 'min_samples_leaf': [2,4],                  # Minimum number of samples required at a leaf node
-		# 'bootstrap': [True, False],                     # Method for sampling data points (with or without replacement)
-		# 'class_weight': [None, 'balanced', 'balanced_subsample'], # Weights associated with classes
-		# 'criterion': ['gini', 'entropy'],               # Function to measure the quality of a split
-		# 'max_leaf_nodes': [None, 10, 20, 30, 50],       # Maximum number of leaf nodes
-		# 'min_impurity_decrease': [0.0, 0.1, 0.01, 0.001] # A node will be split if this split induces a decrease of the impurity
+		'n_estimators': [34, 36],            # Number of trees in the forest
+		'max_features': [15, 16],
+		'max_depth': [5, 6],                # Maximum depth of the tree
+		'min_samples_split': [2, 2, 3],                 # Minimum number of samples required to split a node
+		'min_samples_leaf': [3, 4, 5],                  # Minimum number of samples required at a leaf node
 	}
 	# {'max_depth': 7, 'min_samples_leaf': 2, 'min_samples_split': 2, 'n_estimators': 350}
 
@@ -295,11 +290,9 @@ def knn_model():
 
 def tune_knn():
 	knn_param_grid = {
-		'n_neighbors': [50, 105, 110, 120],        # Number of neighbors
-		'weights': ['uniform',],  # Weight function used in prediction
-		'p': [1, 2]                          # Power parameter for the Minkowski metric
-		# 'weights': ['uniform', 'distance'],  # Weight function used in prediction
-		# 'p': [1, 2]                          # Power parameter for the Minkowski metric
+		'n_neighbors': [46, 50, 54],        # Number of neighbors
+		'p': [1],                          # Power parameter for the Minkowski metric
+		'weights': ['uniform'],  # Weight function used in prediction
 	}
 
 	knn = KNeighborsClassifier()
@@ -513,17 +506,17 @@ if __name__ == "__main__":
 	# logistic_regression()
 	# random_forests()
 	# support_vector_machine()
-	# xgboost_model()
 	# naive_bayes_model()
-	# multilayer_perceptron()
 	# knn_model()
+	# multilayer_perceptron()
+	# xgboost_model()
 
-	tune_logreg()
+	# tune_logreg()
 	# tune_rf()
 	# tune_svm()
-	# tune_xgb()
 	# tune_nb()
+	tune_knn()
 	# tune_mlp()
-	# tune_knn()
+	# tune_xgb()
 	
 	# betting_simulation()
