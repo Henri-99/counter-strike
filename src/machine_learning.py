@@ -450,13 +450,13 @@ def betting_simulation():
 	# y_proba = pd.DataFrame(xgboost_model(), columns=['prob_0', 'prob_1'])
 	x = df.iloc[split_index:].reset_index(drop=True)
 	df = pd.concat((x, y_proba), axis=1)
-	matches = pd.read_csv('csv/odds.csv')
+	matches = pd.read_csv(root_dir / 'data' / 'odds.csv')
 	merged_df = pd.merge(df, matches, on='match_id', how='inner')
 
 	# merged_df['prob_1'] = merged_df['ts_win_prob']
 	# merged_df['prob_0'] = 1- merged_df['ts_win_prob']
 	merged_df = merged_df[['match_id', 'datetime_x', 'team1_x', 'team2_x', 'win', 'ts_win_prob', 'prob_1', 'prob_0', 't1_odds', 't2_odds', 't1_prob', 't2_prob', 't1_n_prob', 't2_n_prob', 'event_id', 'event_name']]
-	merged_df.to_csv('csv/pred_odds.csv')
+	merged_df.to_csv(root_dir / 'data' / 'pred_odds.csv')
 
 	correlation = merged_df['prob_1'].corr(merged_df['t1_n_prob'])
 	mae = mean_absolute_error(merged_df['prob_1'], merged_df['t1_n_prob'])
