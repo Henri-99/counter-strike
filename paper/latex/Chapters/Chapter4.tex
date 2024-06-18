@@ -34,7 +34,7 @@ The full dataset consists of 10145 matches, with 8116 used for training and 2029
 
 The ML models did not significantly outperform the TrueSkill baseline model, with the improvement in classification accuracy varying from -2\% to 2\%. XGBoost and MLP had the best overall performance with a classification accuracy of 60.0\% and 59.7\%  respectively. XGBoost had the highest recall, $F_1$ score, and AUC ROC, indicating slightly better ability to discriminate between classes.
 
-The optimal set of hyperparameters for each model was found using grid search and is captured in Table \ref{table:hyperparameters} below.
+The optimal set of hyperparameters for each model was found using grid search and is captured in Table \ref{table:hyperparameters2} below.
 
  \begin{table}[h]
 	\centering
@@ -126,6 +126,7 @@ The ROC curve for TrueSkill and the best performing ML model, XGBoost, are plott
 
 Feature selection methods such as filter and wrapper methods have already been discussed in section \ref{feature-selection}. Some models can also be used to determine feature importance. In a regularised logistic regression model, the magnitude of the coefficients for each feature are indicative of their importance given a large enough regularization penalty. 
 
+\newpage
 For SVMs with linear kernels, the weights assigned to each feature indicate their importance. With tree-based methods like random forests and XGBoost, the features yielding the largest average reduction in the loss function are more important. Figure \ref{fig:xgbimp} shows the feature importances determined by XGBoost.
 
 \begin{figure}[h]

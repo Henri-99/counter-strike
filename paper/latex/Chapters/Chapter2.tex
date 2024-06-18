@@ -38,23 +38,29 @@ Do the same findings apply to esports analysis? Jenny et al. \cite{def-esports} 
 
 \subsection{Machine Learning Algorithms}
 
-In this section the techniques used in the aforementioned papers are investigated. The algorithms include logistic regression, random forest, gradient boosting techniques, support vector machines, and neural networks.
+In this section the techniques used in the aforementioned papers are investigated. The algorithms include logistic regression, random forests, support vector machines, $k$-nearest neighbours, Naive Bayes, neural networks, and gradient boosting.
 
 \subsubsection{Logistic regression}
 
-Logistic regression (LR) is a binary classification algorithm: given an input vector $\bm{x_i}$, classify the output label $y_i$ as 0 or 1. The output value is determined by mapping a linear combination of input values onto the logistic function. This produces a probability $p(\bm{x_i})$ of a given input vector $\bm{x_i}$ (set of features) belonging to the default output class, $y_i = 1$. 
+Logistic regression (LR) \cite{logreg} is a binary classification algorithm: given an input vector $\bm{x_i}$, classify the output label $y_i$ as 0 or 1. The output value is determined by mapping a linear combination of input values onto the logistic function. This produces a probability $p(\bm{x_i})$ of a given input vector $\bm{x_i}$ (set of features) belonging to the default output class, $y_i = 1$. 
 
-\[ p(\bm{x_i}) = \frac{e^{\beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \ldots}}{1 + e^{\beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \ldots}}  \]
+\begin{equation}
+p(\bm{x_i}) = \frac{e^{\beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \ldots}}{1 + e^{\beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \ldots}} 
+\end{equation}
 
 The optimal set of regression coefficients, ${\beta_0, \beta_1, ..., \beta_n}$, is obtained by maximizing the likelihood function. In LR, the likelihood function is the product of the probabilities $p_i$ of each data point being correctly classified by the model. 
 
-$$\mathcal{L}(\beta_0, \beta_1, ..., \beta_n | y, X) = \prod_{i=1}^{N} p(y_i | \bm{x_i}, \beta_0, \beta_1, ..., \beta_n)^{y_i} \left(1 - p(y_i | \bm{x_i}, \beta_0, \beta_1, ..., \beta_n)\right)^{1 - y_i}$$
+\begin{equation}
+	\mathcal{L}(\beta_0, \beta_1, ..., \beta_n | y, X) = \prod_{i=1}^{N} p(y_i | \bm{x_i}, \beta_0, \beta_1, ..., \beta_n)^{y_i} \left(1 - p(y_i | \bm{x_i}, \beta_0, \beta_1, ..., \beta_n)\right)^{1 - y_i}
+\end{equation}
 
 where $\mathcal{L}$ is the likelihood function, $y_i$ is the actual label of the $i$-th sample, $\bm{x_i}$ is the feature vector of the $i$-th sample, $\beta_0, \beta_1, ..., \beta_n$ are the regression coefficients, and $p(y_i | \bm{x_i}, \beta_0, \beta_1, ..., \beta_n)$ is the predicted probability of the $i$-th sample belonging to the positive class given the feature vector and coefficients.
 
 Because maximizing the likelihood function is computationally challenging, the negative log-likelihood (also known as cross-entropy loss) function is minimized instead. For logistic regression, the loss function is defined as:
 
-\[ L(y, p) = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right] \]
+\begin{equation}
+L(y, p) = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(p_i) + (1 - y_i) \log(1 - p_i) \right]
+\end{equation}
 
 where $L(y, p)$ is the loss function, $N$ is the number of samples, $y_i$ is the actual label, and $p_i$ is the predicted probability that the $i$-th sample belongs to the positive class.
 
@@ -62,46 +68,112 @@ This is an optimization process which is performed iteratively. The logistic reg
 
 \subsubsection{Decision trees and random forests}
 
-A decision tree resembles a flowchart-structure with three elements: internal nodes which represent different split points on features, branches which represent decision rules, and leaf nodes which represent the outcome. Starting at the top-most node (root), the decision tree is recursively partitioned into progressively smaller sub-trees. In order to make a classification, the tree is traversed using the input features until a leaf node is reached, which indicates the predicted class. There are multiple methods for determining the splitting criterion at each node, such as Information gain (the difference in entropy before and after a split) and Gini impurity. The latter quantifies the 'purity' of a node, with lower values representing more homogenous nodes. In the equation below, $p_i$ is the probability of an observation being classified into the $i^{th}$ class.
+A decision tree resembles a flowchart-structure with three elements: internal nodes which represent different split points on features, branches which represent decision rules, and leaf nodes which represent the outcome. Starting at the top-most node (root), the decision tree is recursively partitioned into progressively smaller sub-trees. 
 
-\[ Gini\, Impurity = 1 - \sum (p_i)^2 \]
+There are multiple methods for determining the splitting criterion at each node, such as Information gain (the difference in entropy before and after a split) and Gini impurity. The latter quantifies the 'purity' of a node, with lower values representing more homogenous nodes. The Gini Impurity for a single node is calculated using the following formula, where $p_i$ is the probability of an observation being classified into the $i^{th}$ class.
+
+\begin{equation}
+Gini\, Impurity = 1 - \sum (p_i)^2
+\end{equation}
+
+As an objective function for determining splits, the Gini Impurity is calculated across all leaf nodes. The split that results in the greatest reduction in weighted average impurity across the child nodes is then performed. 
 
 The depth of a decision tree affects its performance and complexity. More complex relationships can be modelled by deeper trees, but these are also more prone to overfitting. 
 
 Overfitting can be mitigated using several techniques. Decision trees can be pruned back according to a cross-validated cost complexity criterion. Their maximum depth can be limited, which prevents them from becoming too complex. The minimum number of samples required to split an internal node can be increased, ensuring that there is enough data to make a decision.
 
-The decision tree in Figure \ref{fig:tree} was generated from data about passengers of the Titanic, with the target class being whether they survived or died. If the passenger were a female, or a male under 10 years old with less than three siblings, the decision tree predicts they would survive. Each leaf node is shown with two values: the probability of survival and the proportion of data points belonging to that node. For example, 61\% of the data points were males aged 10 or more years, of which only 17\% survived.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.7\textwidth]{Figures/decision-tree.jpg}
-	\caption{A decision tree for classifying the survival of passengers on the Titanic \cite{fig-tree}}
-	\label{fig:tree}
-\end{figure}
-
-Random forests is an ensemble model; it combines the outputs of many, simpler decision trees which are each trained on a different random subset of the dataset. This technique is known as bagging and it helps to prevent models from over-fitting the training data. Random forests are typically more robust and have an improved accuracy when compared to a single decision tree. 
-
-\subsubsection{Gradient boosting}
-
-Gradient Boosting is another ensemble technique, however it differs from random forests in that each tree is built sequentially, and learns to 'correct' the errors of the previously trained tree. This process is done by calculating the difference between the predicted and actual values for the initial tree (the residuals), then building a subsequent tree which tries to predict the residuals for the former tree. The model is then updated by adding the weighted tree predictions to the initial predictions. This 'fine-tuning' process is repeated until convergence. 
-
-The learning rate is an important hyperparameter which controls the extent to which each tree's predictions influence the overall model. Lower values often lead to more robust models, however more trees are required for convergence. A fundamental equation in gradient boosting shows how the model is updated using a weighted sum of each learner's predictions. This equation is given by:
-
-\[ F_{new}(x) = F_{old}(x) + \lambda \cdot \sum_{t=1}^{T} \gamma_t \cdot h_t(x) \]
-
-where $F_{new}(x)$ is the updated model prediction, $F_{old}(x)$ is the prediction from the previous iteration, $\lambda$ is the learning rate, $T$ is the total number of trees in the model, $\gamma_t$ is the weight assigned to the t-th tree, and $h_t(x)$ is the prediction of the t-th tree. Each new tree is added to the model iteratively which improves the overall prediction accuracy incrementally.
-
-XGBoost (eXtreme Gradient Boosting) is a popular implementation of gradient boosting which regularly outperforms other models for classification tasks \cite{gradboostingwins}.
+Random forests \cite{randomforests} is an ensemble model; it combines the outputs of many, simpler decision trees which are each trained on a different random subset of the dataset. This technique is known as bagging and it helps to prevent models from over-fitting the training data. Random forests are typically more robust and have an improved accuracy when compared to a single decision tree. 
 
 \subsubsection{Support vector machines}
 
-Support vector machines are another classification technique whereby a \textit{hyperplane} which optimally separates the data points into their output classes is constructed. The \textit{margin} is the distance between the hyperplane and the nearest data point in each class. A SVM aims to maximize the margin as far as possible. If a linear hyperplane cannot separate the data well enough, the data can transformed into a higher-dimensional space using a \textit{kernel} function.
+A support vector machine (SVM) \cite{svm} is classification model which aims to separate data points into their output classes by means of a \textit{hyperplane}. The \textit{margin} is the distance between the hyperplane and the nearest data point in each class. A SVM aims to maximize the margin as far as possible. If a linear hyperplane cannot separate the data well enough, the data can transformed into a higher-dimensional space using a \textit{kernel} function.
 
-\clearpage
+A hyperplane in an \( n \)-dimensional space can be defined as:
+\begin{equation}
+	\mathbf{w} \cdot \mathbf{x} + b = 0
+\end{equation}
+where \( \mathbf{w} \) is the normal vector to the hyperplane, \( \mathbf{x} \) is a data point, and \( b \) is the bias term.
+
+The margin, which SVMs aim to maximise, is the distance between the hyperplane and the nearest data point from either class. The points lying on the margin boundaries are called support vectors. The distance from a point \( \mathbf{x}_i \) to the hyperplane is given by:
+\begin{equation}
+	\frac{|\mathbf{w} \cdot \mathbf{x}_i + b|}{\|\mathbf{w}\|}
+\end{equation}
+
+For a binary classification problem with labels \( y_i \in \{ -1, 1 \} \), the optimisation problem to maximise the margin can be formulated as:
+\begin{equation}
+	\begin{aligned}
+		& \min_{\mathbf{w}, b} \quad \frac{1}{2} \|\mathbf{w}\|^2 \\
+		& \text{subject to} \quad y_i (\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1, \quad \forall i
+	\end{aligned}
+\end{equation}
+
+As mentioned before, when the data is not linearly separable, SVMs use a \textit{kernel} function to map the input features into a higher-dimensional space where a linear hyperplane can be used to separate the data. Commonly used kernel functions include a \textit{linear} kernel, a \textit{polynomial} kernel, or a \textit{radial basis function} (RBF) kernel. A graphical representation of the effect of using a kernel function is shown in Figure \ref{fig:svm}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{Figures/svm.png}
+	\caption{Hyperplanes for a SVM using different kernel functions \cite{scikitsvm}}
+	\label{fig:svm}
+\end{figure}
+
+When using a kernel function, the optimization problem becomes:
+\begin{equation}
+	\begin{aligned}
+		& \min_{\mathbf{w}, b, \xi} \quad \frac{1}{2} \|\mathbf{w}\|^2 + C \sum_{i=1}^{n} \xi_i \\
+		& \text{subject to} \quad y_i (\mathbf{w} \cdot \phi(\mathbf{x}_i) + b) \geq 1 - \xi_i, \quad \xi_i \geq 0, \quad \forall i
+	\end{aligned}
+\end{equation}
+where \( \phi(\mathbf{x}) \) is the mapping to the higher-dimensional space, \( \xi_i \) are slack variables allowing for misclassification, and \( C \) is a regularisation parameter balancing margin maximization and classification error.
+
+\subsubsection{\textit{k}-nearest neighbours}
+
+$k$-nearest neighbours ($k$-NN) \cite{knn} is a simple algorithm that classifies new observations into the majority class among its nearest neighbouring observations in the feature space. Given an input vector \( \mathbf{x}_i \), the class label \( y_i \) is predicted by the most frequent class among the \( k \) closest neighbours in the training set.
+
+For a new data point \( \mathbf{x}_i \), the predicted class \( \hat{y}_i \) is determined by:
+\begin{equation}
+	\hat{y}_i = \arg\max_{y} \sum_{\mathbf{x}_j \in N_k(\mathbf{x}_i)} I(y_j = y)
+\end{equation}
+where \( N_k(\mathbf{x}_i) \) is the set of \( k \) nearest neighbors of \( \mathbf{x}_i \), and \( I(\cdot) \) is the indicator function.
+
+Using a smaller \( k \) value makes the model more sensitive to noise, while a larger \( k \) value may smooth over useful patterns.
+
+The distance between data points \( \mathbf{x}_i \) and \( \mathbf{x}_j \) is usually measured using the Euclidean distance:
+\begin{equation}
+	d(\mathbf{x}_i, \mathbf{x}_j) = \sqrt{\sum_{m=1}^{M} (x_{im} - x_{jm})^2}
+\end{equation}
+where \( M \) is the number of features. Note that other measures of distance, such as Manhattan or Minkowski, can also be used.
+
+$k$-NN differs from other models in that there is no training phase, however it can be computationally expensive during the testing phase and is often sensitive to irrelevant features.
+
+\subsubsection{Naive Bayes}
+
+Naive Bayes \cite{gaussiannb} is a probabilistic classifier based on Bayes' theorem. Bayes' theorem quantifies the probability of an event occurring given prior knowledge of the conditions related to the event. 
+
+\begin{equation}
+	P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
+\end{equation}
+
+where $P(A|B)$ is the conditional probability of event A occurring given that event B is true, and $P(A)$ and $P(B)$ are the independent probabilities of event A or B occurring.
+
+It is "naive" as it assumes that the predictors (features) are conditionally independent given the class, i.e. the presence (or absence) of a particular feature in a class is unrelated to the presence (or absence) of any other feature in that class.
+
+The Gaussian Naive Bayes classifier is a Naive Bayes algorithm which assumes that all continuous features are normally distributed. The probability of a feature value given a class is thus calculated using the Gaussian probability density function.
+
+For a new data point \( \mathbf{x}_i \), the predicted class \( \hat{y}_i \) is determined by:
+\begin{equation}
+	\hat{y}_i = \arg\max_{y} p(y) \prod_{j=1}^{n} p(x_{ij} | y),
+\end{equation}
+where \( p(y) \) is the prior probability of class \( y \), and \( p(x_{ij} | y) \) is the conditional probability of feature \( j \) given class \( y \), assumed to be Gaussian:
+\begin{equation}
+	p(x_{ij} | y) = \frac{1}{\sqrt{2\pi\sigma_{yj}^2}} \exp\left( -\frac{(x_{ij} - \mu_{yj})^2}{2\sigma_{yj}^2} \right),
+\end{equation}
+where \( \mu_{yj} \) and \( \sigma_{yj}^2 \) are the mean and variance of feature \( j \) in class \( y \), respectively.
 
 \subsubsection{Neural networks}
 
-The basic structure of a neural network (NN) consists of large amounts of densely interconnected nodes. In a feed-forward network, data moves in one direction only - forward. It traverses the network from the input layer, through multiple hidden layers of nodes, to an output layer. Figure \ref{fig:feedforward} is an example of this structure. Each node assigns a weight to its incoming connections, and emits an output using an activation function. This function computes an output from each weighted input and a threshold value. During training, the weights and thresholds are adjusted until convergence \cite{nnoverview}. At convergence, these values stabilize and do not change significantly with further training.
+A neural network (NN)  \cite{mlp} consists of many densely interconnected nodes. In a feed-forward network, data moves in one direction only - forward. It traverses the network from the input layer, through multiple hidden layers of nodes, to an output layer. Figure \ref{fig:feedforward} is an example of this structure. 
+
+Each node assigns a weight to its incoming connections, and emits an output using an activation function. This function computes an output from each weighted input and a threshold value. During training, the weights and thresholds are adjusted until convergence \cite{nnoverview}. At convergence, these values stabilize and do not change significantly with further training.
 
 \begin{figure}[h]
 	\centering
@@ -110,19 +182,86 @@ The basic structure of a neural network (NN) consists of large amounts of densel
 	\label{fig:feedforward}
 \end{figure}
 
-They key parameters which affect the network's capacity to model complex relationships in the data are the depth of the network (the number of hidden layers) and the width (the number of nodes in each hidden layer). The activation function used must be selected beforehand. A common activation function is the Rectified Linear Unit (ReLU), defined as:
+They key parameters which affect the network's capacity to model complex relationships in the data are the depth of the network (the number of hidden layers), the width (the number of nodes in each hidden layer), and the activation function used in the hidden layers. Common activation functions include 
 
-\[ f(x) = \max(0, x) \]
+\begin{itemize}
+	\item Rectified Linear Unit (ReLU)
+	\begin{equation}
+		f(x) = \max(0, x)
+	\end{equation}
+	where \( f(x) \) is the activation function applied to the input \( x \) of a neuron.
+	
+	\item Sigmoid
+	\begin{equation}
+		\sigma(x) = \frac{1}{1 + e^{-x}}
+	\end{equation}
+	Sigmoid squashes the output to the range [0, 1], which is useful for binary classification tasks.
+	
+	\item Tanh (Hyperbolic tangent)
+	\begin{equation}
+		\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}
+	\end{equation}
+	Tanh squashes the output to the range [-1, 1], which helps with zero-centered data and mitigates the vanishing gradient problem.
+\end{itemize}
 
-where \( f(x) \) is the activation function applied to the input \( x \) of a neuron.
+The activation function used impacts the training and performance of the NN. ReLU is commonly used in hidden layers due to its simplicity and effectiveness in training deep networks, while sigmoid and tanh are used in the output layer for binary classification.
 
-There are multiple types of neural networks with different applications. Feed-forward neural networks, such as multilayer perceptrons (MLPs), work as described above. MLPs consist of at least three layers of nodes and can be used for both classification and regression tasks. Recurrent neural networks involve back-propagation, where outputs are fed back into the model. Convolutional NNs consist of one or more NNs in 'convolutional layers', which are isolated smaller regions of the feature space. CNNs have been shown to be particularly effective for image recognition and natural language processing applications \cite{cnn-paper}. 
+There are multiple types of neural networks with different applications. Feed-forward neural networks, such as multilayer perceptrons (MLPs), work as described above. MLPs consist of at least three layers of nodes and can be used for both classification and regression tasks. 
 
-\clearpage
+Recurrent neural networks (RNNs) are designed for sequential data processing. They have connections that form directed cycles, thereby maintaining a hidden state that can capture information from previous time steps. The hidden state is updated iteratively using the current input and the previous hidden state. This feedback loop makes RNNs suitable for tasks involving time series data and natural language processing.
+
+Convolutional neural networks (CNNs) are designed to process data with a grid-like topology, such as images. They consist of one or more convolutional layers, where each layer applies convolutional filters to small regions of the input, capturing local patterns and spatial hierarchies. This makes CNNs suitable for tasks like image recognition \cite{cnn-paper}.
+
+\subsubsection{Gradient boosting}
+
+Gradient boosting \cite{friedmanboosting} is an ensemble technique that differs from random forests in that each tree is built sequentially, where each new tree is trained to 'correct' the errors of the previously trained trees. 
+
+The process begins with an initial model, typically a simple predictor, such as the mean of the target values for regression problems. With each iteration, the pseudo-residuals (the difference between the predicted and actual values) are calculated and the subsequent tree is built to predict these residuals. The model is updated by adding the predictions from this tree, weighted by a learning rate $\lambda$, to the initial predictions. This iterative fine-tuning process is repeated until convergence or another stopping criterion is met. 
+
+This process is mathematically formulated as follows:
+
+The \textbf{initial model} \( F_0(x) \) is chosen to minimize the loss function over all training examples.
+\begin{equation}
+	F_0(x) = \arg\min_{\gamma} \sum_{i=1}^{n} L(y_i, \gamma)
+\end{equation}
+where \( L(y, \hat{y}) \) is the loss function, \( y_i \) is the actual value, and \( \gamma \) is a constant (e.g., the mean of \( y \) for regression).
+
+For each \textbf{iteration}, \( m = 1 \) to \( M \) (the total number of iterations):
+
+(a) Compute the pseudo-residuals:
+\begin{equation}
+	r_i^{(m)} = -\left[\frac{\partial L(y_i, F_{m-1}(x_i))}{\partial F_{m-1}(x_i)}\right]
+\end{equation}
+These residuals represent the gradient of the loss function with respect to the current model's predictions.
+
+(b) Fit a base learner (e.g., a decision tree) \( h_m(x) \) to the pseudo-residuals:
+\begin{equation}
+	h_m(x) \approx r_i^{(m)}
+\end{equation}
+
+(c) The optimal step size \( \gamma_m \) is computed to minimize the loss function after adding the new learner's predictions:
+\begin{equation}
+	\gamma_m = \arg\min_{\gamma} \sum_{i=1}^{n} L(y_i, F_{m-1}(x_i) + \gamma h_m(x_i))
+\end{equation}
+
+(d) Update the model by adding the scaled predictions of the new learner to the current model
+\begin{equation}
+	F_m(x) = F_{m-1}(x) + \lambda \gamma_m h_m(x)
+\end{equation}
+where \( \lambda \) is the learning rate.
+
+After \( M \) iterations, the \textbf{final model} is given by:
+\begin{equation}
+	F_M(x) = F_0(x) + \sum_{m=1}^{M} \lambda \gamma_m h_m(x)
+\end{equation}
+
+XGBoost (eXtreme Gradient Boosting) \cite{xgboost} is an advanced, scalable implementation of gradient boosting which regularly outperforms other models for classification tasks \cite{gradboostingwins}. It introduces a number of improvements over gradient boosting:
+
+XGBoost uses a second-order Taylor approximation of the loss function $L$ to make the optimization problem more accurate. Regularisation is introduced into the objective function which penalises model complexity, thereby reducing overfitting. It handles sparse and missing data efficiently using a sparsity-aware split finding algorithm. Furthermore, tree construction is parallelised for enhanced computational efficiency.
 
 \subsection{Rating systems}
 
-Ratings and ranks are a representation of the relative performance of a given player or team. Although the methods differ, ratings are determined from past performances. There is an implicit expectation that higher-rated teams are expected to beat lower-rated teams more often than not. A good rating system is one which represents the true skill level as accurately as possible.
+Ratings and ranks serve as indicators of the relative performance of players or teams. These indicators are determined using different methods that vary from sport to sport, however they are always modelled on prior data. The ratings then serve as predictors for future data, and there is an implicit expectation that higher-rated teams are expected to beat lower-rated teams more often than not. A good rating system is one which represents the true skill level as accurately as possible. This section investigates the Elo, Glicko, and TrueSkill rating systems.
 
 \subsubsection{Elo}
 \label{elo}
