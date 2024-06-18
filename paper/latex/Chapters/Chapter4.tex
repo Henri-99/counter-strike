@@ -15,16 +15,16 @@ The full dataset consists of 10145 matches, with 8116 used for training and 2029
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill                 & 56.8 & 57.9 & 57.2 & 62.4 & 59.7 & 61.6 \\ \hline
-			\rule{0pt}{2.6ex} Logistic Regression 		& 60.0 & 58.5 & 56.9 & 69.3 & 62.5 & 62.9 \\
-			\rule{0pt}{2.6ex} Random Forest 			& 64.3 & 58.3 & 56.7 & 69.9 & 62.6 & 62.5 \\
-			\rule{0pt}{2.6ex} Support Vector Machine 	& 59.5 & 59.4 & \textbf{58.3} & 66.3 & 62.0 & 63.0 \\
-			\rule{0pt}{2.6ex} XGBoost 					& 61.0 & \textbf{60.0} & \textbf{58.5} &\textbf{ 69.6} & \textbf{63.5} & \textbf{64.1} \\
+			\rule{0pt}{2.6ex} Logistic regression 		& 60.0 & 58.5 & 56.9 & 69.3 & 62.5 & 62.9 \\
+			\rule{0pt}{2.6ex} Random forests 			& 64.3 & 58.3 & 56.7 & 69.9 & 62.6 & 62.5 \\
+			\rule{0pt}{2.6ex} Support vector machine 	& 59.5 & 59.4 & \textbf{58.3} & 66.3 & 62.0 & 63.0 \\
+			\rule{0pt}{2.6ex} k-nearest neighbours 		& 58.9 & 55.9 & 55.3 & 61.2 & 58.1 & 57.8 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes 		& 56.6 & 55.7 & 57.4 & 44.5 & 50.1 & 59.0 \\
-			\rule{0pt}{2.6ex} MLP Neural Network 		& 59.9 & 59.7 & 59.0 & 63.8 & 61.3 & 62.1 \\
-			\rule{0pt}{2.6ex} k-Nearest Neighbours 		& 58.9 & 55.9 & 55.3 & 61.2 & 58.1 & 57.8 \\
+			\rule{0pt}{2.6ex} Multilayer perceptron     & 59.9 & 59.7 & 59.0 & 63.8 & 61.3 & 62.1 \\
+			\rule{0pt}{2.6ex} XGBoost 					& 61.0 & \textbf{60.0} & \textbf{58.5} &\textbf{ 69.6} & \textbf{63.5} & \textbf{64.1} \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -33,6 +33,8 @@ The full dataset consists of 10145 matches, with 8116 used for training and 2029
 \end{table}
 
 The ML models did not significantly outperform the TrueSkill baseline model, with the improvement in classification accuracy varying from -2\% to 2\%. XGBoost and MLP had the best overall performance with a classification accuracy of 60.0\% and 59.7\%  respectively. XGBoost had the highest recall, $F_1$ score, and AUC ROC, indicating slightly better ability to discriminate between classes.
+
+\clearpage
 
 The optimal set of hyperparameters for each model was found using grid search and is captured in Table \ref{table:hyperparameters2} below.
 
@@ -44,25 +46,43 @@ The optimal set of hyperparameters for each model was found using grid search an
 			\hline
 			\rule{0pt}{2.5ex}\textbf{Hyperparameter} & \textbf{Description} & \textbf{Value Selected} \\
 			\hline
-			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Logistic Regression}} \\
+			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Logistic regression}} \\
 			\hline
-			C & Inverse of regularization strength & 0.01 \\
+			C & Inverse of regularization strength & 0.005 \\
 			penalty & Type of regularization & "l2" \\
-			solver & Optimization algorithm & "liblinear" \\
+			solver & Optimization algorithm & "saga" \\
 			\hline
-			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Random Forest}} \\
+			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Random forests}} \\
 			\hline
-			n\_estimators & Number of trees in the forest & 100-400 \\
-			max\_depth & Maximum depth of the tree & 2 \\
-			min\_samples\_split & Min samples to split a node & 4 \\
+			n\_estimators & Number of trees in the forest & 34 \\
+			max\_depth & Maximum depth of the tree & 6 \\
+			min\_samples\_split & Min samples to split a node & 2 \\
 			min\_samples\_leaf & Min samples to be at a leaf node & 4 \\
-			max\_features & Number of features for best split & "log2" \\
+			max\_features & Number of features for best split & 16 \\
 			\hline
-			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Support Vector Machine}} \\
+			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Support vector machine}} \\
 			\hline
 			C & Regularization parameter & 0.1 \\
 			kernel & Kernel type & "linear" \\
-			gamma & Kernel coefficient & "scale" \\
+			\hline
+			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{$k$-nearest neighbours}} \\
+			\hline
+			n\_neighbors & Number of neighbors to use & 50 \\
+			weights & Weight function in prediction & "uniform" \\
+			algorithm & Algorithm to compute nearest neighbors & "auto" \\
+			p & Power parameter for Minkowski metric & 1 (Manhattan) \\
+			\hline
+			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Gaussian Naive Bayes}} \\
+			\hline
+			var\_smoothing & Variance smoothing & 1e-9 \\
+			\hline
+			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Multilayer perceptron}} \\
+			\hline
+			hidden\_layer\_sizes & Neurons in hidden layers & (5,4) \\
+			activation & Activation function & "relu" \\
+			solver & Solver for weight optimization & "sgd" \\
+			alpha & L2 penalty (regularisation term) & 0.001 \\
+			learning\_rate & Learning rate for weight updates & "constant" \\
 			\hline
 			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{XGBoost}} \\
 			\hline
@@ -72,25 +92,6 @@ The optimal set of hyperparameters for each model was found using grid search an
 			subsample & Subsample ratio of the training instances & 0.5 \\
 			colsample\_bytree & Subsample ratio of columns for each tree & 0.5 \\
 			gamma & Min loss reduction for partition on a leaf node & 0.1 \\
-			\hline
-			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Gaussian Naive Bayes}} \\
-			\hline
-			var\_smoothing & Variance smoothing & 1e-9 \\
-			\hline
-			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{Multi-layer Perceptron}} \\
-			\hline
-			hidden\_layer\_sizes & Neurons in hidden layers & (5,4) \\
-			activation & Activation function & "relu" \\
-			solver & Solver for weight optimization & "sgd" \\
-			alpha & L2 penalty (regularization term) & 0.001 \\
-			learning\_rate & Learning rate for weight updates & "constant" \\
-			\hline
-			\multicolumn{3}{|c|}{\rule{0pt}{2.5ex}\textit{k-Nearest Neighbours}} \\
-			\hline
-			n\_neighbors & Number of neighbors to use & 110 \\
-			weights & Weight function in prediction & "uniform", "distance" \\
-			algorithm & Algorithm to compute nearest neighbors & "auto" \\
-			p & Power parameter for Minkowski metric & 1 (Manhattan) \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -126,7 +127,6 @@ The ROC curve for TrueSkill and the best performing ML model, XGBoost, are plott
 
 Feature selection methods such as filter and wrapper methods have already been discussed in section \ref{feature-selection}. Some models can also be used to determine feature importance. In a regularised logistic regression model, the magnitude of the coefficients for each feature are indicative of their importance given a large enough regularization penalty. 
 
-\newpage
 For SVMs with linear kernels, the weights assigned to each feature indicate their importance. With tree-based methods like random forests and XGBoost, the features yielding the largest average reduction in the loss function are more important. Figure \ref{fig:xgbimp} shows the feature importances determined by XGBoost.
 
 \begin{figure}[h]
@@ -142,8 +142,6 @@ In contrast to the filter methods in section \ref{feature-selection}, XGBoost co
 
 With logistic regression, the feature importances differed considerably. As seen in Figure \ref{fig:logimp}, the TrueSkill win probability and $\mu,\sigma$ values for either team were very important, followed by the difference in average map win-rate, round win-rate per map. HLTV world ranking, and win-streak.
 
-\clearpage
-
 \begin{figure}[h]
 	
 	\centering
@@ -154,7 +152,7 @@ With logistic regression, the feature importances differed considerably. As seen
 	\label{fig:logimp}
 \end{figure}
 
-The results reported in Table \ref{table:2} below were obtained after reducing the number of features to 18, an 87\% reduction in the data provided to each model. This smaller set of features was determined using the list of feature importance graphs produced from the previous analysis. The number of matches in the training and testing sets remained the same.
+The results reported in Table \ref{table:2} below were obtained after reducing the number of features to 18, an 87\% reduction in the data provided to each model. This smaller set of features was determined by considering which features appeared in the feature importance lists produced in the previous analysis as well as by the f-classif filter method discussed in the Methodology (\ref{fclassif}). The number of matches in the training and testing sets remained the same.
 
 \begin{table}[h!]
 	\centering
@@ -162,16 +160,16 @@ The results reported in Table \ref{table:2} below were obtained after reducing t
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill                 & 56.8 & 57.9 & 57.2 & 62.4 & 59.7 & 61.6 \\ \hline
 			\rule{0pt}{2.6ex} Logistic regression 		& 58.4 & 59.1 & 57.7 & 67.7 & 62.3 & 62.2 \\
 			\rule{0pt}{2.6ex} Random forests 			& 63.3 & 59.1 & 57.7 & 68.3 & 62.5 & 63.3 \\
 			\rule{0pt}{2.6ex} Support vector machine 	& 59.7 & 57.4 & 55.6 & \textbf{74.0} & \textbf{63.5} & 62.8 \\
-			\rule{0pt}{2.6ex} XGBoost 					& 60.0 & 59.3 & 57.9 & 68.6 & 62.8 & \textbf{64.2} \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 63.9 & 53.9 & 53.4 & 60.6 & 56.7 & 55.8 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes 		& 58.3 & 57.9 & 56.9 & 65.2 & 60.8 & 61.0 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron     & 59.8 & \textbf{59.8} & \textbf{58.6} & 66.4 & 62.3 & 63.7 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 63.9 & 53.9 & 53.4 & 60.6 & 56.7 & 55.8 \\
+			\rule{0pt}{2.6ex} XGBoost 					& 60.0 & 59.3 & 57.9 & 68.6 & 62.8 & \textbf{64.2} \\
 			\hline
 			\rule{0pt}{2.6ex} \textbf{Mean Change} 		& +0.45 & -0.12 & -0.59 & +3.74 & +1.54 & +0.23 \\
 			\hline
@@ -195,16 +193,16 @@ Another test was performed by reducing the total number of features to just seve
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill                 & 56.8 & 57.9 & 57.2 & 62.4 & 59.7 & 61.6 \\ \hline
 			\rule{0pt}{2.6ex} Logistic regression 		& 57.7 & 58.8 & 58.0 & 63.6 & 60.7 & 61.1 \\
 			\rule{0pt}{2.6ex} Random forests			& 62.1 & 59.0 & 57.6 & \textbf{67.9} & 62.3 & 62.3 \\
 			\rule{0pt}{2.6ex} Support vector machine 	& 57.5 & 58.7 & 57.7 & 65.1 & 61.2 & 61.8 \\
-			\rule{0pt}{2.6ex} XGBoost 					& 59.2 & \textbf{59.5} & \textbf{58.3} & 66.6 & \textbf{62.2} & \textbf{62.7} \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 59.3 & 57.7 & 56.9 & 63.3 & 59.9 & 60.8 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes 		& 58.3 & 57.9 & 56.9 & 65.2 & 60.8 & 61.0 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron     & 57.1 & 56.9 & 57.0 & 56.5 & 56.7 & 58.4 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 59.3 & 57.7 & 56.9 & 63.3 & 59.9 & 60.8 \\
+			\rule{0pt}{2.6ex} XGBoost 					& 59.2 & \textbf{59.5} & \textbf{58.3} & 66.6 & \textbf{62.2} & \textbf{62.7} \\
 			\hline
 			\rule{0pt}{2.6ex} \textbf{Mean Change} 		& -1.29 & +0.14 & +0.04 & +0.51 & +0.53 & -0.47 \\
 			\hline
@@ -241,16 +239,16 @@ The dataset used for this analysis consisted of 8320 matches in total split usin
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill                 & 58.8 & 59.2 & 59.3 & 62.3 & 60.8 & 63.7 \\ \hline
 			\rule{0pt}{2.6ex} Logistic regression       & 61.3 & 61.7 & 60.6 & 69.9 & 64.9 & 65.6 \\
 			\rule{0pt}{2.6ex} Random forests            & 65.5 & 61.3 & 60.1 & \textbf{70.6} & 64.9 & 66.0 \\
 			\rule{0pt}{2.6ex} Support vector machine    & 61.3 & 61.7 & \textbf{60.8} & 68.8 & 64.6 & 65.5 \\
-			\rule{0pt}{2.6ex} XGBoost                   & 63.7 & \textbf{61.9} & \textbf{60.8} & 69.9 & \textbf{65.0} & \textbf{66.3} \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 61.2 & 60.9 & 59.9 & 69.2 & 64.2 & 65.7 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes      & 60.4 & 59.4 & 58.5 & 68.2 & 63.0 & 63.3 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron     & 62.1 & 61.1 & 60.2 & 68.8 & 64.2 & 65.9 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 61.2 & 60.9 & 59.9 & 69.2 & 64.2 & 65.7 \\
+			\rule{0pt}{2.6ex} XGBoost                   & 63.7 & \textbf{61.9} & \textbf{60.8} & 69.9 & \textbf{65.0} & \textbf{66.3} \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -279,16 +277,16 @@ LAN tournaments are often prestigious events, and it is usually only the top tea
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill                 & 54.8 & 59.9 & 59.0 & 64.8 & 61.7 & 62.8 \\ \hline
 			\rule{0pt}{2.6ex} Logistic regression       & 58.1 & 60.1 & 59.6 & 62.4 & 61.0 & 63.5 \\
 			\rule{0pt}{2.6ex} Random forests            & 63.8 & 62.4 & \textbf{61.4} & 67.1 & 64.1 & 63.9 \\
 			\rule{0pt}{2.6ex} Support vector machine    & 58.0 & \textbf{62.7} & 61.1 & \textbf{70.0} & \textbf{65.2} & \textbf{64.2} \\
-			\rule{0pt}{2.6ex} XGBoost                   & 67.2 & 60.3 & 59.7 & 63.4 & 61.5 & 61.8 \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 59.2 & 58.0 & 56.9 & 65.7 & 61.0 & 62.8 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes      & 57.0 & 59.9 & 59.5 & 61.5 & 60.5 & 61.7 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron     & 57.3 & 59.2 & 58.3 & 64.3 & 61.2 & 61.1 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 59.2 & 58.0 & 56.9 & 65.7 & 61.0 & 62.8 \\
+			\rule{0pt}{2.6ex} XGBoost                   & 67.2 & 60.3 & 59.7 & 63.4 & 61.5 & 61.8 \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -321,16 +319,16 @@ This filter removed a sizeable number of matches from the dataset, leaving 7115 
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill 				& 57.4 & 58.0 & 57.8 & 62.4 & 60.0 & 61.5 \\ \hline
 			\rule{0pt}{2.6ex} Logistic regression 		& 60.4 & 59.3 & 57.6 & 73.7 & \textbf{64.6} & 63.3 \\
 			\rule{0pt}{2.6ex} Random forests 			& 62.9 & 58.1 & 56.6 & \textbf{73.0} & 63.7 & 61.7 \\
 			\rule{0pt}{2.6ex} Support vector machine 	& 61.3 & 58.6 & 57.7 & 67.0 & 62.0 & 62.8 \\
-			\rule{0pt}{2.6ex} XGBoost 					& 62.9 & \textbf{59.5} & 58.0 & 71.6 & 64.1 & \textbf{64.3} \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 64.7 & 52.8 & 53.0 & 58.4 & 55.5 & 54.2 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes 		& 58.2 & 57.2 & 57.8 & 56.3 & 57.0 & 60.8 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron		& 61.7 & 59.0 & \textbf{60.7} & 53.3 & 56.8 & 62.0 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 64.7 & 52.8 & 53.0 & 58.4 & 55.5 & 54.2 \\
+			\rule{0pt}{2.6ex} XGBoost 					& 62.9 & \textbf{59.5} & 58.0 & 71.6 & 64.1 & \textbf{64.3} \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -350,16 +348,16 @@ The ranking threshold was further constrained to only include matches with at le
 	\begin{adjustbox}{center} % Center the table
 		\begin{tabular}{ |l|c|c|c|c|c|c| }
 			\hline
-			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train ACC} & \textbf{Test ACC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
+			\rule{0pt}{2.6ex} \textbf{Model} & \textbf{Train Acc.} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} & \textbf{ROC AUC} \\
 			\hline
 			\rule{0pt}{2.6ex} TrueSkill 				& 58.2 & 58.5 & 59.3 & 62.6 & 60.9 & 61.6 \\ \hline
 			\rule{0pt}{2.6ex} Logistic regression 		& 62.5 & 57.6 & 56.9 & 73.5 & 64.1 & 62.3 \\
 			\rule{0pt}{2.6ex} Random forests			& 61.8 & 58.6 & 57.1 & \textbf{79.9} & \textbf{66.6} & 62.4 \\
 			\rule{0pt}{2.6ex} Support vector machine 	& 63.3 & 58.1 & 57.0 & 77.1 & 65.5 & 63.7 \\
-			\rule{0pt}{2.6ex} XGBoost 					& 66.5 & \textbf{62.0} & 61.8 & 69.1 & 65.2 & \textbf{65.8} \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 66.3 & 51.6 & 52.7 & 61.3 & 56.7 & 54.0 \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes 		& 59.0 & 58.4 & \textbf{61.9} & 50.3 & 55.5 & 62.1 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron     & 64.4 & 60.2 & 59.5 & 71.9 & 65.1 & 61.9 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 66.3 & 51.6 & 52.7 & 61.3 & 56.7 & 54.0 \\
+			\rule{0pt}{2.6ex} XGBoost 					& 66.5 & \textbf{62.0} & 61.8 & 69.1 & 65.2 & \textbf{65.8} \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -379,6 +377,8 @@ The results suggest that LAN matches are more predictable than online matches, a
 
 Furthermore, it was found that incorporating many features did not measurably improve the predictive power of the models. Key features could be identified and selected using filter and wrapper techniques, but also from feature importance metrics produced by the models themselves. Training using a smaller subset of only the most relevant features reduced the tendency for models to overfit the training data while simultaneously reducing the computational requirements. These smaller models produced almost identical performance to the fully-featured models. 
 
+\clearpage
+
 \section{Betting odds and simulation}
 
 The odds generated by the various models all exhibited a high correlation with the bookmaker odds, as shown in Table \ref{table:bettingperformance}. As explained in \ref{bettingstats}, the correlation, mean absolute error (MAE), and root-mean squared error (RMSE) for each model is reported. These measure the discrepancy between real odds offered by bookmakers and the odds generated by the models. Bet \% refers to the proportion of matches which were deemed to be worth betting on. The P/L column is the total number of betting units won or lost by the end of the betting period.
@@ -395,10 +395,10 @@ The odds generated by the various models all exhibited a high correlation with t
 			\rule{0pt}{2.6ex} Logistic regression       & 0.815 & 0.099  & 0.121 & 82.76 & 39.58 & 60.42 & 27.80 \\
 			\rule{0pt}{2.6ex} Random forests            & 0.815 & 0.101 & 0.124 & 81.61 & 39.08 & 60.92 & 25.98 \\
 			\rule{0pt}{2.6ex} Support vector machine    & 0.803 & 0.100 & 0.123 & 82.47 & 39.02 & 60.98 & 23.72 \\
-			\rule{0pt}{2.6ex} XGBoost                   & \textbf{0.855} &  \textbf{0.088} & \textbf{0.108} & 81.90 & 38.60 & 61.40 & 21.38 \\
+			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 0.740 & 0.105 & 0.130 & 81.90 & 40.70 & 59.30 & \textbf{32.78} \\
 			\rule{0pt}{2.6ex} Gaussian Naive Bayes      & 0.774 & 0.102 & 0.135 & 80.17 & \textbf{51.25} &\textbf{ 48.75} & 15.27 \\
 			\rule{0pt}{2.6ex} Multilayer perceptron     & 0.801 & 0.097  & 0.120 & \textbf{84.20} & 38.23 & 61.77 & 16.70 \\
-			\rule{0pt}{2.6ex} $k$-nearest neighbours 	& 0.740 & 0.105 & 0.130 & 81.90 & 40.70 & 59.30 & \textbf{32.78} \\
+			\rule{0pt}{2.6ex} XGBoost                   & \textbf{0.855} &  \textbf{0.088} & \textbf{0.108} & 81.90 & 38.60 & 61.40 & 21.38 \\
 			\hline
 		\end{tabular}
 	\end{adjustbox}
@@ -406,22 +406,39 @@ The odds generated by the various models all exhibited a high correlation with t
 	\label{table:bettingperformance}
 \end{table}
 
-The betting performance is of particular interest, as every ML model was profitable despite having a low percentage of winning bets relative to their classification accuracy. This counter-intuitive result is explained by the models assigning a higher probability (but still less than 50\%) to the underdog than what was implied by the bookmaker odds. The models effectively preferred to bet on the teams they predicted to lose. The large payouts from winning underdog bets offset the more frequent losses, resulting in an overall profitable strategy.
+The betting performance is of particular interest, as every ML model was profitable despite having a low percentage of winning bets relative to their classification accuracy. This counter-intuitive result is explained by the models assigning a higher probability (but still less than 50\%) to the underdog than what was implied by the bookmaker odds. This behaviour is evident by the number of underdog bets specified in Table \ref{tab:betting_results}.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{lrrrr}
+		\toprule
+		Bet Type & Bets & Wins & Losses & Profit \\
+		\midrule
+		Underdog & 240 & 89 & 151 & 29.54 \\
+		Overdog & 39 & 24 & 15 & 3.15 \\
+		No Bet & 68 & 0 & 0 & 0.00 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Summary of $k$-NN betting results}
+	\label{tab:betting_results}
+\end{table}
+
+The models effectively preferred to bet on the teams they predicted to lose. The large payouts from winning underdog bets offset the more frequent losses, resulting in an overall profitable strategy.
 
 Every model considered over 80\% of the matches as worth betting on, with bookmakers offering favourable odds; odds for one of the teams being greater than what the model generated. The MLP produced the most avid betting activity, with 84\% of matches being bet on.
 
 XGBoost, the model which repeatedly produced the most accurate classifications, shared the greatest overlap with the real-world odds, with a correlation of 0.855, MAE of 0.088 and RMSE of 0.108.
 
-The most profitable model, $k$-NN, disagreed with the bookmaker odds the most; it had the lowest correlation of 0.740 and highest errors of all the ML models. 
+The most profitable model, $k$-NN, disagreed with the bookmaker odds the most; it had the lowest correlation of 0.740 and highest errors of all the ML models.
 
-The cumulative profit/loss for $k$-NN is plotted in Figures \ref{fig:profit-match} and \ref{fig:profit-date}. The first shows the profit/loss on a match-by-match basis, where the second shows the profit/loss with the date as the x-axis. The various horizontal lines in Figure \ref{fig:profit-date} are periods in which no matches were bet on. 
+The cumulative profit/loss for $k$-NN is plotted below. Figure \ref{fig:profit-match} shows the profit/loss on a match-by-match basis. Figure \ref{fig:profit-date} shows the profit/loss over time. Note that the horizontal lines indicate periods in which no matches occurred. 
 
 \begin{figure}[h]
 	\centering
 	\begin{adjustbox}{center}
 		\includegraphics[width=\textwidth]{Figures/profit-match-2.png}
 	\end{adjustbox}
-	\caption{Cumulative profit/loss for $k$-NN and XGBoost (by match number)}
+	\caption{Cumulative profit/loss for $k$-NN and XGBoost (by match)}
 	\label{fig:profit-match}
 \end{figure}
 
@@ -434,15 +451,4 @@ The cumulative profit/loss for $k$-NN is plotted in Figures \ref{fig:profit-matc
 	\label{fig:profit-date}
 \end{figure}
 
-It is interesting to note that the model which deviated most from the bookmaker odds was the most profitable. $k$-NN only shared a 74\% correlation with the bookmaker odds. The raw betting data for the $k$-NN model is included in the Appendix. It was found by observation that it would generate very high probabilities (>95\%) for teams more often than the other models, resulting in more "overdog" bets being placed. 
-
-This was in contrast to the other, more accurate models which found most matches to be more balanced. In other words, these models often estimated the underdog as having a higher probability of victory than what the bookmaker odds suggested. They therefore placed underdog bets at a higher rate.
-
-These results suggest that bookmaker odds exhibit some degree of bias which is exploitable. Over a relatively large sample size of matches (n=\matchesBet{}), the machine learning algorithms were all able to make a profit on the esports betting market by considering features generated from historical match data only. Further investigation into optimizing the betting strategy employed may yield even greater profits. 
-
-
-
-
-
-
-
+It is interesting to note that the model which deviated most from the bookmaker odds was the most profitable. $k$-NN only shared a 74\% correlation with the bookmaker odds. It should also be noted that XGBoost outperformed $k$-NN until the 260th match played, as shown by the intersection of the graphs in Figure \ref{fig:profit-match}. This suggests that short-term results or fluctuations may not be indicative of a model's true performance, and a longer betting period may lead to different outcomes. The raw betting data for the $k$-NN model is included in Appendix \ref{dix:betting-data}.

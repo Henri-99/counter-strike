@@ -511,7 +511,7 @@ Shortly after its release in September 2023, the professional scene transitioned
 
 \subsection{Feature correlation}
 
-It is useful to plot a correlation matrix to understand the relationships between pairs of variables. It can also help to identify multicollinearity, where independent variables are highly correlated. Highly correlated features essentially provide redundant information to a model, and can result in unstable and unreliable coefficient estimates. Dimensionality reduction techniques, such as principal component analysis, can be implemented to mitigate multicollinearity, however with the trade-off that new uncorrelated variables, called principal components, are less interpretable.
+It is useful to plot a correlation matrix to understand the relationships between pairs of variables. It can also help to identify multicollinearity, where independent variables are highly correlated. Highly correlated features essentially provide redundant information to a model, and can result in unstable and unreliable coefficient estimates. The parametric ML models described earlier can be regularised, which minimises the impact of multicollinearity.
 
 The correlation matrix for thirty of the features is plotted in Figure \ref{fig:corr}. It is immediately observable that none of the features correlate strongly with the target class \textit{win}. This is evident by the top row consisting of just pale colours. 
 
@@ -553,7 +553,7 @@ It is useful to evaluate the performance of more basic models, with only 1 or 2 
 
 \textit{Feature selection} refers to the selection of the most relevant features from a dataset. It is used to reduce over-fitting and simplify models. Features can be selected either based on a statistical measure (a filter method), or by evaluating the performance of models using different subsets of features (a wrapper method).
 
-A filter method was implemented using the \texttt{\textbf{f\_classif}} function from scikit-learn's \texttt{\textbf{feature\_selection}} class. By computing the ANOVA F-value, or \textit{F-statistic}, between each feature and the target class, each feature can be ranked and compared. The ANOVA F-value refers to the ratio of variance between the classes and the variance within the classes for each feature, thereby determining how well each feature can discriminate between each class, $y=0$ or $y=1$. If a feature has a higher ANOVA F-value, it has a stronger relationship with the target class and is potentially more useful for classification.
+A filter method was implemented using the \texttt{\textbf{f\_classif}} function from scikit-learn's \texttt{\textbf{feature\_selection}} class. By computing the ANOVA F-value, or \textit{F-statistic}, between each feature and the target class, each feature can be ranked and compared. The ANOVA F-value refers to the ratio of variance between the classes and the variance within the classes for each feature, thereby determining how well each feature can discriminate between each class, $y=0$ or $y=1$. If a feature has a higher ANOVA F-value, it has a stronger relationship with the target class and is potentially more useful for classification. \label{fclassif}
 
 Other methods for feature selection were considered, such as \texttt{\textbf{SelectFdr}} which accounts for the family-wise error rate. However given the exploratory data analysis context, the filter method was deemed sufficient, and the best $k$ features or top $n^{th}$ percentile were identified using the \texttt{\textbf{SelectKBest}} function. The information presented in Figure \ref{fig:f-stat} was obtained by setting $k = 15$. 
 \clearpage
@@ -874,23 +874,29 @@ Where $O_A$ and $O_B$ are the decimal odds for team A and B to win the match, an
 
 In order to compare the generated betting odds with real betting odds provided by bookmakers, the average odds for \matchesBet{} matches across \tournamentsBet{} tournaments in the test set (2023) were downloaded from an online archive at \texttt{oddsportal.com}. To remove the bookmaker margin, the odds were then converted back into probabilities and normalized such that the sum of each pair of probabilities added up to 1.
 
-The correlation, mean absolute error (MAE), and root mean square error (RMSE) between the generated odds and the bookmaker odds is reported for each model to quantify the discrepancy between the odds from the models and the bookmaker. These are formulated as follows:\label{bettingstats}
+The correlation, mean absolute error (MAE), and root mean square error (RMSE) between the generated probabilities and the bookmaker probabilities are reported for each model to quantify the discrepancy between the odds from the models and the bookmaker. These are formulated as follows:\label{bettingstats}
 
-Given that the generated odds are $O_g$ and the bookmaker odds are $O_b$, with $n$ being the total number of odds comparisons, the \textbf{correlation} is defined as:
+Given that the generated probabilities are \( P_g \) and the bookmaker probabilities are \( P_b \), with \( n \) being the total number of probability comparisons, the \textbf{correlation} is defined as:
 
-\[r = \frac{\sum_{i=1}^{n} (O_{g_i} - \bar{O_g})(O_{b_i} - \bar{O_b})}{\sqrt{\sum_{i=1}^{n} (O_{g_i} - \bar{O_g})^2 \sum_{i=1}^{n} (O_{b_i} - \bar{O_b})^2}}\]
+\[
+r = \frac{\sum_{i=1}^{n} (P_{g_i} - \bar{P_g})(P_{b_i} - \bar{P_b})}{\sqrt{\sum_{i=1}^{n} (P_{g_i} - \bar{P_g})^2 \sum_{i=1}^{n} (P_{b_i} - \bar{P_b})^2}}
+\]
 
 where:
 \begin{itemize}
-	\item $O_{g_i}$ and $O_{b_i}$ are the i-th generated and bookmaker odds, respectively.
-	\item $\bar{O_g}$ and $\bar{O_b}$ are the means of the generated and bookmaker odds.
+	\item \( P_{g_i} \) and \( P_{b_i} \) are the \( i \)-th generated and bookmaker probabilities, respectively.
+	\item \( \bar{P_g} \) and \( \bar{P_b} \) are the means of the generated and bookmaker probabilities.
 \end{itemize}
 
 The \textbf{mean absolute error} (MAE) is defined as:
-\[\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |O_{g_i} - O_{b_i}|\]
+\[
+\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |P_{g_i} - P_{b_i}|
+\]
 
-And finally, the \textbf{root mean square error} (RMSE) is defined as
-\[\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (O_{g_i} - O_{b_i})^2}\]
+And finally, the \textbf{root mean square error} (RMSE) is defined as:
+\[
+\text{RMSE} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (P_{g_i} - P_{b_i})^2}
+\]
 
 \subsection{Betting simulation}
 
